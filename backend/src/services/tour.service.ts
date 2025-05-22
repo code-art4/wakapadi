@@ -12,11 +12,15 @@ export class TourService {
     return newTour.save();
   }
 
-  async findAll(): Promise<Tour[]> {
+  async findAll(location?: string): Promise<Tour[]> {
+    if (location) {
+      return this.tourModel.find({ location: new RegExp(location, 'i') }).exec();
+    }
     return this.tourModel.find().exec();
-  }
+  }  
 
   async findByTitle(title: string): Promise<Tour | null> {
     return this.tourModel.findOne({ title }).exec();
   }
 }
+

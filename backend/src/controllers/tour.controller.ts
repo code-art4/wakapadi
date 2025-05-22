@@ -1,23 +1,25 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query  } from '@nestjs/common';
 import { TourService } from '../services/tour.service';
 import { Tour } from '../schemas/tour.schema';
+import { CreateTourDto } from '../types/tour.dto';
+
 
 @Controller('tours')
 export class TourController {
   constructor(private readonly tourService: TourService) {}
 
   @Get()
-  findAll(): Promise<Tour[]> {
-    return this.tourService.findAll();
+  findAll(@Query('location') location?: string) {
+    return this.tourService.findAll(location);
   }
 
   @Post()
-  create(@Body() tour: Partial<Tour>) {
+  create(@Body() tour: CreateTourDto) {
     return this.tourService.create(tour);
   }
 
   @Post('seed')
-  async seedTours(@Body() tours: Partial<Tour>[]) {
+  async seedTours(@Body() tours: CreateTourDto[]) {
     return Promise.all(
       tours.map(async (tour:{title:string}) => {
         const exists = await this.tourService.findByTitle(tour.title);
@@ -28,3 +30,4 @@ export class TourController {
     );
   }
 }
+

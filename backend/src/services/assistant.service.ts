@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CreateAssistantDto } from '../types/assistant.dto';
 import { Assistant, AssistantDocument } from '../schemas//assistant.schema';
 
 @Injectable()
 export class AssistantService {
   constructor(@InjectModel(Assistant.name) private assistantModel: Model<AssistantDocument>) {}
 
-  create(data: Partial<Assistant>) {
+  create(data: CreateAssistantDto) {
     const assistant = new this.assistantModel(data);
     return assistant.save();
   }

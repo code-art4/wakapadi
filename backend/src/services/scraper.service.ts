@@ -244,12 +244,9 @@
 //   }
 // }
 
-
-
-
 import { Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
 import { TourService } from './tour.service';
+import * as puppeteer from 'puppeteer';
 
 @Injectable()
 export class ScraperService {
@@ -258,38 +255,113 @@ export class ScraperService {
   constructor(private readonly tourService: TourService) {}
 
   async scrapeFreeTourDotCom(city: string): Promise<void> {
-    const url = `https://www.freetour.com/${city}`;
+    const url = `https://www.freetour.com/${city.toLowerCase()}`;
+    this.logger.log(`Starting scrape for ${city} at ${url}`);
 
+    let browser;
     try {
-      const response = await axios.get(url);
-      const tours = response.data?.data ?? [];
+      browser = await puppeteer.launch({ 
+        headless: true, // Use the new headless mode
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Useful for some environments
+      });
+      const page = await browser.newPage();
+      
+      // Set a realistic user agent
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+      
+      // Configure page behavior
+      await page.setViewport({ width: 1366, height: 768 });
+      await page.setJavaScriptEnabled(true);
+
+      // Navigate with more options and timeout
+      const response = await page.goto(url, { 
+        waitUntil: 'domcontentloaded', 
+        timeout: 30000 
+      });
+
+      if (!response.ok()) {
+        throw new Error(`Failed to load page: HTTP ${response.status()}`);
+      }
+
+      // Wait for the main content to load
+      await page.waitForSelector('.tour-item, .search-results, .tours-list', { 
+        timeout: 10000 
+      }).catch(() => {
+        this.logger.warn('Main tour items selector not found, proceeding anyway');
+      });
+
+      const tours = await page.evaluate(() => {
+        // Try different selectors - the website might have changed
+        const cardSelectors = [
+          '.tour-item',
+          '.tour-card',
+          '.tours-list li',
+          '.search-results .item'
+        ];
+        
+        let cards: Element[] = [];
+        
+        // Try each selector until we find one that works
+        for (const selector of cardSelectors) {
+          const found = document.querySelectorAll(selector);
+          if (found.length > 0) {
+            cards = Array.from(found);
+            break;
+          }
+        }
+        return cards.map((el) => {
+          // More flexible selectors with fallbacks
+          const title = el.querySelector('.tour-title, .title, h3, h4')?.textContent?.trim() || '';
+          const time = el.querySelector('.tour-time, .duration, .time')?.textContent?.trim() || '';
+          const link = (el.querySelector('a[href]') as HTMLAnchorElement)?.href || '';
+          const img = (el.querySelector('img[src]') as HTMLImageElement)?.src || '';
+          
+          return { title, time, link, image: img };
+        }).filter(tour => tour.title && tour.link); // Only return tours with title and link
+      });
 
       if (!tours.length) {
-        this.logger.warn(`No tours found for city: ${city}`);
+        this.logger.warn(`No tours found on page for ${city}`);
+        // Consider taking a screenshot for debugging
+        await page.screenshot({ path: `debug-${city}-${Date.now()}.png` });
         return;
       }
 
+      this.logger.log(`Found ${tours.length} tours for ${city}`);
+
+      // Save tours to database
       for (const tour of tours) {
-        const title = tour.title;
-        const time = Array.isArray(tour.schedule) ? tour.schedule.join(', ') : 'Recurring';
-        const location = tour.city?.name || city;
-
-        const exists = await this.tourService.findByTitle(title);
-        if (!exists) {
-          await this.tourService.create({
-            title,
-            location,
-            recurringSchedule: time,
-            sourceUrl: `https://www.freetour.com/${city}`,
-          });
-
-          this.logger.log(`✔ Saved: ${title}`);
-        } else {
-          this.logger.debug(`⏩ Already exists: ${title}`);
+        try {
+          const exists = await this.tourService.findByTitle(tour.title);
+          if (!exists) {
+            await this.tourService.create({
+              title: tour.title,
+              location: city,
+              recurringSchedule: tour.time,
+              sourceUrl: url,
+              externalPageUrl: tour.link,
+              image: tour.image,
+            });
+            this.logger.log(`✔ Saved: ${tour.title}`);
+          } else {
+            this.logger.debug(`⏩ Skipped (exists): ${tour.title}`);
+          }
+        } catch (dbError) {
+          this.logger.error(`Database error for ${tour.title}: ${dbError.message}`);
         }
       }
+
     } catch (err) {
-      this.logger.error(`❌ Failed to fetch tours for ${city}: ${err.message}`);
+      this.logger.error(`❌ Error scraping ${city}: ${err.message}`);
+      // Take screenshot on error
+      if (browser) {
+        const page = await browser.newPage();
+        await page.screenshot({ path: `error-${city}-${Date.now()}.png` });
+      }
+    } finally {
+      if (browser) {
+        await browser.close();
+      }
     }
   }
 }

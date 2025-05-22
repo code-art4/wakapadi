@@ -3,26 +3,25 @@ import { Document } from 'mongoose';
 
 export type TourDocument = Tour & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Tour {
   @Prop({ required: true })
   title: string;
 
-  @Prop()
+  @Prop({ required: true })
   location: string;
 
-  @Prop() // For specific one-time dates
-  date?: string;
-
-  @Prop() // For repeating schedules
-  recurringSchedule?: string;
+  @Prop()
+  recurringSchedule: string;
 
   @Prop()
   sourceUrl: string;
 
-  @Prop({ default: Date.now })
-  createdAt: Date;
-}
+  @Prop()
+  externalPageUrl: string;
 
+  @Prop()
+  image: string;
+}
 
 export const TourSchema = SchemaFactory.createForClass(Tour);

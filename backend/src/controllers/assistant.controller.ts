@@ -1,13 +1,13 @@
 import { Controller, Post, Body, Get, Query, Param } from '@nestjs/common';
 import { AssistantService } from '../services/assistant.service';
-import { Assistant } from '../schemas/assistant.schema';
+import { CreateAssistantDto } from '../types/assistant.dto';
 
 @Controller('assistants')
 export class AssistantController {
   constructor(private readonly assistantService: AssistantService) {}
 
   @Post()
-  create(@Body() body: Partial<Assistant>) {
+  create(@Body() body: CreateAssistantDto) {
     return this.assistantService.create(body);
   }
 
