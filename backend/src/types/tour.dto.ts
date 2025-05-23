@@ -19,6 +19,8 @@ export class CreateTourDto {
   @IsOptional()
   @IsString()
   externalPageUrl?: string;
+  @IsString()
+  sourceType: string;
 
   @IsOptional()
   @IsString()

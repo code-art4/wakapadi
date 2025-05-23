@@ -21,6 +21,9 @@ export class Tour {
   externalPageUrl: string;
 
   @Prop()
+  sourceType: string;
+
+  @Prop()
   image: string;
 }
 

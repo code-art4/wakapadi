@@ -98,6 +98,7 @@
   .inputField {
     padding: 0.75rem 0;
     font-size: 0.9rem;
+    width: 800px;
   }
   
   .mobileMenuButton {

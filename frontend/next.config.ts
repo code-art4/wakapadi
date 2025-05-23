@@ -13,7 +13,7 @@
 const nextConfig = {
   reactStrictMode: true,
   i18n: {
-    locales: ['en', 'fr', 'es'], // Ensure these match your actual setup
+    locales: ['en', 'fr', 'es', 'de'], // Ensure these match your actual setup
     defaultLocale: 'en',
   },
   images: {

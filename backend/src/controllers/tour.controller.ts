@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, HttpCode  } from '@nestjs/common';
 import { TourService } from '../services/tour.service';
 import { Tour } from '../schemas/tour.schema';
 import { CreateTourDto } from '../types/tour.dto';
@@ -28,6 +28,12 @@ export class TourController {
         }
       }),
     );
+  }
+
+  @Delete()
+  @HttpCode(204)
+  async deleteAllTours(): Promise<void> {
+    await this.tourService.deleteAll();
   }
 }
 

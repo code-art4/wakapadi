@@ -8,5 +8,6 @@ import { ScraperController } from '../controllers/scraper.controller';
   imports: [TourModule, ScheduleModule.forRoot()],
   providers: [ScraperService],
   controllers: [ScraperController],
+  exports: [ScraperService],
 })
 export class ScraperModule {}

@@ -6,17 +6,19 @@ import { TourModule } from './modules/tour.module';
 import { ScraperModule } from './modules/scraper.module';
 import { AssistantModule } from './modules/assistant.module';
 import { WhoisModule } from './modules/whois.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     // MongooseModule.forRoot('mongodb://localhost/wakapadi'),
+    ScheduleModule.forRoot(),
     MongooseModule.forRoot('mongodb://localhost:27017/wakapadi'),
     AssistantModule,
     TourModule,
     ScraperModule,
     WhoisModule, // ✅ Add this line
 
-  ],
+  ], 
   controllers: [AppController],
   providers: [AppService],
 })
