@@ -1,0 +1,11 @@
+/* Optional: Add smooth scrolling */
+html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Set default font */
+  body {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    color: #333;
+    line-height: 1.6;
+  }

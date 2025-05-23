@@ -1,47 +1,49 @@
-import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
+// components/home/TourCard.tsx
+import { Card, CardContent, CardMedia, Typography, Button, Box } from '@mui/material';
 import { useTranslation } from 'next-i18next';
+import { Tour } from '../../pages/index';
+import styles from './TourCard.module.css';
 
-type Tour = {
-  title: string;
-  location: string;
-  recurringSchedule?: string;
-  externalPageUrl?: string;
-  image?: string;
-};
-
-export default function TourCard({ tour }: { tour: Tour }) {
+export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlight?: string }) {
   const { t } = useTranslation('common');
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {tour.image && (
-        <CardMedia
-          component="img"
-          height="180"
-          image={tour.image}
-          alt={tour.title}
-          loading="lazy"
-        />
-      )}
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="h6">{tour.title}</Typography>
-        <Typography color="text.secondary">{tour.location}</Typography>
-        {tour.recurringSchedule && (
-          <Typography mt={1}><strong>When:</strong> {tour.recurringSchedule}</Typography>
+    <div className={styles.cardWrapper}>
+      <Card className={styles.card}>
+        {tour.image && (
+          <CardMedia
+            component="img"
+            image={tour.image}
+            alt={tour.title}
+            loading="lazy"
+            className={styles.cardImage}
+          />
         )}
-        {tour.externalPageUrl && (
-          <Button
-            variant="text"
-            size="small"
-            sx={{ mt: 2 }}
-            href={tour.externalPageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t('moreInfo')}
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+
+        <CardContent className={styles.cardContent}>
+          <Typography variant="h6" className={styles.cardTitle} title={tour.title}>
+            {tour.title}
+          </Typography>
+          <Typography className={styles.cardLocation}>{tour.location}</Typography>
+          
+          {tour.recurringSchedule && (
+            <Typography className={styles.cardSchedule}>
+              <span className={styles.scheduleLabel}>{t('when')}:</span> {tour.recurringSchedule}
+            </Typography>
+          )}
+          
+          {tour.externalPageUrl && (
+            <Button
+              variant="outlined"
+              href={tour.externalPageUrl}
+              target="_blank"
+              className={styles.cardButton}
+            >
+              {t('moreInfo')}
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

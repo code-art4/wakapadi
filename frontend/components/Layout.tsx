@@ -1,3 +1,4 @@
+// components/Layout.tsx
 import {
     AppBar,
     Toolbar,
@@ -20,6 +21,8 @@ import {
   import NextLink from 'next/link';
   import { useEffect, useState } from 'react';
   import i18nextConfig from '../next-i18next.config';
+  import { useTranslation } from 'next-i18next';
+  import styles from './Layout.module.css';
   
   export default function Layout({
     children,
@@ -31,165 +34,143 @@ import {
     description?: string;
   }) {
     const router = useRouter();
-    const currentLocale = router.locale || 'en';
-    const locales = i18nextConfig.i18n.locales;
+    const { t, i18n } = useTranslation('common');
+    const currentLocale = router.locale || i18nextConfig.i18n.defaultLocale;
     const [drawerOpen, setDrawerOpen] = useState(false);
   
-    const languageLabels: Record<string, string> = {
-      en: 'English',
-      fr: 'Français',
-      es: 'Español',
-      de: 'Deutsch',
+    const handleLocaleChange = (e: any) => {
+      const locale = e.target.value;
+      router.push(router.pathname, router.asPath, { locale });
     };
-  
-    useEffect(() => {
-      const savedLang = typeof window !== 'undefined' && localStorage.getItem('wakapadi-lang');
-      if (savedLang && savedLang !== currentLocale) {
-        router.push(router.pathname, router.asPath, { locale: savedLang });
-      }
-    }, []);
-  
-    const changeLanguage = (lang: string) => {
-      localStorage.setItem('wakapadi-lang', lang);
-      router.push(router.pathname, router.asPath, { locale: lang });
-    };
-  
-    const navLinks = [
-      { label: 'Assistants', href: '/assistants' },
-      { label: '#Whois', href: '/whois' },
-      { label: 'Privacy', href: '/privacy' },
-    ];
   
     return (
-      <>
+      <div className={styles.layoutContainer}>
         <Head>
           <title>{title}</title>
           <meta name="description" content={description} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta property="og:title" content={title} />
           <meta property="og:description" content={description} />
-          <meta property="og:type" content="website" />
-          <meta property="og:url" content={`https://wakapadi.com${router.asPath}`} />
         </Head>
   
-        <AppBar position="static">
-          <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <NextLink href="/" passHref legacyBehavior>
-              <Link color="inherit" underline="none">
-                <Typography variant="h6" fontWeight="bold">Wakapadi</Typography>
-              </Link>
-            </NextLink>
+<AppBar position="sticky" className={styles.appBar}>
+  <Toolbar className={styles.toolbar}>
+    <Box className={styles.logoContainer}>
+      {/* Mobile Menu Button - Only shows on small screens */}
+      <IconButton
+        edge="start"
+        color="inherit"
+        onClick={() => setDrawerOpen(true)}
+        className={styles.menuButton}
+        aria-label="menu"
+      >
+        <MenuIcon />
+      </IconButton>
+      
+      <NextLink href="/" passHref>
+        <Typography variant="h6" className={styles.logoText}>
+          Wakapadi
+        </Typography>
+      </NextLink>
+    </Box>
+
+    {/* Desktop Navigation - Only shows on larger screens */}
+    <Box className={styles.desktopNav}>
+      <Link href="/assistants" className={styles.navLink}>
+        {t('findAssistants')}
+      </Link>
+      <Link href="/whois" className={styles.navLink}>
+        {t('whoisNearby')}
+      </Link>
+      <Select
+        value={currentLocale}
+        onChange={handleLocaleChange}
+        className={styles.languageSelector}
+        size="small"
+      >
+        {i18nextConfig.i18n.locales.map((loc) => (
+          <MenuItem key={loc} value={loc} className={styles.languageOption}>
+            {loc.toUpperCase()}
+          </MenuItem>
+        ))}
+      </Select>
+    </Box>
+  </Toolbar>
+</AppBar>
   
-            {/* Desktop Menu */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-              {navLinks.map((link) => (
-                <Button key={link.href} color="inherit" component={NextLink} href={link.href}>
-                  {link.label}
-                </Button>
-              ))}
-              <Select
-                size="small"
-                value={currentLocale}
-                onChange={(e) => changeLanguage(e.target.value)}
-                sx={{
-                  ml: 2,
-                  bgcolor: 'white',
-                  color: 'black',
-                  borderRadius: 1,
-                  minWidth: 100,
-                }}
+        <Drawer 
+          anchor="left" 
+          open={drawerOpen} 
+          onClose={() => setDrawerOpen(false)}
+          classes={{ paper: styles.drawerPaper }}
+        >
+          <Box className={styles.drawerContainer}>
+            <List className={styles.drawerList}>
+              <ListItem 
+                button 
+                component={NextLink} 
+                href="/assistants"
+                className={styles.drawerListItem}
               >
-                {locales.map((lang) => (
-                  <MenuItem key={lang} value={lang}>
-                    {languageLabels[lang] || lang.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-  
-            {/* Mobile Menu */}
-            <IconButton
-              sx={{ display: { xs: 'block', md: 'none' } }}
-              edge="end"
-              color="inherit"
-              onClick={() => setDrawerOpen(true)}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-  
-        {/* Drawer for Mobile */}
-        <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-          <Box sx={{ width: 250, p: 2 }}>
-            <Typography variant="h6" gutterBottom>Menu</Typography>
-            <List>
-              {navLinks.map((link) => (
-                <ListItem
-                  button
-                  key={link.href}
-                  onClick={() => {
-                    router.push(link.href);
-                    setDrawerOpen(false);
-                  }}
+                <ListItemText 
+                  primary={t('findAssistants')} 
+                  primaryTypographyProps={{ className: styles.drawerText }}
+                />
+              </ListItem>
+              <ListItem 
+                button 
+                component={NextLink} 
+                href="/whois"
+                className={styles.drawerListItem}
+              >
+                <ListItemText 
+                  primary={t('whoisNearby')} 
+                  primaryTypographyProps={{ className: styles.drawerText }}
+                />
+              </ListItem>
+              <ListItem className={styles.languageListItem}>
+                <Select
+                  fullWidth
+                  value={currentLocale}
+                  onChange={handleLocaleChange}
+                  size="small"
+                  className={styles.drawerLanguageSelector}
                 >
-                  <ListItemText primary={link.label} />
-                </ListItem>
-              ))}
+                  {i18nextConfig.i18n.locales.map((loc) => (
+                    <MenuItem 
+                      key={loc} 
+                      value={loc}
+                      className={styles.drawerLanguageOption}
+                    >
+                      {loc.toUpperCase()}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </ListItem>
             </List>
-            <Box mt={2}>
-              <Typography variant="subtitle2" gutterBottom>
-                Language
-              </Typography>
-              <Select
-                fullWidth
-                size="small"
-                value={currentLocale}
-                onChange={(e) => {
-                  changeLanguage(e.target.value);
-                  setDrawerOpen(false);
-                }}
-              >
-                {locales.map((lang) => (
-                  <MenuItem key={lang} value={lang}>
-                    {languageLabels[lang] || lang.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
           </Box>
         </Drawer>
   
-        {/* Page Content */}
-        <Container sx={{ py: 4 }}>{children}</Container>
+        <main className={styles.mainContent}>{children}</main>
   
-        {/* Footer */}
-        <Box
-          component="footer"
-          sx={{
-            mt: 8,
-            py: 3,
-            backgroundColor: '#222',
-            color: 'white',
-            textAlign: 'center',
-          }}
-        >
-          <Typography variant="body2">
-            &copy; {new Date().getFullYear()} Wakapadi. All rights reserved.
-          </Typography>
-          <Box sx={{ mt: 1 }}>
-            <Link href="/privacy" color="inherit" underline="hover" sx={{ mx: 1 }}>
-              Privacy
-            </Link>
-            <Link href="/terms" color="inherit" underline="hover" sx={{ mx: 1 }}>
-              Terms
-            </Link>
-            <Link href="/cookies" color="inherit" underline="hover" sx={{ mx: 1 }}>
-              Cookies
-            </Link>
-          </Box>
-        </Box>
-      </>
+<Box component="footer" className={styles.footer}>
+  <Container maxWidth="lg" className={styles.footerContent}>
+    <Typography variant="body2" className={styles.copyright}>
+      &copy; {new Date().getFullYear()} Wakapadi. All rights reserved.
+    </Typography>
+    <Box className={styles.footerLinks}>
+      <Link href="/privacy" className={styles.footerLink}>
+        Privacy
+      </Link>
+      <Link href="/terms" className={styles.footerLink}>
+        Terms
+      </Link>
+      <Link href="/cookies" className={styles.footerLink}>
+        Cookies
+      </Link>
+    </Box>
+  </Container>
+</Box>
+      </div>
     );
   }
-  

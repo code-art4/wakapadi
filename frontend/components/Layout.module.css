@@ -1,0 +1,298 @@
+/* components/Layout.module.css */
+.layoutContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+
+  
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem !important;
+  }
+  
+  .logoContainer {
+    display: flex;
+    align-items: center;
+  }
+  
+  .menuButton {
+    margin-right: 0.5rem;
+    display: none !important;
+  }
+  
+  .logoText {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700 !important;
+    color: #3f51b5;
+    cursor: pointer;
+    font-size: 1.25rem !important;
+    transition: color 0.3s ease;
+  }
+  
+  .logoText:hover {
+    color: #303f9f;
+  }
+  
+  /* Navigation Links */
+  .navLinks {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .navLink {
+    color: #333;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.875rem;
+  }
+  
+  .navLink:hover {
+    color: #3f51b5;
+    text-decoration: none;
+  }
+  
+  .languageSelector {
+    margin-left: 1rem;
+    min-width: 60px;
+  }
+  
+  .languageOption {
+    font-size: 0.8rem !important;
+  }
+  
+  /* Drawer Styles */
+  .drawerPaper {
+    width: 280px !important;
+    background-color: #f8f9fa !important;
+  }
+  
+  .drawerContainer {
+    padding: 1rem;
+    height: 100%;
+  }
+  
+  .drawerList {
+    padding: 0;
+  }
+  
+  .drawerListItem {
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .drawerListItem:hover {
+    background-color: rgba(63, 81, 181, 0.08);
+  }
+  
+  .drawerText {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+  }
+  
+  .languageListItem {
+    padding: 1rem 0 0 0 !important;
+  }
+  
+  .drawerLanguageSelector {
+    background-color: white;
+  }
+  
+  .drawerLanguageOption {
+    font-size: 0.8rem !important;
+  }
+  
+  /* Main Content */
+  .mainContent {
+    flex: 1;
+    padding: 2rem 0;
+  }
+  
+  /* Footer Styles */
+  .footer {
+    background-color: #222;
+    color: white;
+    padding: 2rem 0;
+    margin-top: auto;
+  }
+  
+  .copyright {
+    color: rgba(255, 255, 255, 0.7) !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .footerLinks {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  
+  .footerLink {
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-decoration: none !important;
+    transition: color 0.3s ease;
+    font-size: 0.875rem !important;
+  }
+  
+  .footerLink:hover {
+    color: white !important;
+  }
+  
+  /* Responsive Styles */
+  /* @media (max-width: 768px) {
+    .menuButton {
+      display: inline-flex;
+    }
+  
+    .navLinks {
+      display: none;
+    }
+  
+    .toolbar {
+      padding: 0.5rem !important;
+    }
+  
+    .mainContent {
+      padding: 1rem 0;
+    }
+  
+    .footerLinks {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+  } */
+  
+  /* @media (min-width: 1200px) {
+    .toolbar {
+      padding: 0.5rem 2rem !important;
+    }
+  } */
+
+
+
+
+
+  /* components/Layout.module.css */
+
+/* Header Styles */
+.appBar {
+    background: linear-gradient(135deg, #3f51b5 0%, #303f9f 100%) !important;
+    color: white !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .toolbar {
+    padding: 0 24px !important;
+    min-height: 64px !important;
+  }
+  
+  .logoText {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700 !important;
+    color: white !important;
+    font-size: 1.25rem !important;
+    letter-spacing: 0.5px;
+  }
+  
+  .menuButton {
+    margin-right: 16px;
+    display: none !important; /* Hidden by default */
+  }
+  
+  .desktopNav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  
+  .navLink {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    transition: color 0.3s ease;
+    font-size: 0.95rem;
+  }
+  
+  .navLink:hover {
+    color: white !important;
+  }
+  
+  .languageSelector {
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .languageSelector svg {
+    color: white !important;
+  }
+  
+  /* Footer Styles */
+  .footer {
+    background: #2d3748;
+    color: white;
+    padding: 40px 0;
+    margin-top: 80px;
+  }
+  
+  .footerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .copyright {
+    color: rgba(255, 255, 255, 0.7) !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .footerLinks {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .footerLink {
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-decoration: none !important;
+    transition: color 0.3s ease;
+    font-size: 0.9rem;
+  }
+  
+  .footerLink:hover {
+    color: white !important;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .menuButton {
+      display: block !important; /* Show on mobile */
+    }
+    
+    .desktopNav {
+      display: none; /* Hide on mobile */
+    }
+    
+    .toolbar {
+      padding: 0 16px !important;
+    }
+    
+    .footerLinks {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+ 
+    .toolbar {
+      padding: 0 32px !important;
+    }
+  }

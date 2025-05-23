@@ -1,0 +1,162 @@
+/* styles/HomePage.module.css */
+.anchor {
+    scroll-margin-top: 100px;
+  }
+  
+  
+  .sectionTitle {
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #2d3748;
+    font-size: 2rem;
+    position: relative;
+  }
+  
+  .sectionTitle::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: #3f51b5;
+    margin: 1rem auto 0;
+    border-radius: 2px;
+  }
+  
+
+  
+  .noResults {
+    text-align: center;
+    padding: 4rem 0;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin: 2rem 0;
+  }
+  
+  .noResultsText {
+    color: #6b7280;
+    font-weight: 500;
+  }
+  
+ 
+  
+  .paginationContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+    padding: 1rem;
+  }
+  
+  .paginationRoot {
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .paginationList {
+    flex-wrap: nowrap;
+  }
+  
+  .paginationList button {
+    border-radius: 8px !important;
+    min-width: 40px;
+    height: 40px;
+    margin: 0 4px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  
+  .paginationList button.Mui-selected {
+    background-color: #3f51b5 !important;
+    color: white;
+    transform: scale(1.05);
+  }
+  
+  .paginationList button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .paginationList button.Mui-selected:hover {
+    background-color: #334296 !important;
+  }
+  
+
+/* styles/HomePage.module.css */
+.tourContainer {
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem 1rem;
+    margin: 0 auto;
+  }
+  
+  .tourGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    width: 100%;
+  }
+  
+  .gridItem {
+    width: 100%;
+  }
+  
+  .skeletonCard {
+    background: #f0f0f0;
+    border-radius: 12px;
+    height: 380px;
+    width: 100%;
+  }
+ 
+
+  
+
+  /* Responsive styles */
+
+
+  @media (max-width: 600px) {
+    .tourGrid {
+      grid-template-columns: 1fr;
+    }
+    
+    .tourContainer {
+      padding: 1.5rem 0.75rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .tourContainer {
+      padding: 2rem 0.5rem;
+    }
+  
+    .sectionTitle {
+      font-size: 1.6rem;
+      margin-bottom: 2rem;
+    }
+  
+    .tourGrid {
+      padding: 0;
+    }
+  
+    .paginationContainer {
+      margin-top: 2rem;
+      padding: 0.5rem;
+    }
+  
+    .paginationList button {
+      min-width: 32px;
+      height: 32px;
+      font-size: 0.875rem;
+    }
+  }
+
+
+
+
+   
+  @media (max-width: 900px) {
+    .tourGrid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+  }
+  
