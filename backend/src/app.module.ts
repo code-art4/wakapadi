@@ -7,6 +7,10 @@ import { ScraperModule } from './modules/scraper.module';
 import { AssistantModule } from './modules/assistant.module';
 import { WhoisModule } from './modules/whois.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SeedController } from './controllers/seed.controller';
+import { SeedModule } from './modules/seed.module';
+import { UserModule } from './modules/users.module';
+import { AuthModule } from './modules/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +20,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     AssistantModule,
     TourModule,
     ScraperModule,
+    AuthModule,
+    SeedModule,
+    UserModule,
     WhoisModule, // ✅ Add this line
 
   ], 

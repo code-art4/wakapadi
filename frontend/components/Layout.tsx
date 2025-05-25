@@ -13,7 +13,7 @@ import {
     ListItem,
     ListItemText,
     Select,
-    MenuItem
+    MenuItem,
   } from '@mui/material';
   import MenuIcon from '@mui/icons-material/Menu';
   import { useRouter } from 'next/router';
@@ -37,10 +37,21 @@ import {
     const { t, i18n } = useTranslation('common');
     const currentLocale = router.locale || i18nextConfig.i18n.defaultLocale;
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+    useEffect(() => {
+      setIsLoggedIn(!!localStorage.getItem('token'));
+    }, []);
   
     const handleLocaleChange = (e: any) => {
       const locale = e.target.value;
       router.push(router.pathname, router.asPath, { locale });
+    };
+  
+    const handleLogout = () => {
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+      router.push('/');
     };
   
     return (
@@ -53,95 +64,92 @@ import {
           <meta property="og:description" content={description} />
         </Head>
   
-<AppBar position="sticky" className={styles.appBar}>
-  <Toolbar className={styles.toolbar}>
-    <Box className={styles.logoContainer}>
-      {/* Mobile Menu Button - Only shows on small screens */}
-      <IconButton
-        edge="start"
-        color="inherit"
-        onClick={() => setDrawerOpen(true)}
-        className={styles.menuButton}
-        aria-label="menu"
-      >
-        <MenuIcon />
-      </IconButton>
-      
-      <NextLink href="/" passHref>
-        <Typography variant="h6" className={styles.logoText}>
-          Wakapadi
-        </Typography>
-      </NextLink>
-    </Box>
-
-    {/* Desktop Navigation - Only shows on larger screens */}
-    <Box className={styles.desktopNav}>
-      <Link href="/assistants" className={styles.navLink}>
-        {t('findAssistants')}
-      </Link>
-      <Link href="/whois" className={styles.navLink}>
-        {t('whoisNearby')}
-      </Link>
-      <Select
-        value={currentLocale}
-        onChange={handleLocaleChange}
-        className={styles.languageSelector}
-        size="small"
-      >
-        {i18nextConfig.i18n.locales.map((loc) => (
-          <MenuItem key={loc} value={loc} className={styles.languageOption}>
-            {loc.toUpperCase()}
-          </MenuItem>
-        ))}
-      </Select>
-    </Box>
-  </Toolbar>
-</AppBar>
+        <AppBar position="sticky" className={styles.appBar}>
+          <Toolbar className={styles.toolbar}>
+            <Box className={styles.logoContainer}>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={() => setDrawerOpen(true)}
+                className={styles.menuButton}
+                aria-label="menu"
+              >
+                <MenuIcon />
+              </IconButton>
   
-        <Drawer 
-          anchor="left" 
-          open={drawerOpen} 
+              <NextLink href="/" passHref>
+                <Typography variant="h6" className={styles.logoText}>
+                  Wakapadi
+                </Typography>
+              </NextLink>
+            </Box>
+  
+            <Box className={styles.desktopNav}>
+              <Link href="/assistants" className={styles.navLink}>
+                {t('findAssistants')}
+              </Link>
+              <Link href="/whois" className={styles.navLink}>
+                {t('whoisNearby')}
+              </Link>
+  
+              {isLoggedIn ? (
+                <Button onClick={handleLogout} color="inherit" className={styles.navLink}>
+                  Logout
+                </Button>
+              ) : null
+             
+              }
+  
+              <Select
+                value={currentLocale}
+                onChange={handleLocaleChange}
+                className={styles.languageSelector}
+                size="small"
+              >
+                {i18nextConfig.i18n.locales.map((loc) => (
+                  <MenuItem key={loc} value={loc}>
+                    {loc.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </Toolbar>
+        </AppBar>
+  
+        <Drawer
+          anchor="left"
+          open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           classes={{ paper: styles.drawerPaper }}
         >
           <Box className={styles.drawerContainer}>
             <List className={styles.drawerList}>
-              <ListItem 
-                button 
-                component={NextLink} 
-                href="/assistants"
-                className={styles.drawerListItem}
-              >
-                <ListItemText 
-                  primary={t('findAssistants')} 
-                  primaryTypographyProps={{ className: styles.drawerText }}
-                />
+              <ListItem button component={NextLink} href="/assistants">
+                <ListItemText primary={t('findAssistants')} />
               </ListItem>
-              <ListItem 
-                button 
-                component={NextLink} 
-                href="/whois"
-                className={styles.drawerListItem}
-              >
-                <ListItemText 
-                  primary={t('whoisNearby')} 
-                  primaryTypographyProps={{ className: styles.drawerText }}
-                />
+              <ListItem button component={NextLink} href="/whois">
+                <ListItemText primary={t('whoisNearby')} />
               </ListItem>
-              <ListItem className={styles.languageListItem}>
+  
+              {isLoggedIn ? (
+                <ListItem button onClick={handleLogout}>
+                  <ListItemText primary="Logout" />
+                </ListItem>
+              ) : (
+                <ListItem button component={NextLink} href="/login">
+                  <ListItemText primary="Login" />
+                </ListItem>
+              )}
+  
+              <ListItem>
                 <Select
                   fullWidth
                   value={currentLocale}
                   onChange={handleLocaleChange}
                   size="small"
-                  className={styles.drawerLanguageSelector}
                 >
                   {i18nextConfig.i18n.locales.map((loc) => (
-                    <MenuItem 
-                      key={loc} 
-                      value={loc}
-                      className={styles.drawerLanguageOption}
-                    >
+                    <MenuItem key={loc} value={loc}>
                       {loc.toUpperCase()}
                     </MenuItem>
                   ))}
@@ -153,24 +161,25 @@ import {
   
         <main className={styles.mainContent}>{children}</main>
   
-<Box component="footer" className={styles.footer}>
-  <Container maxWidth="lg" className={styles.footerContent}>
-    <Typography variant="body2" className={styles.copyright}>
-      &copy; {new Date().getFullYear()} Wakapadi. All rights reserved.
-    </Typography>
-    <Box className={styles.footerLinks}>
-      <Link href="/privacy" className={styles.footerLink}>
-        Privacy
-      </Link>
-      <Link href="/terms" className={styles.footerLink}>
-        Terms
-      </Link>
-      <Link href="/cookies" className={styles.footerLink}>
-        Cookies
-      </Link>
-    </Box>
-  </Container>
-</Box>
+        <Box component="footer" className={styles.footer}>
+          <Container maxWidth="lg" className={styles.footerContent}>
+            <Typography variant="body2" className={styles.copyright}>
+              &copy; {new Date().getFullYear()} Wakapadi. All rights reserved.
+            </Typography>
+            <Box className={styles.footerLinks}>
+              <Link href="/privacy" className={styles.footerLink}>
+                Privacy
+              </Link>
+              <Link href="/terms" className={styles.footerLink}>
+                Terms
+              </Link>
+              <Link href="/cookies" className={styles.footerLink}>
+                Cookies
+              </Link>
+            </Box>
+          </Container>
+        </Box>
       </div>
     );
   }
+  

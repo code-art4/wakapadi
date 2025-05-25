@@ -1,14 +1,22 @@
+// src/whois/whois.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { WhoisController } from '../controllers/whois.controller';
+import { WhoisPresence, WhoisPresenceSchema } from '../schemas/whois.schema';
 import { WhoisService } from '../services/whois.service';
-import { Presence, PresenceSchema } from '../schemas/presence.schema';
-
+import { WhoisController } from '../controllers/whois.controller';
+import { WhoisMessage, WhoisMessageSchema } from 'src/schemas/whois-message.schema';
+import { UserSchema, User } from 'src/schemas/user.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Presence.name, schema: PresenceSchema }])],
-  providers: [WhoisService],
-  controllers: [WhoisController],
+  imports: [
+    MongooseModule.forFeature([
+      { name: WhoisPresence.name, schema: WhoisPresenceSchema },
+      { name: WhoisMessage.name, schema: WhoisMessageSchema },
+      { name: User.name, schema: UserSchema }, // ✅ ADD THIS LINE
 
+    ]),
+  ],
+  controllers: [WhoisController],
+  providers: [WhoisService],
 })
 export class WhoisModule {}
