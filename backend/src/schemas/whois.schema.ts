@@ -40,6 +40,7 @@ export class WhoisPresence extends Document {
   username: string;
   @Prop()
   expiresAt: Date;
+
 }
 
 export const WhoisPresenceSchema = SchemaFactory.createForClass(WhoisPresence);

@@ -37,6 +37,7 @@ export default function AuthPage() {
       const endpoint = isLogin ? 'login' : 'register';
       const res = await api.post(`/auth/${endpoint}`, payload);
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('userId', res.data.userId);
       router.push('/');
     } catch (err) {
       console.error(err);

@@ -21,7 +21,8 @@ export class AuthService {
   
     const hash = await bcrypt.hash(password, 10);
     const user = await this.userModel.create({ email, password: hash, username });
-    return { token: this.signToken(user._id, username) };
+    return { token: this.signToken(user._id, username),  userId: user._id.toString(), // Convert ObjectId to string
+    username: user.username };
   }
   
 
@@ -31,7 +32,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return { token: this.signToken(user._id, user.username) };
+    return { token: this.signToken(user._id, user.username) ,  userId: user._id.toString(), // Convert ObjectId to string
+    username: user.username};
   }
 
   private signToken(id: string, username: string) {

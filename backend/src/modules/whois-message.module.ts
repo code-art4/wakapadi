@@ -14,7 +14,7 @@ import { User, UserSchema } from 'src/schemas/user.schema';
 ])],
   controllers: [WhoisMessageController],
   providers: [WhoisMessageService,  WhoisGateway],
-  exports: [WhoisMessageService], // 👈 THIS is what was missing
+  exports: [WhoisMessageService, WhoisGateway], // 👈 THIS is what was missing
 
 })
 export class WhoisMessageModule {}
