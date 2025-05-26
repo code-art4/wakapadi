@@ -1,6 +1,17 @@
 // components/home/HeroSection.tsx
-import { Autocomplete, TextField, Button, IconButton, useMediaQuery } from '@mui/material';
-import { Search, PersonSearch, NearbyError, Menu } from '@mui/icons-material';
+import {
+  Autocomplete,
+  TextField,
+  Button,
+  IconButton,
+  useMediaQuery
+} from '@mui/material';
+import {
+  Search,
+  PersonSearch,
+  NearbyError,
+  Menu
+} from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -30,8 +41,11 @@ export default function HeroSection({
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!heroRef.current) return;
-      setIsFixed(window.scrollY > heroRef.current.offsetHeight / 2);
+      requestAnimationFrame(() => {
+        if (heroRef.current) {
+          setIsFixed(window.scrollY > heroRef.current.offsetHeight / 2);
+        }
+      });
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -45,7 +59,6 @@ export default function HeroSection({
 
   return (
     <div className={styles.heroContainer} ref={heroRef}>
-      {/* Hero Banner */}
       <div className={styles.heroBanner}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -63,9 +76,12 @@ export default function HeroSection({
         </motion.div>
       </div>
 
-      {/* Search Bar */}
       {locations && (
-        <div className={`${styles.searchContainer} ${isFixed ? styles.fixed : ''}`}>
+        <div
+          className={`${styles.searchContainer} ${
+            isFixed ? styles.fixed : ''
+          }`}
+        >
           <div className={styles.searchContent}>
             <div className={styles.searchInput}>
               <Search className={styles.searchIcon} />
@@ -90,7 +106,7 @@ export default function HeroSection({
                 )}
               />
               {isMobile && (
-                <IconButton 
+                <IconButton
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className={styles.mobileMenuButton}
                   aria-label="Toggle menu"
@@ -99,9 +115,12 @@ export default function HeroSection({
                 </IconButton>
               )}
             </div>
-            
-            {/* Buttons - always visible on desktop, conditional on mobile */}
-            <div className={`${styles.searchButtons} ${!isMobile || mobileMenuOpen ? styles.visible : ''}`}>
+
+            <div
+              className={`${styles.searchButtons} ${
+                !isMobile || mobileMenuOpen ? styles.visible : ''
+              }`}
+            >
               <Button
                 variant="contained"
                 startIcon={<PersonSearch />}
