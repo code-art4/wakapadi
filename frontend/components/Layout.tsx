@@ -85,34 +85,25 @@ import {
             </Box>
   
             <Box className={styles.desktopNav}>
-              <Link href="/assistants" className={styles.navLink}>
-                {t('findAssistants')}
-              </Link>
-              <Link href="/whois" className={styles.navLink}>
-                {t('whoisNearby')}
-              </Link>
-  
-              {isLoggedIn ? (
-                <Button onClick={handleLogout} color="inherit" className={styles.navLink}>
-                  Logout
-                </Button>
-              ) : null
-             
-              }
-  
-              <Select
-                value={currentLocale}
-                onChange={handleLocaleChange}
-                className={styles.languageSelector}
-                size="small"
-              >
-                {i18nextConfig.i18n.locales.map((loc) => (
-                  <MenuItem key={loc} value={loc}>
-                    {loc.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
+  <Link href="/assistants" className={styles.navLink}>{t('findAssistants')}</Link>
+  <Link href="/whois" className={styles.navLink}>{t('whoisNearby')}</Link>
+  {isLoggedIn && (
+    <Link href="/profile" className={styles.navLink}>Profile</Link>
+  )}
+  {isLoggedIn ? (
+    <Button onClick={handleLogout} color="inherit" className={styles.navLink}>Logout</Button>
+  ) : null}
+  <Select
+    value={currentLocale}
+    onChange={handleLocaleChange}
+    className={styles.languageSelector}
+    size="small"
+  >
+    {i18nextConfig.i18n.locales.map((loc) => (
+      <MenuItem key={loc} value={loc}>{loc.toUpperCase()}</MenuItem>
+    ))}
+  </Select>
+</Box>
           </Toolbar>
         </AppBar>
   
@@ -124,21 +115,25 @@ import {
         >
           <Box className={styles.drawerContainer}>
             <List className={styles.drawerList}>
-              <ListItem button component={NextLink} href="/assistants">
-                <ListItemText primary={t('findAssistants')} />
-              </ListItem>
-              <ListItem button component={NextLink} href="/whois">
-                <ListItemText primary={t('whoisNearby')} />
-              </ListItem>
-  
-              {isLoggedIn ? (
-                <ListItem button onClick={handleLogout}>
-                  <ListItemText primary="Logout" />
-                </ListItem>
-              ) : (
-                <ListItem button component={NextLink} href="/login">
-                  <ListItemText primary="Login" />
-                </ListItem>
+            <ListItem button component={NextLink} href="/assistants">
+  <ListItemText primary={t('findAssistants')} />
+</ListItem>
+<ListItem button component={NextLink} href="/whois">
+  <ListItemText primary={t('whoisNearby')} />
+</ListItem>
+{isLoggedIn && (
+  <ListItem button component={NextLink} href="/profile">
+    <ListItemText primary="Profile" />
+  </ListItem>
+)}
+{isLoggedIn ? (
+  <ListItem button onClick={handleLogout}>
+    <ListItemText primary="Logout" />
+  </ListItem>
+) : (
+  <ListItem button component={NextLink} href="/login">
+    <ListItemText primary="Login" />
+  </ListItem>
               )}
   
               <ListItem>

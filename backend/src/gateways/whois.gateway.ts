@@ -7,28 +7,26 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
-
-} from '@nestjs/websockets'; // Use @nestjs/common for Inject and forwardRef
+} from '@nestjs/websockets';
 import {
-  Inject,        // <--- Add this
-  forwardRef,    // <--- Add this
-} from "@nestjs/common"
+  Inject,
+  forwardRef,
+} from "@nestjs/common";
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { WhoisMessage } from '../schemas/whois-message.schema';
 import { WhoisMessageService } from '../services/whois-message.service'; // Import the service
+import { User } from '../schemas/user.schema'; // <--- Import User schema for getUserById
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
 @WebSocketGateway({
   cors: {
-  
-      origin: '*', // Allows all origins - DANGEROUS FOR PRODUCTION!
-      methods: ['GET', 'POST'],
-      credentials: true,
-    
+    origin: '*', // Adjust for your frontend URL in production!
+    methods: ['GET', 'POST'],
+    credentials: true,
   },
   transports: ['websocket', 'polling'],
   path: '/socket.io',
@@ -46,7 +44,9 @@ export class WhoisGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     @InjectModel(WhoisMessage.name)
     private readonly messageModel: Model<WhoisMessage>,
-    @Inject(forwardRef(() => WhoisMessageService)) // <--- Apply forwardRef here
+    @InjectModel(User.name) // <--- Inject User model here
+    private readonly userModel: Model<User>, // <--- Declare userModel
+    @Inject(forwardRef(() => WhoisMessageService))
     private readonly messageService: WhoisMessageService, // Inject the service
   ) {}
 
@@ -58,6 +58,11 @@ export class WhoisGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.userSockets.set(payload.id, client.id);
 
       console.log(`✅ User connected: ${payload.id}, socket: ${client.id}`);
+
+      // Ensure the client joins a room specific to their userId for notifications
+      client.join(`user-${payload.id}`); // This is important for notifications
+      console.log(`Socket ${client.id} automatically joined personal room: user-${payload.id}`);
+
 
       this.server.emit('userOnline', payload.id);
     } catch (err) {
@@ -91,7 +96,16 @@ export class WhoisGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     const roomName = [data.userId1, data.userId2].sort().join('-');
     client.join(roomName);
-    console.log(`Socket ${client.id} joined room: ${roomName}`);
+    console.log(`Socket ${client.id} joined conversation room: ${roomName}`);
+  }
+
+  // NEW: Event for joining personal notification room (redundant if handled in handleConnection, but good for clarity)
+  @SubscribeMessage('joinNotifications')
+  handleJoinNotifications(@MessageBody() data: { userId: string }, @ConnectedSocket() client: Socket) {
+    // This is already done in handleConnection, but if a client explicitly joins again, it's fine.
+    // It also ensures that if a client re-connects, they always join their personal room.
+    client.join(`user-${data.userId}`);
+    console.log(`Socket ${client.id} joined explicit notification room for user: ${data.userId}`);
   }
 
   @SubscribeMessage('message:read')
@@ -114,89 +128,89 @@ export class WhoisGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
     }
 
+    // Use service method if you have one, or direct model update
     await this.messageModel.updateMany(
       { _id: { $in: data.messageIds }, toUserId: currentUserId, fromUserId: data.fromUserId, read: false },
       { $set: { read: true } },
     );
 
-    this.emitToUser(data.fromUserId, 'message:read:confirm', {
+    // Emit read confirmation to the sender of the messages
+    const roomName = [currentUserId, data.fromUserId].sort().join('-'); // Conversation room
+    this.server.to(roomName).emit('message:read:confirm', {
       readerId: currentUserId,
       messageIds: data.messageIds,
     });
+    console.log(`Read confirmation emitted to room ${roomName} for message IDs: ${data.messageIds}`);
   }
 
-
-  // src/gateways/whois.gateway.ts (conceptual)
   @SubscribeMessage('message')
   async handleMessage(
-    @MessageBody() data: { to: string; message: string; tempId?: string },
+    @MessageBody() data: { to: string; message: string; tempId?: string }, // Added tempId
     @ConnectedSocket() client: Socket
   ) {
     try {
       const token = client.handshake.auth?.token as string;
       const payload = jwt.verify(token, JWT_SECRET) as { id: string };
-  
-      // Save the message
+      const fromUserId = payload.id;
+
+      if (!fromUserId) {
+        throw new Error('Authenticated user ID not found in WebSocket handshake.');
+      }
+      if (!mongoose.Types.ObjectId.isValid(data.to)) { // Ensure mongoose is imported
+          throw new Error('Invalid recipient ID.');
+      }
+
+      // 1. Save the message using your service
       const savedMessage = await this.messageService.sendMessage(
-        payload.id, 
-        data.to, 
+        fromUserId,
+        data.to,
         data.message
       );
-  
-      // The message will be emitted by the service to the conversation room
-      // No need for additional emissions here
-  
+
+      // 2. Fetch sender and receiver details to enrich the payload
+      const senderUser = await this.userModel.findById(fromUserId).select('_id username avatar').lean();
+      const receiverUser = await this.userModel.findById(data.to).select('_id username avatar').lean();
+
+
+      const messagePayload = {
+        _id: savedMessage._id,
+        message: savedMessage.message,
+        fromUserId: savedMessage.fromUserId.toString(),
+        toUserId: savedMessage.toUserId.toString(),
+        createdAt: savedMessage.createdAt.toISOString(),
+        read: savedMessage.read,
+        username: senderUser?.username || 'Unknown',
+        avatar: senderUser?.avatarUrl|| `https://i.pravatar.cc/40?u=${savedMessage.fromUserId.toString()}`,
+        reactions: savedMessage.reactions || [],
+        tempId: data.tempId, // Crucial for frontend optimistic updates
+      };
+
+      // 3. Emit to all clients in the conversation room (both sender and receiver)
+      const conversationRoom = [fromUserId, data.to].sort().join('-');
+      this.server.to(conversationRoom).emit('message:new', messagePayload);
+      console.log(`Message emitted to conversation room ${conversationRoom}:`, messagePayload);
+
+      // 4. Emit a notification to the receiver's specific user room (if not self-chat)
+      if (fromUserId !== data.to) {
+        this.server.to(`user-${data.to}`).emit('notification:new', {
+          type: 'new_message',
+          fromUserId: fromUserId,
+          fromUsername: senderUser?.username || 'Unknown',
+          messagePreview: savedMessage.message.substring(0, Math.min(savedMessage.message.length, 50)), // Preview, max 50 chars
+          conversationId: conversationRoom,
+          createdAt: savedMessage.createdAt.toISOString(),
+        });
+        console.log(`Notification emitted to receiver's personal room: user-${data.to}`);
+      }
+
     } catch (error) {
       console.error('Error handling message:', error);
-      // Optionally emit error back to client
-      client.emit('message:error', { 
-        tempId: data.tempId, 
-        error: error.message 
+      client.emit('message:error', {
+        tempId: data.tempId,
+        error: error.message || 'Failed to send message'
       });
     }
   }
-  // @SubscribeMessage('message')
-  // async handleMessage(
-  //   @MessageBody() data: { to: string; message: string },
-  //   @ConnectedSocket() client: Socket,
-  // ) {
-  //   try {
-  //     const token = client.handshake.auth?.token as string;
-  //     const payload = jwt.verify(token, JWT_SECRET) as { id: string };
-
-  //    const  savedMessage= await this.messageService.sendMessage(payload.id, data.to, data.message);
-  //     this.server.to(data.to).emit('message:new', savedMessage);
-
-  //     // IMPORTANT: Emit back to the sender if they are on a different device or for immediate ack
-  //     // If the sender is in the same 'conversation' room as the receiver, this might be enough.
-  //     // If not, you might need to target the sender's specific socket ID or their own user ID room.
-  //     // this.server.to(fromUserId).emit('message:new', savedMessage);
-  //   } catch (err) {
-  //     console.error('Error handling message:', err);
-  //   }
-  // }
-
-//   @SubscribeMessage('message')
-// async handleMessage(@MessageBody() data: { to: string; message: string }, @ConnectedSocket() client: Socket) {
-//   try {
-//     const fromUserId = client.handshake.auth.userId; // Or however you get sender ID
-//     const savedMessage = await this.messageService.sendMessage(fromUserId, data.to, data.message);
-
-//     console.log("savedMsg", savedMessage)
-//     // Emit to the receiver
-//     this.server.to(data.to).emit('message:new', savedMessage);
-
-//     // IMPORTANT: Emit back to the sender if they are on a different device or for immediate ack
-//     // If the sender is in the same 'conversation' room as the receiver, this might be enough.
-//     // If not, you might need to target the sender's specific socket ID or their own user ID room.
-//     this.server.to(fromUserId).emit('message:new', savedMessage); // Or client.emit('message:new', savedMessage);
-//                                                                   // Or this.server.to(`user-${fromUserId}`).emit(...)
-//   } catch (error) {
-//     console.error('Error handling message:', error);
-//     // Optionally, emit an error back to the client that sent the message
-//     // client.emit('message:error', { tempId: data.tempId, error: error.message });
-//   }
-// }
 
   @SubscribeMessage('typing')
   async handleTyping(
@@ -206,12 +220,14 @@ export class WhoisGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const token = client.handshake.auth?.token as string;
       const payload = jwt.verify(token, JWT_SECRET) as { id: string };
+      const fromUserId = payload.id; // Get sender's ID
 
-      const roomName = [payload.id, data.to].sort().join('-');
-      this.server.to(roomName).emit('typing', { fromUserId: payload.id });
+      const roomName = [fromUserId, data.to].sort().join('-');
+      this.server.to(roomName).emit('typing', { fromUserId: fromUserId }); // Emit sender's ID
+      console.log(`User ${fromUserId} is typing to ${data.to}. Emitted to room: ${roomName}`);
 
     } catch (err) {
-      console.warn('Typing event rejected due to auth error');
+      console.warn('Typing event rejected due to auth error', err.message);
     }
   }
 
@@ -223,24 +239,41 @@ export class WhoisGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const token = client.handshake.auth?.token as string;
       const payload = jwt.verify(token, JWT_SECRET) as { id: string };
+      const fromUserId = payload.id; // Get sender's ID
 
-      const roomName = [payload.id, data.to].sort().join('-');
-      this.server.to(roomName).emit('stoppedTyping', { fromUserId: payload.id });
+      const roomName = [fromUserId, data.to].sort().join('-');
+      this.server.to(roomName).emit('stoppedTyping', { fromUserId: fromUserId }); // Emit sender's ID
+      console.log(`User ${fromUserId} stopped typing to ${data.to}. Emitted to room: ${roomName}`);
     } catch (err) {
-      console.warn('Stopped typing event rejected due to auth error');
+      console.warn('Stopped typing event rejected due to auth error', err.message);
     }
   }
 
   @SubscribeMessage('message:reaction')
   async handleMessageReaction(
-    @MessageBody() data: { messageId: string; emoji: string; toUserId: string },
+    @MessageBody() data: { messageId: string; emoji: string; toUserId: string }, // Added toUserId for potential room targeting
     @ConnectedSocket() client: Socket,
   ) {
     try {
       const token = client.handshake.auth?.token as string;
       const payload = jwt.verify(token, JWT_SECRET) as { id: string };
+      const fromUserId = payload.id; // User who is adding the reaction
 
-      await this.messageService.addReaction(data.messageId, payload.id, data.emoji);
+      // Use service to add reaction to the message
+      const updatedMessage = await this.messageService.addReaction(data.messageId, fromUserId, data.emoji);
+
+      if (updatedMessage) {
+        // Emit the reaction update to all clients in the conversation room
+        const roomName = [fromUserId, data.toUserId].sort().join('-'); // Assuming toUserId is the other chat participant
+        this.server.to(roomName).emit('message:reaction', {
+          messageId: updatedMessage._id,
+          reaction: {
+            emoji: data.emoji,
+            fromUserId: fromUserId, // User who added the reaction
+          },
+        });
+        console.log(`Reaction ${data.emoji} added by ${fromUserId} to message ${data.messageId}. Emitted to room ${roomName}.`);
+      }
 
     } catch (err) {
       console.error('Error handling message reaction:', err);

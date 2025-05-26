@@ -5,13 +5,15 @@ import {
   Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText,
   Popover, TextField, Typography, Snackbar, Alert, Menu, MenuItem
 } from '@mui/material';
-import { Picker } from 'emoji-mart';
+// import { Picker } from 'emoji-mart';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import MoreVertIcon from '@mui/icons-material/MoreVert'; 
 import Layout from '../../components/Layout';
 import io, { Socket } from 'socket.io-client';
 import { api } from '../../lib/api';
 import moment from 'moment-timezone';
+import dynamic from 'next/dynamic';
+const Picker = dynamic(() => import('@emoji-mart/react'), { ssr: false });
 
 interface Reaction {
   emoji: string;

@@ -7,11 +7,11 @@ import { ScraperModule } from './modules/scraper.module';
 import { AssistantModule } from './modules/assistant.module';
 import { WhoisModule } from './modules/whois.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SeedController } from './controllers/seed.controller';
 import { SeedModule } from './modules/seed.module';
 import { UserModule } from './modules/users.module';
 import { AuthModule } from './modules/auth.module';
 import { WhoisMessageModule } from './modules/whois-message.module';
+import { PresenceModule } from './modules/PresenceModule';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { WhoisMessageModule } from './modules/whois-message.module';
     AuthModule,
     SeedModule,
     UserModule,
+    PresenceModule,
     WhoisModule, // ✅ Add this line
 
   ], 

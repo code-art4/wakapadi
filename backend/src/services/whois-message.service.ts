@@ -1,7 +1,7 @@
 // src/services/whois-message.service.ts
 import { Injectable, OnModuleInit, NotFoundException, Inject, forwardRef } from '@nestjs/common'; // Add Inject, forwardRef
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { WhoisMessage } from '../schemas/whois-message.schema';
 import { WhoisGateway } from '../gateways/whois.gateway';
 import { User } from '../schemas/user.schema'; // Correct import for User schema
@@ -27,6 +27,7 @@ export class WhoisMessageService implements OnModuleInit {
     private readonly messageModel: Model<WhoisMessage>,
     @Inject(forwardRef(() => WhoisGateway)) // <--- Apply forwardRef here
     private readonly gateway: WhoisGateway,
+    @InjectModel(User.name) private readonly userModel: Model<User> 
   ) {}
 
   onModuleInit() {}
@@ -153,6 +154,7 @@ export class WhoisMessageService implements OnModuleInit {
   }
 
   async getInbox(userId: string) {
+    console.log("inbox userid", userId)
     return this.messageModel.aggregate([
       { $match: { $or: [ { fromUserId: new Types.ObjectId(userId) }, { toUserId: new Types.ObjectId(userId) } ] } },
       { $sort: { createdAt: -1 } },
@@ -178,8 +180,181 @@ export class WhoisMessageService implements OnModuleInit {
       { $sort: { createdAt: -1 } }
     ]);
   }
-
+  async getUserById(userId: string) {
+    return this.userModel.findById(userId).select('_id username avatar').lean();
+}
   async getUnreadCount(userId: string) {
     return this.messageModel.countDocuments({ toUserId: userId, read: false });
   }
+
+
+  // --- NEW METHOD: Get Conversations for Inbox ---
+  async getConversationsForUser(userId: string) {
+    // Convert userId string to ObjectId for aggregation $match
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    const conversations = await this.messageModel.aggregate([
+      {
+        $match: {
+          $or: [
+            { fromUserId: userObjectId },
+            { toUserId: userObjectId },
+          ],
+        },
+      },
+      {
+        $sort: { createdAt: -1 }, // Sort by most recent message first
+      },
+      {
+        $group: {
+          _id: { // Group by a unique conversation identifier (sorted IDs)
+            $cond: [
+              { $gt: ['$fromUserId', '$toUserId'] }, // If fromUserId > toUserId (lexicographically)
+              { user1: '$fromUserId', user2: '$toUserId' },
+              { user1: '$toUserId', user2: '$fromUserId' },
+            ],
+          },
+          lastMessage: { $first: '$$ROOT' }, // Get the entire last message document for each group
+        },
+      },
+      {
+        $replaceRoot: { newRoot: '$lastMessage' }, // Promote the last message to the root
+      },
+      {
+        $sort: { createdAt: -1 }, // Sort again by createdAt for final display order (most recent conversations first)
+      },
+      {
+        $lookup: { // Populate fromUserId with user details
+          from: 'users', // Collection name for User schema (usually lowercase plural of schema name)
+          localField: 'fromUserId',
+          foreignField: '_id',
+          as: 'fromUser',
+        },
+      },
+      {
+        $unwind: '$fromUser', // Deconstructs the fromUser array field from the input documents to output a document for each element.
+      },
+      {
+        $lookup: { // Populate toUserId with user details
+          from: 'users', // Collection name for User schema
+          localField: 'toUserId',
+          foreignField: '_id',
+          as: 'toUser',
+        },
+      },
+      {
+        $unwind: '$toUser', // Deconstructs the toUser array field
+      },
+      {
+        $project: { // Shape the output for the frontend
+          _id: 1, // The message ID of the last message in the conversation
+          message: 1, // Content of the last message
+          createdAt: 1, // Timestamp of the last message
+          read: 1, // Read status of the last message
+          fromUserId: 1,
+          toUserId: 1,
+          otherUser: { // Details of the other participant in the conversation
+            $cond: [
+              { $eq: ['$fromUserId', userObjectId] }, // If fromUserId is current user (the one whose inbox we are fetching)
+              {
+                _id: '$toUser._id',
+                username: '$toUser.username',
+                avatar: '$toUser.avatar', // Assuming avatar exists in User schema
+              },
+              {
+                _id: '$fromUser._id', // If toUserId is current user
+                username: '$fromUser.username',
+                avatar: '$fromUser.avatar', // Assuming avatar exists in User schema
+              },
+            ],
+          },
+        },
+      },
+    ]);
+
+    return conversations;
+  }
+  async markMessagesAsRead(toUserId: string, fromUserId: string, messageIds: string[]) {
+    await this.messageModel.updateMany(
+      {
+        _id: { $in: messageIds.map(id => new mongoose.Types.ObjectId(id)) },
+        toUserId: new mongoose.Types.ObjectId(toUserId),
+        fromUserId: new mongoose.Types.ObjectId(fromUserId),
+        read: false,
+      },
+      { $set: { read: true } }
+    );
+  
+    // Emit real-time read confirmation
+    this.gateway.emitToUser(fromUserId, 'message:read:confirm', {
+      readerId: toUserId,
+      messageIds,
+    });
+  }
+  
+  // --- Existing Method: Get Messages Between Two Users ---
+  async getMessagesBetweenUsers(userId1: string, userId2: string) {
+    const messages = await this.messageModel
+      .find({
+        $or: [
+          { fromUserId: userId1, toUserId: userId2 },
+          { fromUserId: userId2, toUserId: userId1 },
+        ],
+      })
+      .sort({ createdAt: 1 }) // Ascending order
+      .lean(); // Return plain JavaScript objects
+
+    // Populate usernames and avatars for frontend display
+    const userIds = [userId1, userId2].map(id => new mongoose.Types.ObjectId(id));
+    const users = await this.userModel.find({ _id: { $in: userIds } }).select('_id username avatar').lean();
+    const userMap = new Map(users.map(u => [u._id.toString(), u]));
+
+    return messages.map(msg => ({
+      ...msg,
+      username: userMap.get(msg.fromUserId.toString())?.username || 'Unknown User',
+      avatar: userMap.get(msg.fromUserId.toString())?.avatarUrl || `https://i.pravatar.cc/40?u=${msg.fromUserId.toString()}`,
+    }));
+  }
+
+  // --- NEW/UPDATED METHOD: Create/Save a new message ---
+  // async sendMessage(fromUserId: string, toUserId: string, messageContent: string): Promise<WhoisMessage> {
+  //     const newMessage = await this.messageModel.create({
+  //         fromUserId: new mongoose.Types.ObjectId(fromUserId),
+  //         toUserId: new mongoose.Types.ObjectId(toUserId),
+  //         message: messageContent,
+  //         read: false,
+  //         reactions: [],
+  //         createdAt: new Date(), // Set createdAt to now
+  //     });
+  //     return newMessage;
+  // }
+
+  // --- NEW/UPDATED METHOD: Get a user by ID ---
+  // async getUserById(userId: string) {
+  //     return this.userModel.findById(userId).select('_id username avatar').lean();
+  // }
+
+  // --- NEW/UPDATED METHOD: Add a reaction to a message ---
+  // async addReaction(messageId: string, fromUserId: string, emoji: string): Promise<WhoisMessage | null> {
+  //     const message = await this.messageModel.findById(messageId);
+  //     if (!message) {
+  //         console.error('Message not found for reaction:', messageId);
+  //         return null;
+  //     }
+
+  //     const fromObjectId = new mongoose.Types.ObjectId(fromUserId);
+
+  //     const existingReactionIndex = message.reactions.findIndex(
+  //         (r: any) => r.fromUserId.equals(fromObjectId)
+  //     );
+
+  //     if (existingReactionIndex > -1) {
+  //         message.reactions[existingReactionIndex].emoji = emoji;
+  //     } else {
+  //         message.reactions.push({ fromUserId: fromObjectId, emoji: emoji });
+  //     }
+
+  //     await message.save();
+  //     return message;
+  // }
 }

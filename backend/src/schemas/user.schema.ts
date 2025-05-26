@@ -39,6 +39,14 @@ export class User extends Document {
 
   @Prop({ default: false })
   isOnline: boolean;
+
+  @Prop({ type: [String], default: [] })
+  travelPrefs: string[];
+
+  @Prop({ type: [String], default: [] })
+  languages: string[];
+
+  updatedAt: Date
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

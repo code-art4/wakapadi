@@ -1,5 +1,5 @@
 // src/services/auth.service.ts
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
@@ -39,4 +39,45 @@ export class AuthService {
   private signToken(id: string, username: string) {
     return jwt.sign({ id, username }, JWT_SECRET, { expiresIn: '7d' });
   }
+
+
+  async updateProfile(userId: string, updates: any) {
+    const allowedFields = ['travelPrefs', 'languages', 'socials'];
+    const filtered: any = {};
+  
+    for (const key of allowedFields) {
+      if (updates[key] !== undefined) {
+        filtered[key] = updates[key];
+      }
+    }
+  
+    // Flatten nested socials if sent directly
+    if (updates.instagram || updates.twitter) {
+      filtered.socials = {
+        ...(updates.instagram && { instagram: updates.instagram }),
+        ...(updates.twitter && { twitter: updates.twitter })
+      };
+    }
+  
+    const updatedUser = await this.userModel.findByIdAndUpdate(userId, filtered, { new: true });
+    return updatedUser;
+  }
+
+  async findUserById(userId: string) {
+    const user = await this.userModel.findById(userId).lean();
+    if (!user) throw new NotFoundException('User not found');
+  
+    return {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      travelPrefs: user.travelPrefs || [],
+      languages: user.languages || [],
+      socials: user.socials || {}
+    };
+  }
+  
 }
