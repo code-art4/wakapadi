@@ -18,15 +18,40 @@ export class WhoisMessageController {
     return this.messageService.sendMessage(req.user!.id, body.toUserId, body.message);
   }
 
-  @Get('thread/:userId')
-  async getThread(
-    @Req() req: AuthRequest,
-    @Param('userId') userId: string,
-    @Query('page') page = '1',
-    @Query('limit') limit = '20'
-  ) {
-    return this.messageService.getConversation(req.user!.id, userId, parseInt(page), parseInt(limit));
-  }
+  // @Get('thread/:userId')
+  // async getThread(
+  //   @Req() req: AuthRequest,
+  //   @Param('userId') userId: string,
+  //   @Query('page') page = '1',
+  //   @Query('limit') limit = '20'
+  // ) {
+  //   return this.messageService.getConversation(req.user!.id, userId, parseInt(page), parseInt(limit));
+  // }
+
+@Get('chat/:userId')
+@UseGuards(AuthGuard) // Optional but recommended for production
+async getChat(
+  @Req() req: AuthRequest,
+  @Param('userId') userId: string,
+  @Query('page') page = '1',
+  @Query('limit') limit = '20'
+) {
+  const result = await this.messageService.getConversation(
+    req.user!.id,
+    userId,
+    parseInt(page),
+    parseInt(limit)
+  );
+
+  return {
+    messages: result.messages,
+    meta: {
+      page: result.page,
+      total: result.total,
+      totalPages: result.totalPages,
+    }
+  };
+}
 
   @Get('inbox')
   async inbox(@Req() req: AuthRequest) {

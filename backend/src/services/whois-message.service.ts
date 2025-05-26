@@ -26,38 +26,58 @@ export class WhoisMessageService implements OnModuleInit {
       message,
       sentAt: leanMessage.createdAt,
     });
-
+console.log("messaging")
     return newMessage;
   }
 
   async getConversation(userId: string, otherUserId: string, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
-
+   
+    
     const filter = {
       $or: [
         { fromUserId: userId, toUserId: otherUserId },
         { fromUserId: otherUserId, toUserId: userId },
       ],
     };
-
+  
     const [messages, total] = await Promise.all([
-      this.messageModel.find(filter).sort({ createdAt: 1 }).skip(skip).limit(limit),
+      this.messageModel
+        .find(filter)
+        .sort({ createdAt: 1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('fromUserId', 'username avatar')
+        .populate('toUserId', 'username avatar'),
       this.messageModel.countDocuments(filter),
     ]);
-
+  
     await this.messageModel.updateMany(
       { fromUserId: otherUserId, toUserId: userId, read: false },
       { $set: { read: true } }
     );
-
+  
     return {
       page,
       limit,
       total,
       totalPages: Math.ceil(total / limit),
-      messages,
+      messages: messages.map((msg) => ({
+        _id: msg._id,
+        text: msg.message,
+        fromUserId: msg.fromUserId._id,
+        toUserId: msg.toUserId._id,
+        createdAt: msg.createdAt,
+        read: msg.read,
+        // fromUsername: msg.fromUserId.username,
+        // toUsername: msg.toUserId.username,
+        // fromAvatar: msg.fromUserId.avatar,
+        // toAvatar: msg.toUserId.avatar,
+      })),
     };
+    
   }
+  
 
   async getInbox(userId: string) {
     return this.messageModel.aggregate([

@@ -33,7 +33,10 @@ export class WhoisService {
 
   async getNearby(city: string, isAuthenticated?: boolean) {
     const visibleUsers = await this.whoisModel.find({ city, visible: true });
-  
+    console.log("visibleUsers", visibleUsers)
+    console.log("city", city)
+
+
     return Promise.all(
       visibleUsers.map(async (user) => {
         const base = {
@@ -45,12 +48,12 @@ export class WhoisService {
           
         };
   
-        if (!isAuthenticated) {
-          return {
-            ...base,
-            anonymous: true,
-          };
-        }
+        // if (!isAuthenticated) {
+        //   return {
+        //     ...base,
+        //     anonymous: true,
+        //   };
+        // }
   
         const foundUser = await this.userModel.findById(user.userId).lean();
   

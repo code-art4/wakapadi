@@ -1,8 +1,9 @@
 // src/whois/whois.controller.ts
-import { Controller, Get, Post, Delete, Body, Req, UseGuards, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Req, UseGuards, Query, Param, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { WhoisService } from '../services/whois.service';
 import { AuthGuard } from '../gateways/auth.guard';
 import { Request } from 'express';
+import mongoose from 'mongoose';
 
 interface AuthRequest extends Request {
   user?: {
@@ -14,6 +15,7 @@ interface AuthRequest extends Request {
 
 @Controller('whois')
 export class WhoisController {
+  messageService: any;
   constructor(private readonly whoisService: WhoisService) {}
 
   @Post('ping')
@@ -48,6 +50,28 @@ async nearby(@Req() req: AuthRequest) {
   async markAsRead(@Param('userId') userId: string, @Req() req: AuthRequest) {
     return this.whoisService.markMessagesAsRead(userId, req.user!.id);
   }
+
+  @Get('thread/:userId')
+async getThread(
+  @Req() req: AuthRequest,
+  @Param('userId') userId: string,
+  @Query('page') page = '1',
+  @Query('limit') limit = '20'
+) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+    return await this.messageService.getConversation(
+      req.user!.id, 
+      userId, 
+      parseInt(page), 
+      parseInt(limit)
+    );
+  } catch (err) {
+    throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+  }
+}
   
 }
 

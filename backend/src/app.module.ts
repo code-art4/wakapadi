@@ -11,6 +11,7 @@ import { SeedController } from './controllers/seed.controller';
 import { SeedModule } from './modules/seed.module';
 import { UserModule } from './modules/users.module';
 import { AuthModule } from './modules/auth.module';
+import { WhoisMessageModule } from './modules/whois-message.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './modules/auth.module';
     AssistantModule,
     TourModule,
     ScraperModule,
+    WhoisMessageModule,
     AuthModule,
     SeedModule,
     UserModule,
