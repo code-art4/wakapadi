@@ -12,10 +12,14 @@ import { UserModule } from './modules/users.module';
 import { AuthModule } from './modules/auth.module';
 import { WhoisMessageModule } from './modules/whois-message.module';
 import { PresenceModule } from './modules/PresenceModule';
+import { ConfigModule } from '@nestjs/config';
+import { EmailModule } from './modules/email.module';
 
 @Module({
   imports: [
     // MongooseModule.forRoot('mongodb://localhost/wakapadi'),
+    ConfigModule.forRoot({ isGlobal: true }),
+
     ScheduleModule.forRoot(),
     MongooseModule.forRoot('mongodb://localhost:27017/wakapadi'),
     AssistantModule,
@@ -25,6 +29,7 @@ import { PresenceModule } from './modules/PresenceModule';
     AuthModule,
     SeedModule,
     UserModule,
+    EmailModule,
     PresenceModule,
     WhoisModule, // ✅ Add this line
 

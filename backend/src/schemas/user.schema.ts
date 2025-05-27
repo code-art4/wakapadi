@@ -19,7 +19,7 @@ export class User extends Document {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   password: string;
 
   @Prop({ required: true })
@@ -46,7 +46,10 @@ export class User extends Document {
   @Prop({ type: [String], default: [] })
   languages: string[];
 
-  updatedAt: Date
+  @Prop({ default: 'local' }) // 'google' for social login
+  authProvider: 'local' | 'google';
+  
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

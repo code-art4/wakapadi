@@ -5,14 +5,26 @@ import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Document } from 'mongoose';
 import { User } from '../schemas/user.schema';
+import { OAuth2Client } from 'google-auth-library';
+import { ConfigService } from '@nestjs/config';
+import { EmailService } from './email.service';
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
+const RESET_SECRET = process.env.JWT_SECRET + '_RESET'; // Different from login token
 
 type UserDocument = User & Document & { _id: string };
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+  private readonly configService: ConfigService, // ⬅️ Index [1]
+  private emailService: EmailService,
+
+
+  ) {}
 
   async register({ email, password, username }) {
     if (!email || !password || !username) {
@@ -80,4 +92,95 @@ export class AuthService {
     };
   }
   
+
+
+async verifyGoogleToken(idToken: string) {
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload) {
+    throw new UnauthorizedException('Invalid Google token');
+  }
+
+  return {
+    email: payload.email,
+    username: payload.name,
+    avatarUrl: payload.picture,
+    googleId: payload.sub,
+  };
+}
+  
+  async googleLogin(googleUser: any) {
+    const existingUser = await this.userModel.findOne({ email: googleUser.email });
+    if (existingUser) {
+      return {
+        token: this.signToken(existingUser._id, existingUser.username),
+        userId: existingUser._id.toString(),
+        username: existingUser.username,
+      };
+    }
+  
+    const newUser = await this.userModel.create({
+      email: googleUser.email,
+      username: googleUser.username,
+      avatarUrl: googleUser.avatarUrl,
+      password: '', // Optional: use random hash or flag for social login
+    });
+  
+    return {
+      token: this.signToken(newUser._id, newUser.username),
+      userId: newUser._id.toString(),
+      username: newUser.username,
+    };
+  }
+  
+
+  async requestPasswordReset(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new NotFoundException('No user found with that email');
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      RESET_SECRET,
+      { expiresIn: '15m' },
+    );
+
+    await this.emailService.sendPasswordResetEmail(email, token);
+    return { message: 'Reset instructions sent if email exists' };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    let payload: any;
+
+    try {
+      payload = jwt.verify(token, RESET_SECRET);
+    } catch (err) {
+      throw new UnauthorizedException('Invalid or expired reset token');
+    }
+
+    const user = await this.userModel.findById(payload.userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    const authToken = this.signToken(user._id, user.username);
+
+    return {
+      token: authToken,
+      userId: user._id.toString(),
+      username: user.username,
+      message: 'Password reset successful',
+    };
+  }
+
+
 }

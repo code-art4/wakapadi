@@ -121,7 +121,7 @@ export default function HeroSection({
                 !isMobile || mobileMenuOpen ? styles.visible : ''
               }`}
             >
-              <Button
+              {/* <Button
                 variant="contained"
                 startIcon={<PersonSearch />}
                 onClick={() => router.push('/assistants')}
@@ -129,7 +129,7 @@ export default function HeroSection({
                 fullWidth={isMobile}
               >
                 {isMobile ? t('assistants') : t('findAssistants')}
-              </Button>
+              </Button> */}
               <Button
                 variant="outlined"
                 startIcon={<NearbyError />}

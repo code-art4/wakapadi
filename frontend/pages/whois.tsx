@@ -14,6 +14,7 @@ import {
 import { api } from '../lib/api';
 import { useRouter } from 'next/router';
 import io from 'socket.io-client';
+import Layout from '../components/Layout';
 
 const socket = io(
   process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
@@ -125,6 +126,7 @@ export default function WhoisPage() {
   }, []);
 
   return (
+    <Layout title="#Whois Page - Wakapadi">
     <Container sx={{ mt: 4 }}>
       <Typography variant="h4" mb={2}>
         #whois Nearby
@@ -193,5 +195,6 @@ export default function WhoisPage() {
         </List>
       )}
     </Container>
+    </Layout>
   );
 }

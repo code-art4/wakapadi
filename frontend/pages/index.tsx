@@ -118,7 +118,7 @@ export default function HomePage() {
   const locations = useMemo(() => [...new Set(tours.map(t => t.location))], [tours]);
 
   return (
-    <Layout>
+    <Layout title='Home Page - Wakapadi'>
       <div ref={topRef} className={styles.anchor} />
       <HeroSection locations={locations} onSearch={handleSearchInput} />
 

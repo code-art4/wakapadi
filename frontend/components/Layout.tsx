@@ -85,7 +85,7 @@ import {
             </Box>
   
             <Box className={styles.desktopNav}>
-  <Link href="/assistants" className={styles.navLink}>{t('findAssistants')}</Link>
+  {/* <Link href="/assistants" className={styles.navLink}>{t('findAssistants')}</Link> */}
   <Link href="/whois" className={styles.navLink}>{t('whoisNearby')}</Link>
   {isLoggedIn && (
     <Link href="/profile" className={styles.navLink}>Profile</Link>
@@ -116,7 +116,7 @@ import {
           <Box className={styles.drawerContainer}>
             <List className={styles.drawerList}>
             <ListItem button component={NextLink} href="/assistants">
-  <ListItemText primary={t('findAssistants')} />
+  {/* <ListItemText primary={t('findAssistants')} /> */}
 </ListItem>
 <ListItem button component={NextLink} href="/whois">
   <ListItemText primary={t('whoisNearby')} />
