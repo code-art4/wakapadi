@@ -44,11 +44,11 @@ export default function WhoisPage() {
 
   const isLoggedIn =
     typeof window !== 'undefined' && !!localStorage.getItem('token');
-
+    const userId = typeof window !== 'undefined' &&  localStorage.getItem('userId')
   const fetchNearby = async (targetCity: string) => {
     try {
       const res = await api.get('/whois/nearby', {
-        params: { city: targetCity },
+        params: { city: targetCity, userId },
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

@@ -33,8 +33,8 @@ export class WhoisController {
   @Get('nearby')
 async nearby(@Req() req: AuthRequest) {
   const city = req.query.city as string;
-  const isAuthenticated = !!req.user;
-  return this.whoisService.getNearby(city, isAuthenticated);
+  const userId = req.query.userId as string
+  return this.whoisService.getNearby(city,  userId);
 }
 
 
