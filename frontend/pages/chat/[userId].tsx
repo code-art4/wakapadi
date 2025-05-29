@@ -5,7 +5,6 @@ import {
   Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText,
   Popover, TextField, Typography, Snackbar, Alert, Menu, MenuItem
 } from '@mui/material';
-// import { Picker } from 'emoji-mart';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import MoreVertIcon from '@mui/icons-material/MoreVert'; 
 import Layout from '../../components/Layout';
@@ -355,6 +354,7 @@ export default function ChatPage() {
   }, [otherUserId]);
 
   const handleEmojiClick = (e: React.MouseEvent<HTMLElement>) => {
+
     setEmojiAnchorEl(e.currentTarget);
   };
 
@@ -540,7 +540,7 @@ export default function ChatPage() {
             anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
             transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
-            <Picker onSelect={handleEmojiSelect} />
+            <Picker onEmojiSelect={handleEmojiSelect} />
           </Popover>
           <TextField
             fullWidth
