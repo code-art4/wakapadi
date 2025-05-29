@@ -34,13 +34,20 @@ export class WhoisService {
     return this.whoisModel.findOneAndUpdate({ userId }, { visible});
   }
 
+
   async getNearby(city: string, userId: any) {
-    const visibleUsers = await this.whoisModel.find({
+    const query: any = {
       city,
       visible: true,
-      userId: { $ne: userId },
-    });
-
+    };
+  
+    // Only include userId exclusion if it's a valid non-empty string
+    if (userId && typeof userId === 'string' && userId.trim() !== '') {
+      query.userId = { $ne: userId };
+    }
+  
+    const visibleUsers = await this.whoisModel.find(query);
+  
     return Promise.all(
       visibleUsers.map(async (user) => {
         const base = {
@@ -50,16 +57,25 @@ export class WhoisService {
           coordinates: user.coordinates,
           lastSeen: user.expiresAt,
         };
-
-        if (!userId) {
+  
+        // If the requestor is not logged in (no userId), return anonymous data
+        if (!userId || typeof userId !== 'string' || userId.trim() === '') {
           return {
             ...base,
             anonymous: true,
           };
         }
-        console.log("vuser", visibleUsers)
+  
+        // Only attempt to find the user if a valid userId exists on the record
+        if (!user.userId) {
+          return {
+            ...base,
+            anonymous: true,
+          };
+        }
+  
         const foundUser = await this.userModel.findById(user.userId).lean();
-
+  
         return {
           ...base,
           userId: foundUser?._id.toString(),
@@ -68,6 +84,7 @@ export class WhoisService {
       }),
     );
   }
+  
 
   async getChatHistory(currentUserId: string, peerUserId: string) {
     return this.messageModel

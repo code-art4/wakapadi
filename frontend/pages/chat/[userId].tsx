@@ -28,8 +28,11 @@ import io, { Socket } from 'socket.io-client';
 import { api } from '../../lib/api';
 import moment from 'moment-timezone';
 import dynamic from 'next/dynamic';
-const Picker = dynamic(() => import('@emoji-mart/react'), { ssr: false });
 import ChatBubble from '../../components/ChatBubbles';
+import { useNotifications } from '../../hooks/useNotifications';
+
+
+const Picker = dynamic(() => import('@emoji-mart/react'), { ssr: false });
 
 interface Reaction {
   emoji: string;
@@ -89,7 +92,13 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messageDedupeMap = useRef<Set<string>>(new Set());
+  const { clearNotificationsFromUser } = useNotifications(currentUserId);
 
+  useEffect(() => {
+    if (otherUserId) {
+      clearNotificationsFromUser(otherUserId);
+    }
+  }, [otherUserId]);
   // Debug logs
   useEffect(() => {
     console.log('Current messages:', messages);

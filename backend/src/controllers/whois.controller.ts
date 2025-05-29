@@ -48,6 +48,7 @@ export class WhoisController {
   async nearby(@Req() req: AuthRequest) {
     const city = req.query.city as string;
     const userId = req.query.userId as string;
+    // return []
     return this.whoisService.getNearby(city, userId);
   }
 
