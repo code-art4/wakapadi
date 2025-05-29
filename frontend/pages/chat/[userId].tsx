@@ -1,18 +1,35 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Avatar, Box, Button, Chip, CircularProgress, Container,
-  Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText,
-  Popover, TextField, Typography, Snackbar, Alert, Menu, MenuItem
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Popover,
+  TextField,
+  Typography,
+  Snackbar,
+  Alert,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-import MoreVertIcon from '@mui/icons-material/MoreVert'; 
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Layout from '../../components/Layout';
 import io, { Socket } from 'socket.io-client';
 import { api } from '../../lib/api';
 import moment from 'moment-timezone';
 import dynamic from 'next/dynamic';
 const Picker = dynamic(() => import('@emoji-mart/react'), { ssr: false });
+import ChatBubble from '../../components/ChatBubbles';
 
 interface Reaction {
   emoji: string;
@@ -45,13 +62,13 @@ const isValidObjectId = (id: string): boolean => {
 export default function ChatPage() {
   const router = useRouter();
   const { userId: otherUserIdParam } = router.query;
-  const otherUserId = typeof otherUserIdParam === 'string' && isValidObjectId(otherUserIdParam) 
-    ? otherUserIdParam 
-    : '';
+  const otherUserId =
+    typeof otherUserIdParam === 'string' && isValidObjectId(otherUserIdParam)
+      ? otherUserIdParam
+      : '';
 
-  const currentUserId = typeof window !== 'undefined' 
-    ? localStorage.getItem('userId') || '' 
-    : '';
+  const currentUserId =
+    typeof window !== 'undefined' ? localStorage.getItem('userId') || '' : '';
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState('');
@@ -60,9 +77,14 @@ export default function ChatPage() {
   const [emojiAnchorEl, setEmojiAnchorEl] = useState<null | HTMLElement>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [socketConnected, setSocketConnected] = useState(false);
-  const [messageOptionsAnchorEl, setMessageOptionsAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
-  const [toName,setToName] = useState<string>("")
+  const [messageOptionsAnchorEl, setMessageOptionsAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null
+  );
+  const [toName, setToName] = useState<string>('');
+  const [toAvatar, setToAvatar] = useState<string>('');
+
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -77,14 +99,14 @@ export default function ChatPage() {
   useEffect(() => {
     if (!router.isReady || !currentUserId) {
       if (router.isReady && !currentUserId) {
-        setConnectionError("User not logged in. Please log in to chat.");
+        setConnectionError('User not logged in. Please log in to chat.');
         setLoading(false);
       }
       return;
     }
 
     if (!otherUserId) {
-      setConnectionError("Invalid chat partner ID. Please check the URL.");
+      setConnectionError('Invalid chat partner ID. Please check the URL.');
       setLoading(false);
       return;
     }
@@ -94,12 +116,15 @@ export default function ChatPage() {
       return;
     }
 
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001', {
-      path: '/socket.io',
-      transports: ['websocket'],
-      auth: { token: localStorage.getItem('token') || '' },
-      withCredentials: true
-    });
+    const socket = io(
+      process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
+      {
+        path: '/socket.io',
+        transports: ['websocket'],
+        auth: { token: localStorage.getItem('token') || '' },
+        withCredentials: true,
+      }
+    );
 
     socketRef.current = socket;
 
@@ -107,7 +132,10 @@ export default function ChatPage() {
     const onConnect = () => {
       setSocketConnected(true);
       setConnectionError(null);
-      socket.emit('joinConversation', { userId1: currentUserId, userId2: otherUserId });
+      socket.emit('joinConversation', {
+        userId1: currentUserId,
+        userId2: otherUserId,
+      });
       fetchMessages();
     };
 
@@ -118,17 +146,17 @@ export default function ChatPage() {
     };
 
     const onConnectError = (error: Error) => {
-      console.error("Connection error:", error);
+      console.error('Connection error:', error);
       setConnectionError('Connection failed. Retrying...');
       setLoading(false);
     };
 
     const onTyping = ({ fromUserId }: { fromUserId: string }) => {
       if (fromUserId !== currentUserId && fromUserId === otherUserId) {
-        setTypingUsers(prev => new Set(prev).add(fromUserId));
+        setTypingUsers((prev) => new Set(prev).add(fromUserId));
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => {
-          setTypingUsers(prev => {
+          setTypingUsers((prev) => {
             const newSet = new Set(prev);
             newSet.delete(fromUserId);
             return newSet;
@@ -138,29 +166,47 @@ export default function ChatPage() {
     };
 
     const onReadConfirm = ({ messageIds }: { messageIds: string[] }) => {
-      setMessages(prev => prev.map(msg =>
-        messageIds.includes(msg._id) && msg.fromSelf 
-          ? { ...msg, read: true, status: 'sent' } 
-          : msg
-      ));
+      setMessages((prev) =>
+        prev.map((msg) =>
+          messageIds.includes(msg._id) && msg.fromSelf
+            ? { ...msg, read: true, status: 'sent' }
+            : msg
+        )
+      );
     };
 
-    const onReaction = ({ messageId, reaction }: { messageId: string, reaction: Reaction }) => {
-      setMessages(prev => prev.map(msg =>
-        msg._id === messageId
-          ? {
-              ...msg,
-              reactions: msg.reactions
-                ? [...msg.reactions.filter(r => r.fromUserId !== reaction.fromUserId), reaction]
-                : [reaction]
-            }
-          : msg
-      ));
+    const onReaction = ({
+      messageId,
+      reaction,
+    }: {
+      messageId: string;
+      reaction: Reaction;
+    }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId
+            ? {
+                ...msg,
+                reactions: msg.reactions
+                  ? [
+                      ...msg.reactions.filter(
+                        (r) => r.fromUserId !== reaction.fromUserId
+                      ),
+                      reaction,
+                    ]
+                  : [reaction],
+              }
+            : msg
+        )
+      );
     };
 
     const onNewMessage = (msg: any) => {
       // Deduplication check
-      if (messageDedupeMap.current.has(msg._id) || (msg.tempId && messageDedupeMap.current.has(msg.tempId))) {
+      if (
+        messageDedupeMap.current.has(msg._id) ||
+        (msg.tempId && messageDedupeMap.current.has(msg.tempId))
+      ) {
         console.log('Duplicate message detected, ignoring');
         return;
       }
@@ -168,9 +214,9 @@ export default function ChatPage() {
       messageDedupeMap.current.add(msg._id);
       if (msg.tempId) messageDedupeMap.current.add(msg.tempId);
 
-      setMessages(prev => {
-        const existingIndex = prev.findIndex(m => 
-          m._id === msg._id || (msg.tempId && m.tempId === msg.tempId)
+      setMessages((prev) => {
+        const existingIndex = prev.findIndex(
+          (m) => m._id === msg._id || (msg.tempId && m.tempId === msg.tempId)
         );
 
         if (existingIndex > -1) {
@@ -185,7 +231,8 @@ export default function ChatPage() {
             read: msg.read,
             fromSelf: msg.fromUserId === currentUserId,
             username: msg.username,
-            avatar: msg.avatar || `https://i.pravatar.cc/40?u=${msg.fromUserId}`,
+            avatar:
+              msg.avatar || `https://i.pravatar.cc/40?u=${msg.fromUserId}`,
             reactions: msg.reactions || [],
             status: 'sent',
           };
@@ -201,7 +248,8 @@ export default function ChatPage() {
             read: msg.read,
             fromSelf: msg.fromUserId === currentUserId,
             username: msg.username,
-            avatar: msg.avatar || `https://i.pravatar.cc/40?u=${msg.fromUserId}`,
+            avatar:
+              msg.avatar || `https://i.pravatar.cc/40?u=${msg.fromUserId}`,
             reactions: msg.reactions || [],
             status: 'sent',
           };
@@ -236,7 +284,9 @@ export default function ChatPage() {
     const fetchMessages = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/whois/chat/${otherUserId}/${otherUserIdParam}`);
+        const res = await api.get(
+          `/whois/chat/${otherUserId}/${otherUserIdParam}`
+        );
         const msgs = res.data.messages.map((msg: any) => ({
           _id: msg._id,
           message: msg.message,
@@ -250,11 +300,11 @@ export default function ChatPage() {
           reactions: msg.reactions || [],
           status: 'sent',
         }));
-        console.log("msg", res)
-        setToName(res.data.otherUser.username)
+        setToName(res.data.otherUser.username);
+        setToAvatar(res.data.otherUser.avatarUrl)
         // Add to dedupe map
         msgs.forEach((msg: Message) => messageDedupeMap.current.add(msg._id));
-        
+
         setMessages(msgs);
 
         const unreadMessageIds = msgs
@@ -269,7 +319,7 @@ export default function ChatPage() {
           });
         }
       } catch (err) {
-        console.error("Failed to load messages:", err);
+        console.error('Failed to load messages:', err);
         setConnectionError('Failed to load messages.');
       } finally {
         setLoading(false);
@@ -304,7 +354,9 @@ export default function ChatPage() {
   const handleSend = useCallback(async () => {
     if (!text.trim() || !socketRef.current || !otherUserId) return;
 
-    const tempId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const tempId = `temp-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
     // const messageToSend: Message = {
     //   _id: tempId,
     //   message: text,
@@ -322,14 +374,14 @@ export default function ChatPage() {
     // setMessages(prev => [...prev, messageToSend]);
     messageDedupeMap.current.add(tempId);
 
-    socketRef.current.emit('message', { 
-      to: otherUserId, 
-      message: text, 
-      tempId 
+    socketRef.current.emit('message', {
+      to: otherUserId,
+      message: text,
+      tempId,
     });
 
     // Clear typing status
-    setTypingUsers(prev => {
+    setTypingUsers((prev) => {
       const newSet = new Set(prev);
       newSet.delete(currentUserId);
       return newSet;
@@ -340,30 +392,35 @@ export default function ChatPage() {
     }
   }, [text, currentUserId, otherUserId]);
 
-  const handleTyping = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
-    if (!socketRef.current || !otherUserId) return;
+  const handleTyping = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setText(e.target.value);
+      if (!socketRef.current || !otherUserId) return;
 
-    socketRef.current.emit('typing', { to: otherUserId });
+      socketRef.current.emit('typing', { to: otherUserId });
 
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = setTimeout(() => {
-      socketRef.current?.emit('stoppedTyping', { to: otherUserId });
-      typingTimeoutRef.current = null;
-    }, 2000);
-  }, [otherUserId]);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        socketRef.current?.emit('stoppedTyping', { to: otherUserId });
+        typingTimeoutRef.current = null;
+      }, 2000);
+    },
+    [otherUserId]
+  );
 
   const handleEmojiClick = (e: React.MouseEvent<HTMLElement>) => {
-
     setEmojiAnchorEl(e.currentTarget);
   };
 
   const handleEmojiSelect = (emoji: any) => {
-    setText(prev => prev + emoji.native);
+    setText((prev) => prev + emoji.native);
     setEmojiAnchorEl(null);
   };
 
-  const handleMessageOptionsClick = (event: React.MouseEvent<HTMLElement>, messageId: string) => {
+  const handleMessageOptionsClick = (
+    event: React.MouseEvent<HTMLElement>,
+    messageId: string
+  ) => {
     setMessageOptionsAnchorEl(event.currentTarget);
     setSelectedMessageId(messageId);
   };
@@ -373,16 +430,19 @@ export default function ChatPage() {
     setSelectedMessageId(null);
   };
 
-  const handleReaction = useCallback((emoji: string) => {
-    if (selectedMessageId && socketRef.current && otherUserId) {
-      socketRef.current.emit('message:reaction', {
-        messageId: selectedMessageId,
-        emoji,
-        toUserId: otherUserId,
-      });
-      handleMessageOptionsClose();
-    }
-  }, [selectedMessageId, otherUserId]);
+  const handleReaction = useCallback(
+    (emoji: string) => {
+      if (selectedMessageId && socketRef.current && otherUserId) {
+        socketRef.current.emit('message:reaction', {
+          messageId: selectedMessageId,
+          emoji,
+          toUserId: otherUserId,
+        });
+        handleMessageOptionsClose();
+      }
+    },
+    [selectedMessageId, otherUserId]
+  );
 
   // Group messages by date
   const groupedMessages = messages.reduce((groups: GroupedMessages, msg) => {
@@ -406,9 +466,20 @@ export default function ChatPage() {
   if (!router.isReady) {
     return (
       <Layout title="Chat">
-        <Container sx={{ mt: 4, display: 'flex', flexDirection: 'column', height: '80vh', justifyContent: 'center', alignItems: 'center' }}>
+        <Container
+          sx={{
+            mt: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '80vh',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <CircularProgress />
-          <Typography variant="body1" mt={2}>Loading chat...</Typography>
+          <Typography variant="body1" mt={2}>
+            Loading chat...
+          </Typography>
         </Container>
       </Layout>
     );
@@ -417,8 +488,19 @@ export default function ChatPage() {
   if (!otherUserId || !currentUserId) {
     return (
       <Layout title="Chat">
-        <Container sx={{ mt: 4, display: 'flex', flexDirection: 'column', height: '80vh', justifyContent: 'center', alignItems: 'center' }}>
-          <Alert severity="error">{connectionError || "Chat cannot be loaded. Invalid user IDs."}</Alert>
+        <Container
+          sx={{
+            mt: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '80vh',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Alert severity="error">
+            {connectionError || 'Chat cannot be loaded. Invalid user IDs.'}
+          </Alert>
         </Container>
       </Layout>
     );
@@ -426,17 +508,60 @@ export default function ChatPage() {
 
   return (
     <Layout title="Chat">
-      <Container sx={{ mt: 4, display: 'flex', flexDirection: 'column', height: '80vh' }}>
-        <Typography variant="h5" mb={2}>Chatting with {toName}</Typography>
+      <Container
+        sx={{ mt: 4, display: 'flex', flexDirection: 'column', height: '80vh' }}
+      >
+        <Box
+  sx={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
+    mb: 2,
+    p: 2,
+    bgcolor: 'background.paper',
+    borderRadius: 3,
+    boxShadow: 1,
+  }}
+>
+  <Avatar sx={{ width: 48, height: 48 }} src={`${toAvatar}`} alt={toName} />
+  <Box>
+    <Typography variant="h6" fontWeight="bold">
+      Chatting with {toName}
+    </Typography>
+    <Typography variant="body2" color="text.secondary">
+      Always meet in public and secure locations.
+    </Typography>
+  </Box>
+</Box>
 
-        <Snackbar open={!!connectionError} autoHideDuration={6000} onClose={() => setConnectionError(null)}>
-          <Alert severity="error" onClose={() => setConnectionError(null)}>{connectionError}</Alert>
+        <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+  For your safety, always meet in secure public locations. Avoid sharing personal or financial information.
+</Alert>
+
+        <Snackbar
+          open={!!connectionError}
+          autoHideDuration={6000}
+          onClose={() => setConnectionError(null)}
+        >
+          <Alert severity="error" onClose={() => setConnectionError(null)}>
+            {connectionError}
+          </Alert>
         </Snackbar>
 
         {loading ? (
-          <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>
+          <Box display="flex" justifyContent="center" mt={4}>
+            <CircularProgress />
+          </Box>
         ) : (
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 1, border: '1px solid #eee', borderRadius: 2 }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflowY: 'auto',
+              p: 1,
+              border: '1px solid #eee',
+              borderRadius: 2,
+            }}
+          >
             {Object.entries(groupedMessages).map(([date, msgs]) => (
               <Box key={date}>
                 <Divider textAlign="center" sx={{ my: 2 }}>
@@ -451,7 +576,6 @@ export default function ChatPage() {
                       alignItems: 'flex-start',
                     }}
                   >
-                    {!msg.fromSelf && <ListItemAvatar><Avatar src={msg.avatar} /></ListItemAvatar>}
                     <Box
                       sx={{
                         display: 'flex',
@@ -460,42 +584,17 @@ export default function ChatPage() {
                         maxWidth: '75%',
                       }}
                     >
-                      <ListItemText
-                        primary={msg.message}
-                        sx={{
-                          bgcolor: msg.fromSelf ? 'primary.light' : 'grey.200',
-                          px: 2,
-                          py: 1,
-                          borderRadius: 2,
-                          wordBreak: 'break-word',
-                        }}
+                      <ChatBubble
+                        key={msg._id}
+                        message={msg.message}
+                        fromSelf={msg.fromSelf!}
+                        avatar={msg.avatar!}
+                        username={msg.username}
+                        createdAt={msg.createdAt}
+                        reactions={msg.reactions}
+                        readStatus={getReadStatusText(msg)}
                       />
-                      {msg.reactions?.length > 0 && (
-                        <Box sx={{
-                          display: 'flex',
-                          gap: 0.5,
-                          mt: 0.5,
-                          p: 0.5,
-                          bgcolor: 'rgba(0,0,0,0.05)',
-                          borderRadius: 1
-                        }}>
-                          {msg.reactions.map((r, idx) => (
-                            <Typography key={idx} variant="caption" sx={{ lineHeight: 1 }}>
-                              {r.emoji}
-                            </Typography>
-                          ))}
-                        </Box>
-                      )}
-                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
-                        {msg.username} • {moment(msg.createdAt).tz(moment.tz.guess()).format('h:mm A')}
-                        {msg.fromSelf && (
-                          <Box component="span" sx={{ ml: 1, display: 'inline-flex', alignItems: 'center' }}>
-                            {getReadStatusText(msg)}
-                          </Box>
-                        )}
-                      </Typography>
                     </Box>
-                    {msg.fromSelf && <ListItemAvatar><Avatar src={msg.avatar} /></ListItemAvatar>}
                     <IconButton
                       size="small"
                       sx={{ alignSelf: 'flex-start', mt: 1, ml: 1, mr: 1 }}
@@ -510,7 +609,10 @@ export default function ChatPage() {
             {typingUsers.size > 0 && (
               <Box sx={{ px: 2, py: 1, color: 'text.secondary' }}>
                 <Typography variant="caption">
-                  {Array.from(typingUsers).map(id => `User ${id}`).join(', ')} is typing...
+                  {Array.from(typingUsers)
+                    .map((id) => `User ${id}`)
+                    .join(', ')}{' '}
+                  is typing...
                 </Typography>
               </Box>
             )}
@@ -531,8 +633,18 @@ export default function ChatPage() {
           <MenuItem onClick={() => handleReaction('😡')}>😡 Angry</MenuItem>
         </Menu>
 
-        <Box display="flex" gap={1} alignItems="center" mt={2} p={1} bgcolor="background.paper" borderRadius={1}>
-          <IconButton onClick={handleEmojiClick}><InsertEmoticonIcon /></IconButton>
+        <Box
+          display="flex"
+          gap={1}
+          alignItems="center"
+          mt={2}
+          p={1}
+          bgcolor="background.paper"
+          borderRadius={1}
+        >
+          <IconButton onClick={handleEmojiClick}>
+            <InsertEmoticonIcon />
+          </IconButton>
           <Popover
             open={!!emojiAnchorEl}
             anchorEl={emojiAnchorEl}
@@ -554,10 +666,12 @@ export default function ChatPage() {
             variant="outlined"
             size="small"
           />
-          <Button 
-            variant="contained" 
-            onClick={handleSend} 
-            disabled={!text.trim() || !socketConnected || loading || !otherUserId}
+          <Button
+            variant="contained"
+            onClick={handleSend}
+            disabled={
+              !text.trim() || !socketConnected || loading || !otherUserId
+            }
           >
             Send
           </Button>
