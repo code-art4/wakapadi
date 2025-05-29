@@ -94,7 +94,20 @@ export default function ChatPage() {
   useEffect(() => {
     console.log('Current messages:', messages);
   }, [messages]);
-
+  useEffect(() => {
+    const unreadIds = messages
+      .filter((msg) => !msg.read && msg.fromUserId === otherUserId)
+      .map((msg) => msg._id);
+  
+    if (unreadIds.length > 0 && socketRef.current) {
+      socketRef.current.emit('message:read', {
+        toUserId: currentUserId,
+        fromUserId: otherUserId,
+        messageIds: unreadIds,
+      });
+    }
+  }, [messages, currentUserId, otherUserId]);
+  
   // Main socket effect
   useEffect(() => {
     if (!router.isReady || !currentUserId) {
@@ -253,15 +266,20 @@ export default function ChatPage() {
             reactions: msg.reactions || [],
             status: 'sent',
           };
-
+            console.log("new m", newMessage)
           if (newMessage.fromUserId === otherUserId && !newMessage.read) {
             socket.emit('message:read', {
               toUserId: currentUserId,
               fromUserId: otherUserId,
               messageIds: [newMessage._id],
             });
-            return [...prev, { ...newMessage, read: true }];
+            return [...prev, newMessage];
+          // if (newMessage.fromUserId === otherUserId && !newMessage.read) {
+          //   return [...prev, newMessage]; // don't mark read immediately
           }
+          
+            // return [...prev, { ...newMessage, read: true }];
+          
           return [...prev, newMessage];
         }
       });
@@ -609,10 +627,8 @@ export default function ChatPage() {
             {typingUsers.size > 0 && (
               <Box sx={{ px: 2, py: 1, color: 'text.secondary' }}>
                 <Typography variant="caption">
-                  {Array.from(typingUsers)
-                    .map((id) => `User ${id}`)
-                    .join(', ')}{' '}
-                  is typing...
+                  
+                 {toName} is typing...
                 </Typography>
               </Box>
             )}
