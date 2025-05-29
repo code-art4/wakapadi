@@ -15,15 +15,23 @@ import { api } from '../lib/api';
 
 interface Conversation {
   _id: string;
-  message: string;
+  // message: string;
   createdAt: string;
   read: boolean;
   fromUserId: string;
   toUserId: string;
+  message:{
+    _id: string;
+    message: string;
+    createdAt: string;
+    read: boolean;
+    fromUserId: string;
+    toUserId: string;
+  },
   otherUser: {
     _id: string;
     username: string;
-    avatar?: string;
+    avatarUrl?: string;
   };
 }
 
@@ -57,6 +65,7 @@ export default function ProfilePage() {
         setTwitter(userRes.data.socials?.twitter || '');
 
         const convRes = await api.get('/whois/chat/inbox');
+        console.log("con data", convRes.data)
         setConversations(convRes.data);
 
         const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001', {
@@ -213,18 +222,18 @@ export default function ProfilePage() {
           ) : conversations.length > 0 ? (
             conversations.map((conv) => (
               <ListItem
-                key={conv._id}
+                key={conv.message._id}
                 sx={{ mb: 1, borderRadius: 1, flexDirection: 'column', alignItems: 'flex-start' }}
               >
                 <Box display="flex" alignItems="center" width="100%">
                   <ListItemAvatar>
-                    {/* <Avatar src={conv.otherUser.avatar || `https://i.pravatar.cc/40?u=${conv.otherUser._id}`} /> */}
+                    <Avatar src={conv.otherUser.avatarUrl || `https://i.pravatar.cc/40?u=${conv.otherUser._id}`} />
                   </ListItemAvatar>
                   <ListItemText
-                    primary={`Chat with ${conv.toUserId}`}
+                    primary={`Chat with ${conv.otherUser.username}`}
                     secondary={
                       <Typography component="span" variant="body2" color="text.secondary">
-                        {conv.message} - {moment(conv.createdAt).fromNow()}
+                        {conv.message.message} - {moment(conv.message.createdAt).fromNow()}
                       </Typography>
                     }
                   />
@@ -236,8 +245,8 @@ export default function ProfilePage() {
                   >
                     Continue Chat
                   </Button> */}
-                  <IconButton color="primary" href={`/chat/${conv.toUserId}`}><ChatIcon /></IconButton>
-              <IconButton color="default" href={`/peer/${conv.toUserId}`}><PersonIcon /></IconButton>
+                  <IconButton color="primary" href={`/chat/${conv.otherUser._id}`}><ChatIcon /></IconButton>
+              <IconButton color="default" href={`/peer/${conv.otherUser._id}`}><PersonIcon /></IconButton>
                 </Box>
               </ListItem>
             ))

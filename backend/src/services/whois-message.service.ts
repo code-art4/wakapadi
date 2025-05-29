@@ -108,7 +108,7 @@ export class WhoisMessageService implements OnModuleInit {
         { fromUserId: otherUserId, toUserId: userId },
       ],
     };
-
+ 
     const [messages, total] = await Promise.all([
       this.messageModel
         .find(filter)
@@ -154,14 +154,23 @@ export class WhoisMessageService implements OnModuleInit {
   }
 
   async getInbox(userId: string) {
-    console.log("inbox userid", userId)
-    return this.messageModel.aggregate([
-      { $match: { $or: [ { fromUserId: new Types.ObjectId(userId) }, { toUserId: new Types.ObjectId(userId) } ] } },
+    const msg = await this.messageModel.aggregate([
+      {
+        $match: {
+          $or: [
+            { fromUserId: new Types.ObjectId(userId) },
+            { toUserId: new Types.ObjectId(userId) }
+          ]
+        }
+      },
       { $sort: { createdAt: -1 } },
-      { $group: {
+      {
+        $group: {
           _id: {
             $cond: [
-              { $eq: ['$fromUserId', new Types.ObjectId(userId)] }, '$toUserId', '$fromUserId'
+              { $eq: ['$fromUserId', new Types.ObjectId(userId)] },
+              '$toUserId',
+              '$fromUserId'
             ]
           },
           lastMessage: { $first: '$$ROOT' }
@@ -170,15 +179,30 @@ export class WhoisMessageService implements OnModuleInit {
       {
         $lookup: {
           from: 'users',
-          localField: '_id',
+          localField: '_id',        // this is the "other" user's _id
           foreignField: '_id',
           as: 'otherUser'
         }
       },
       { $unwind: '$otherUser' },
-      { $replaceRoot: { newRoot: '$lastMessage' } },
-      { $sort: { createdAt: -1 } }
+      {
+        $project: {
+          _id: 0,
+          message: '$lastMessage',
+          otherUser: {
+            _id: '$otherUser._id',
+            username: '$otherUser.username',
+            avatarUrl: '$otherUser.avatarUrl',
+            email: '$otherUser.email', // add more fields as needed
+          }
+        }
+      },
+      { $sort: { 'message.createdAt': -1 } }
     ]);
+    
+    console.log("inbox userid", userId, "msg", msg)
+
+    return msg
   }
   async getUserById(userId: string) {
     return this.userModel.findById(userId).select('_id username avatar').lean();

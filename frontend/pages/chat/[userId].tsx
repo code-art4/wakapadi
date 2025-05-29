@@ -63,7 +63,7 @@ export default function ChatPage() {
   const [socketConnected, setSocketConnected] = useState(false);
   const [messageOptionsAnchorEl, setMessageOptionsAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
-
+  const [toName,setToName] = useState<string>("")
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -237,7 +237,7 @@ export default function ChatPage() {
     const fetchMessages = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/whois/chat/${otherUserId}`);
+        const res = await api.get(`/whois/chat/${otherUserId}/${otherUserIdParam}`);
         const msgs = res.data.messages.map((msg: any) => ({
           _id: msg._id,
           message: msg.message,
@@ -251,7 +251,8 @@ export default function ChatPage() {
           reactions: msg.reactions || [],
           status: 'sent',
         }));
-        
+        console.log("msg", res)
+        setToName(res.data.otherUser.username)
         // Add to dedupe map
         msgs.forEach((msg: Message) => messageDedupeMap.current.add(msg._id));
         
@@ -426,7 +427,7 @@ export default function ChatPage() {
   return (
     <Layout title="Chat">
       <Container sx={{ mt: 4, display: 'flex', flexDirection: 'column', height: '80vh' }}>
-        <Typography variant="h5" mb={2}>Chatting with {otherUserId}</Typography>
+        <Typography variant="h5" mb={2}>Chatting with {toName}</Typography>
 
         <Snackbar open={!!connectionError} autoHideDuration={6000} onClose={() => setConnectionError(null)}>
           <Alert severity="error" onClose={() => setConnectionError(null)}>{connectionError}</Alert>

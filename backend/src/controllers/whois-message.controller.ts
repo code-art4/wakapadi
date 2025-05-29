@@ -3,6 +3,7 @@ import { Controller, Post, Get, Param, Body, Req, UseGuards, Query, Patch } from
 import { WhoisMessageService } from '../services/whois-message.service';
 import { AuthGuard } from '../gateways/auth.guard';
 import { Request } from 'express';
+import { UsersService } from 'src/services/user.service';
 
 interface AuthRequest extends Request {
   user?: { id: string };
@@ -11,12 +12,14 @@ interface AuthRequest extends Request {
 @Controller('whois/chat')
 @UseGuards(AuthGuard)
 export class WhoisMessageController {
-  constructor(private readonly messageService: WhoisMessageService) {}
+  constructor(private readonly messageService: WhoisMessageService,
+    private readonly userService: UsersService
+    ) {}
 
   @Get('inbox') // specific route
   async inbox(@Req() req: AuthRequest) {
     return this.messageService.getInbox(req.user!.id);
-  }
+  }  
   @Post('send')
   async send(@Req() req: AuthRequest, @Body() body: { toUserId: string; message: string }) {
     // While messages are primarily sent via WebSocket for real-time,
@@ -34,10 +37,11 @@ export class WhoisMessageController {
     await this.messageService.markMessagesAsRead(req.user!.id, body.fromUserId, body.messageIds);
     return { success: true };
   }
-  @Get(':userId') // Changed 'chat/:userId' to just ':userId' for cleaner routing, assuming it's the primary chat thread endpoint
+  @Get(':userId/:otherId') // Changed 'chat/:userId' to just ':userId' for cleaner routing, assuming it's the primary chat thread endpoint
   async getChat(
     @Req() req: AuthRequest,
     @Param('userId') userId: string,
+    @Param('otherId') otherId: string,
     @Query('page') page = '1',
     @Query('limit') limit = '20'
   ) {
@@ -48,8 +52,9 @@ export class WhoisMessageController {
       parseInt(page),
       parseInt(limit)
     );
-
+const otherUser = await this.userService.getPreferences(otherId)
     return {
+      otherUser,
       messages: result.messages, // These messages will now include the 'reactions' array and populated user data
       meta: {
         page: result.page,

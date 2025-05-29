@@ -71,11 +71,7 @@ export default function WhoisPage() {
   };
 
   const togglePresence = async () => {
-    if (visible) {
-      await api.delete('/whois');
-    } else {
-      await pingPresence(city);
-    }
+    await api.patch('/whois', {visible:!visible});
     setVisible(!visible);
   };
 

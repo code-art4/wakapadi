@@ -29,8 +29,9 @@ export class WhoisService {
     );
   }
 
-  async hidePresence(userId: string) {
-    return this.whoisModel.findOneAndUpdate({ userId }, { visible: false });
+  async hidePresence(userId: string, visible:boolean) {
+
+    return this.whoisModel.findOneAndUpdate({ userId }, { visible});
   }
 
   async getNearby(city: string, userId: any) {
@@ -56,7 +57,7 @@ export class WhoisService {
             anonymous: true,
           };
         }
-
+        console.log("vuser", visibleUsers)
         const foundUser = await this.userModel.findById(user.userId).lean();
 
         return {
