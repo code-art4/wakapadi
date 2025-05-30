@@ -21,6 +21,14 @@ const highlightText = (text: string = '', highlight: string = '') => {
     )
   );
 };
+function extractPath(url:string):string {
+  const parsed = new URL(url);
+  return `/tours${parsed.pathname}`;
+}
+
+// const url = "https://www.freetour.com/berlin/alternative-berlin";
+// console.log(extractPath(url));
+
 
 export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlight?: string }) {
   const { t } = useTranslation('common');
@@ -83,7 +91,7 @@ export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlig
             {tour.externalPageUrl && (
               <Button
                 variant="outlined"
-                href={tour.externalPageUrl}
+                href={extractPath(tour.externalPageUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.cardButton}

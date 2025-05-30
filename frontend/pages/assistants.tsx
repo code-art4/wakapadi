@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Container, Typography, TextField, Box } from '@mui/material';
 import AssistantCard from '../components/AssistantCard';
 import CreateAssistantForm from '../components/CreateAssistantForm';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 
 type Assistant = {
   name: string;

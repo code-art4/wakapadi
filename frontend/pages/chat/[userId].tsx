@@ -26,7 +26,7 @@ import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Layout from '../../components/Layout';
 import io, { Socket } from 'socket.io-client';
-import { api } from '../../lib/api';
+import { api } from '../../lib/api/index';
 import moment from 'moment-timezone';
 import dynamic from 'next/dynamic';
 import ChatBubble from '../../components/ChatBubbles';

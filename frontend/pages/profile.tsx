@@ -10,7 +10,7 @@ import Link from 'next/link';
 import io, { Socket } from 'socket.io-client';
 import Layout from '../components/Layout';
 import moment from 'moment';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 import styles from '../styles/Profile.module.css';
 
 interface User {

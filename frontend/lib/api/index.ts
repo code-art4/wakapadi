@@ -43,4 +43,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export { api };
+
+export default async function cityHandler(req: { query: { lat: any; lon: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error?: string; city?: any; }): any; new(): any; }; }; }) {
+  const { lat, lon } = req.query;
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+      {
+        headers: {
+          'User-Agent': 'your-app-name (your-email@example.com)'
+        }
+      }
+    );
+    if (!response.ok) {
+      return res.status(response.status).json({ error: 'Failed to fetch city' });
+    }
+
+    const data = await response.json();
+    const city = data.address?.city || data.address?.town || data.address?.village;
+    return res.status(200).json({ city });
+  } catch (error) {
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export { api, cityHandler };

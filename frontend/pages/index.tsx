@@ -1,9 +1,10 @@
+// pages/index.tsx
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
-  Box,Button, Typography, Grid, Pagination, Skeleton, Container, CircularProgress
+  Box, Button, Typography, Grid, Pagination, Skeleton, Container
 } from '@mui/material';
 import Layout from '../components/Layout';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import HeroSection from '../components/home/HeroSection';
@@ -22,7 +23,7 @@ export type Tour = {
   sourceUrl?: string;
   externalPageUrl?: string;
   image?: string;
-  altText?: string; // Added for accessibility
+  altText?: string;
 };
 
 export default function HomePage() {
@@ -34,49 +35,38 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
-
   const topRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { q } = router.query;
-
-  // Memoized filtered tours calculation
-  const { filteredTours, totalPages: calculatedPages } = useMemo(() => {
-    if (!tours.length) return { filteredTours: [], totalPages: 1 };
-  
-    const filtered = search
-      ? tours.filter(t => (
-          t.location?.toLowerCase().includes(search.toLowerCase()) ||
-          t.title?.toLowerCase().includes(search.toLowerCase())
-        ))
+  const filteredTours = useMemo(() => {
+    if (!tours.length) return [];
+    return search
+      ? tours.filter(t =>
+          t.location.toLowerCase().includes(search.toLowerCase()) ||
+          t.title.toLowerCase().includes(search.toLowerCase())
+        )
       : tours;
-  
-    return {
-      filteredTours: filtered,
-      totalPages: Math.ceil(filtered.length / PER_PAGE) || 1
-    };
   }, [tours, search]);
 
-  // Fetch tours with error handling
-  useEffect(() => {
-    const fetchTours = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await api.get('/tours');
-        setTours(res.data);
-      } catch (err) {
-        console.error('Error fetching tours:', err);
-        setError(t('fetchError'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    const timer = setTimeout(fetchTours, 300); // Small delay for better perceived performance
-    return () => clearTimeout(timer);
+  const fetchTours = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await api.get('/tours');
+      setTours(res.data);
+    } catch (err) {
+      console.error('Error fetching tours:', err);
+      setError(t('fetchError'));
+    } finally {
+      setLoading(false);
+    }
   }, [t]);
 
-  // Handle search query from URL
+  useEffect(() => {
+    const timer = setTimeout(fetchTours, 300);
+    return () => clearTimeout(timer);
+  }, [fetchTours]);
+
   useEffect(() => {
     if (typeof q === 'string') {
       setSearch(q);
@@ -85,7 +75,6 @@ export default function HomePage() {
     }
   }, [q]);
 
-  // Debounced search with cleanup
   const debouncedSearch = useMemo(
     () => debounce((value: string) => {
       setSearch(value);
@@ -99,20 +88,17 @@ export default function HomePage() {
     debouncedSearch(value);
   }, [debouncedSearch]);
 
-  // Update total pages when filtered results change
   useEffect(() => {
-    setTotalPages(calculatedPages);
-    if (page > calculatedPages && calculatedPages > 0) {
-      setPage(calculatedPages);
+    setTotalPages(Math.ceil(filteredTours.length / PER_PAGE) || 1);
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
     }
-  }, [calculatedPages, page]);
+  }, [filteredTours, page]);
 
-  // Get paginated results
   const paginatedTours = useMemo(() => {
     return filteredTours.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   }, [filteredTours, page]);
 
-  // Handle page change with scroll to top
   const handlePageChange = useCallback((_: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo({
@@ -123,6 +109,45 @@ export default function HomePage() {
 
   const locations = useMemo(() => [...new Set(tours.map(t => t.location))], [tours]);
 
+  // 📍 Geolocation + new city scraping
+  useEffect(() => {
+    const detectAndScrapeCity = async () => {
+      try {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+
+        const { latitude, longitude } = position.coords;
+        // const res = await fetch(`/api/get-city?lat=${latitude}&lon=${longitude}`);
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+        );
+        const geocode = await res.json();
+        const city = (
+          geocode.address.city ||
+          geocode.address.town ||
+          ''
+        )
+          .trim()
+          .toLowerCase();
+        if (!city) return;
+
+        const scrapeRes = await await api.post('/scraper/new/city', {
+          city
+        });
+
+        const result = await scrapeRes.json();
+        if (result.added) {
+          await fetchTours();
+        }
+
+      } catch (err) {
+        console.warn('Skipping geolocation-based scraping', err);
+      }
+    };
+
+    detectAndScrapeCity();
+  }, [fetchTours]);
   return (
     <Layout title={t('homePageTitle')}>
       <div ref={topRef} className={styles.anchor} aria-hidden="true" />
@@ -159,11 +184,7 @@ export default function HomePage() {
               {loading ? (
                 Array.from({ length: PER_PAGE }).map((_, i) => (
                   <div key={`skeleton-${i}`} className={styles.gridItem}>
-                    <Skeleton 
-                      variant="rectangular" 
-                      className={styles.skeletonCard} 
-                      height={380}
-                    />
+                    <Skeleton variant="rectangular" className={styles.skeletonCard} height={380} />
                   </div>
                 ))
               ) : (

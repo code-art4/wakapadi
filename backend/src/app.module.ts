@@ -14,6 +14,8 @@ import { WhoisMessageModule } from './modules/whois-message.module';
 import { PresenceModule } from './modules/PresenceModule';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './modules/email.module';
+import { CityModule } from './modules/city.module';
+
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { EmailModule } from './modules/email.module';
     AuthModule,
     SeedModule,
     UserModule,
+    CityModule,
     EmailModule,
     PresenceModule,
     WhoisModule, // ✅ Add this line

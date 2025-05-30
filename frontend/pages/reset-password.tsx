@@ -9,7 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import { useRouter } from 'next/router';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 import Layout from '../components/Layout';
 
 export default function ResetPasswordPage() {

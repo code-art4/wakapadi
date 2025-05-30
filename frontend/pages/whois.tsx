@@ -21,7 +21,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { formatDistanceToNow } from 'date-fns';
 import Layout from '../components/Layout';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 import { motion } from 'framer-motion';
 import PlaceIcon from '@mui/icons-material/Place';
 import styles from '../styles/whois.module.css';

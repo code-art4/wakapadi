@@ -9,7 +9,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import BlockIcon from '@mui/icons-material/Block';
 import ReportIcon from '@mui/icons-material/Report';
 import Layout from '../../components/Layout';
-import { api } from '../../lib/api';
+import { api } from '../../lib/api/index';
 import moment from 'moment-timezone';
 
 const PeerProfile = () => {

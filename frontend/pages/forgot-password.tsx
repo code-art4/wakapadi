@@ -3,7 +3,7 @@ import { useState } from 'react';
 import {
   Container, TextField, Typography, Button, Alert, Box
 } from '@mui/material';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 import Layout from '../components/Layout';
 
 export default function ForgotPasswordPage() {

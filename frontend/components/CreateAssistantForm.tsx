@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Button, TextField, Typography, Stack, Snackbar } from '@mui/material';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 
 export default function CreateAssistantForm({ onSuccess }: { onSuccess: () => void }) {
   const [form, setForm] = useState({

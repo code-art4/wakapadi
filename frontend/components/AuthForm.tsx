@@ -11,7 +11,7 @@ import {
   Divider,
   Alert,
 } from '@mui/material';
-import { api } from '../lib/api';
+import { api } from '../lib/api/index';
 import { useRouter } from 'next/router';
 import { GoogleLogin } from '@react-oauth/google';
 import styles from '../styles/AuthPage.module.css';
