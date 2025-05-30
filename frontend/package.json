@@ -12,6 +12,7 @@
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@fontsource/poppins": "^5.2.6",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
     "@mui/x-date-pickers": "^8.4.0",
@@ -29,8 +30,10 @@
     "next": "15.3.2",
     "next-i18next": "^15.4.2",
     "react": "^19.0.0",
+    "react-country-flag": "^3.1.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.5.1",
+    "react-intersection-observer": "^9.16.0",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {

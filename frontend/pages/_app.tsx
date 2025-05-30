@@ -1,4 +1,6 @@
 import '../styles/global.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/600.css';
 import type { AppProps } from 'next/app';
 import { appWithTranslation } from 'next-i18next';
 import { GoogleOAuthProvider } from '@react-oauth/google';

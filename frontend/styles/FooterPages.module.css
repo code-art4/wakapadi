@@ -1,0 +1,145 @@
+/* Typography & Spacing Improvements */
+.container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+  }
+  
+  .contentPaper {
+    padding: 3rem;
+    margin: 2rem 0;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .pageTitle {
+    font-weight: 800;
+    color: #1a237e;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  
+  .sectionTitle {
+    font-weight: 700;
+    color: #1a237e;
+    margin: 3rem 0 1.5rem;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+  }
+  
+  .bodyText {
+    line-height: 1.8;
+    color: #424242;
+    margin-bottom: 1.75rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.1px;
+  }
+  
+  .list {
+    padding-left: 2rem;
+    margin: 1.5rem 0;
+  }
+  
+  .listItem {
+    margin-bottom: 0.75rem;
+    line-height: 1.8;
+    font-size: 1.1rem;
+    position: relative;
+    padding-left: 1rem;
+  }
+  
+  .listItem::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #1a237e;
+    font-weight: bold;
+  }
+  
+  .contactEmail {
+    color: #1a237e;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  
+  /* Visual Enhancements */
+  .contentPaper {
+    background: linear-gradient(to bottom, #ffffff, #f9faff);
+  }
+  
+  .sectionTitle {
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  
+  .sectionTitle::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #1a237e, #3d5afe);
+    border-radius: 3px;
+  }
+  
+  /* Responsive Refinements */
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 1.5rem;
+      margin: 2rem auto;
+    }
+    
+    .contentPaper {
+      padding: 2rem;
+    }
+    
+    .pageTitle {
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .bodyText, .listItem {
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 1.25rem;
+    }
+    
+    .contentPaper {
+      padding: 1.75rem 1.25rem;
+      border-radius: 12px;
+    }
+    
+    .pageTitle {
+      font-size: 2rem;
+      letter-spacing: -0.3px;
+    }
+    
+    .sectionTitle {
+      font-size: 1.5rem;
+    }
+    
+    .list {
+      padding-left: 1.5rem;
+    }
+  }
+  
+  /* Animation Enhancements */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .contentPaper {
+    animation: fadeIn 0.6s ease-out forwards;
+  }

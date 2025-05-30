@@ -17,6 +17,10 @@ const nextConfig = {
     defaultLocale: 'en',
   },
   images: {
+    domains: [
+      'www.freetour.com'
+    ]
+  ,
     // This is the critical part
     remotePatterns: [
       {

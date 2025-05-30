@@ -9,6 +9,26 @@
     "moreInfo": "More Info",
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
-    "cookiePolicy": "Cookie Policy"
+    "cookiePolicy": "Cookie Policy",
+    "profile": "Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "footerTagline": "Explore, connect, and discover local free walking tours",
+    "explore": "Explore",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "blog": "Blog",
+    "contact": "Contact Us",
+    "legal": "Legal",
+    "allRightsReserved": "All rights reserved",
+    "discoverTravelers": "Discover travelers near you with Wakapadi's #whois feature",
+    "fetchError": "Failed to load nearby users. Please try again later.",
+    "retry": "Retry",
+    "toggleVisibility": "Toggle visibility",
+    "chatWith": "Chat with {username}",
+    "near": "Near",
+    "lastSeenUnknown": "Last seen unknown",
+    "noMoreUsers": "No more users to load"
   }
   

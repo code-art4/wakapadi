@@ -1,8 +1,6 @@
-// components/Layout.tsx
 import {
   AppBar,
   Toolbar,
-  Typography,
   Container,
   Box,
   Link,
@@ -12,8 +10,13 @@ import {
   List,
   ListItem,
   ListItemText,
-  Select,
+  Menu,
   MenuItem,
+  useMediaQuery,
+  useTheme,
+  Typography,
+  Divider, // Added Divider for visual separation
+  ListItemIcon
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/router';
@@ -22,8 +25,19 @@ import NextLink from 'next/link';
 import { useEffect, useState } from 'react';
 import i18nextConfig from '../next-i18next.config';
 import { useTranslation } from 'next-i18next';
-import NotificationsDropdown from './NotificationsDropdown'; // 👈 Import the new dropdown
+import NotificationsDropdown from './NotificationsDropdown';
 import styles from './Layout.module.css';
+
+// Import country flags (you'll need to install react-country-flag)
+import ReactCountryFlag from 'react-country-flag';
+
+// Language configuration with flags
+const languages = [
+  { code: 'en', name: 'English', flag: 'US' },
+  { code: 'de', name: 'Deutsch', flag: 'DE' },
+  { code: 'es', name: 'Español', flag: 'ES' },
+  { code: 'fr', name: 'Français', flag: 'FR' }
+];
 
 export default function Layout({
   children,
@@ -35,11 +49,15 @@ export default function Layout({
   description?: string;
 }) {
   const router = useRouter();
-  const { t, i18n } = useTranslation('common');
+  const { t } = useTranslation('common');
   const currentLocale = router.locale || i18nextConfig.i18n.defaultLocale;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUserId, setCurrentUserId] = useState('');
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -47,8 +65,16 @@ export default function Layout({
     if (userId) setCurrentUserId(userId);
   }, []);
 
-  const handleLocaleChange = (e: any) => {
-    const locale = e.target.value;
+  const handleLanguageMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleLanguageClose = () => {
+    setAnchorEl(null);
+  };
+
+  const changeLanguage = (locale: string) => {
+    handleLanguageClose();
     router.push(router.pathname, router.asPath, { locale });
   };
 
@@ -59,6 +85,8 @@ export default function Layout({
     router.push('/');
   };
 
+  const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
+
   return (
     <div className={styles.layoutContainer}>
       <Head>
@@ -67,91 +95,225 @@ export default function Layout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </Head>
 
-      <AppBar position="sticky" className={styles.appBar}>
-        <Toolbar className={styles.toolbar}>
-          <Box className={styles.logoContainer}>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={() => setDrawerOpen(true)}
-              className={styles.menuButton}
-              aria-label="menu"
-            >
-              <MenuIcon />
-            </IconButton>
+      <AppBar position="sticky" className={styles.appBar} elevation={0} style={{
+         zIndex:"10",
+      }}>
+        <Container maxWidth="xl">
+          <Toolbar className={styles.toolbar} disableGutters>
+            <Box className={styles.logoContainer}>
+              {isMobile && (
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  onClick={() => setDrawerOpen(true)}
+                  className={styles.menuButton}
+                  aria-label="menu"
+                >
+                  <MenuIcon />
+                </IconButton>
+              )}
+              <NextLink href="/" className={styles.logoImageWrapper}>
+                <img
+                  src="/logo1.png"
+                  alt="Wakapadi logo"
+                  className={styles.logoImage}
+                />
+              </NextLink>
+            </Box>
 
-            <NextLink href="/" passHref>
-              <Typography variant="h6" className={styles.logoText}>
-                Wakapadi
-              </Typography>
-            </NextLink>
-          </Box>
+            {!isMobile && (
+              <Box className={styles.desktopNav}>
+                <Link href="/whois" className={styles.navLink}>
+                  {t('whoisNearby')}
+                </Link>
+                {isLoggedIn && (
+                  <>
+                    <Link href="/profile" className={styles.navLink}>
+                      {t('profile')}
+                    </Link>
+                    <NotificationsDropdown currentUserId={currentUserId} />
+                  </>
+                )}
+                
+                <Box className={styles.authSection}>
+                  {isLoggedIn ? (
+                    <Button 
+                      onClick={handleLogout} 
+                      className={styles.logoutButton}
+                      variant="text"
+                    >
+                      {t('logout')}
+                    </Button>
+                  ) : (
+                    <>
+                      <Button 
+                        href="/login" 
+                        className={styles.loginButton}
+                        variant="outlined"
+                      >
+                        {t('login')}
+                      </Button>
+                      <Button 
+                        href="/register" 
+                        className={styles.registerButton}
+                        variant="contained"
+                      >
+                        {t('register')}
+                      </Button>
+                    </>
+                  )}
+                </Box>
 
-          <Box className={styles.desktopNav}>
-            <Link href="/whois" className={styles.navLink}>
-              {t('whoisNearby')}
-            </Link>
-            {isLoggedIn && (
-              <>
-                <Link href="/profile" className={styles.navLink}>Profile</Link>
-                <NotificationsDropdown currentUserId={currentUserId} />
-              </>
+                <Button
+                  onClick={handleLanguageMenu}
+                  className={styles.languageButton}
+                  startIcon={
+                    <ReactCountryFlag 
+                      countryCode={currentLanguage.flag} 
+                      svg 
+                      style={{ width: '1.5em', height: '1.5em', lineHeight: '1.5em' }} // Added lineHeight for better alignment
+                    />
+                  }
+                >
+                  {currentLanguage.code.toUpperCase()}
+                </Button>
+
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleLanguageClose}
+                  className={styles.languageMenu}
+                  MenuListProps={{ // Added ListMenuProps for better padding control
+                    dense: true,
+                  }}
+                >
+                  {languages.map((language) => (
+                    <MenuItem 
+                      key={language.code} 
+                      onClick={() => changeLanguage(language.code)}
+                      selected={language.code === currentLocale}
+                      className={styles.languageMenuItem}
+                    >
+                      <ListItemIcon className={styles.languageListItemIcon}>
+                        <ReactCountryFlag 
+                          countryCode={language.flag} 
+                          svg 
+                          style={{ width: '1.5em', height: '1.5em' }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText>{language.name}</ListItemText>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Box>
             )}
-            {isLoggedIn ? (
-              <Button onClick={handleLogout} color="inherit" className={styles.navLink}>Logout</Button>
-            ) : null}
-            <Select
-              value={currentLocale}
-              onChange={handleLocaleChange}
-              className={styles.languageSelector}
-              size="small"
-            >
-              {i18nextConfig.i18n.locales.map((loc) => (
-                <MenuItem key={loc} value={loc}>{loc.toUpperCase()}</MenuItem>
-              ))}
-            </Select>
-          </Box>
-        </Toolbar>
+          </Toolbar>
+        </Container>
       </AppBar>
 
       <Drawer
-        anchor="left"
+        anchor="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         classes={{ paper: styles.drawerPaper }}
       >
         <Box className={styles.drawerContainer}>
+          <Box className={styles.drawerLogoWrapper}>
+            <NextLink href="/" className={styles.logoImageWrapper} onClick={() => setDrawerOpen(false)}>
+              <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage} />
+            </NextLink>
+          </Box>
+
+          <Divider className={styles.drawerDivider} /> {/* Added Divider */}
+
           <List className={styles.drawerList}>
-            <ListItem button component={NextLink} href="/whois">
-              <ListItemText primary={t('whoisNearby')} />
+            <ListItem
+              button
+              component={NextLink}
+              href="/whois"
+              onClick={() => setDrawerOpen(false)}
+              className={styles.drawerItem}
+            >
+              <ListItemText primary={t('whoisNearby')} className={styles.drawerItemText} />
             </ListItem>
+
             {isLoggedIn && (
-              <ListItem button component={NextLink} href="/profile">
-                <ListItemText primary="Profile" />
+              <ListItem
+                button
+                component={NextLink}
+                href="/profile"
+                onClick={() => setDrawerOpen(false)}
+                className={styles.drawerItem}
+              >
+                <ListItemText primary={t('profile')} className={styles.drawerItemText} />
               </ListItem>
             )}
+          </List>
+
+          <Box className={styles.drawerFooter}>
+            <Divider className={styles.drawerDivider} /> {/* Added Divider */}
+            <List>
+              {languages.map((language) => (
+                <ListItem
+                  key={language.code}
+                  button
+                  onClick={() => {
+                    changeLanguage(language.code);
+                    setDrawerOpen(false);
+                  }}
+                  className={styles.drawerItem}
+                  selected={language.code === currentLocale}
+                >
+                  <ListItemIcon className={styles.languageListItemIcon}>
+                    <ReactCountryFlag 
+                      countryCode={language.flag} 
+                      svg 
+                      style={{ width: '1.5em', height: '1.5em' }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary={language.name} />
+                </ListItem>
+              ))}
+            </List>
+
+            <Divider className={styles.drawerDivider} /> {/* Added Divider */}
+
             {isLoggedIn ? (
-              <ListItem button onClick={handleLogout}>
-                <ListItemText primary="Logout" />
+              <ListItem
+                button
+                onClick={() => { handleLogout(); setDrawerOpen(false); }}
+                className={`${styles.drawerItem} ${styles.logoutDrawerItem}`} // Added specific class for logout button
+              >
+                <ListItemText primary={t('logout')} className={styles.drawerItemText} />
               </ListItem>
             ) : (
-              <ListItem button component={NextLink} href="/login">
-                <ListItemText primary="Login" />
-              </ListItem>
+              <>
+                <ListItem
+                  button
+                  component={NextLink}
+                  href="/login"
+                  onClick={() => setDrawerOpen(false)}
+                  className={`${styles.drawerItem} ${styles.loginDrawerItem}`} // Specific class for login
+                >
+                  <ListItemText primary={t('login')} className={styles.drawerItemText} />
+                </ListItem>
+                <ListItem
+                  button
+                  component={NextLink}
+                  href="/register"
+                  onClick={() => setDrawerOpen(false)}
+                  className={`${styles.drawerItem} ${styles.registerDrawerItem}`} // Specific class for register
+                >
+                  <ListItemText primary={t('register')} className={styles.drawerItemText} />
+                </ListItem>
+              </>
             )}
-
-            <ListItem>
-              <Select fullWidth value={currentLocale} onChange={handleLocaleChange} size="small">
-                {i18nextConfig.i18n.locales.map((loc) => (
-                  <MenuItem key={loc} value={loc}>
-                    {loc.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </Select>
-            </ListItem>
-          </List>
+          </Box>
         </Box>
       </Drawer>
 
@@ -159,13 +321,80 @@ export default function Layout({
 
       <Box component="footer" className={styles.footer}>
         <Container maxWidth="lg" className={styles.footerContent}>
-          <Typography variant="body2" className={styles.copyright}>
-            &copy; {new Date().getFullYear()} Wakapadi. All rights reserved.
-          </Typography>
-          <Box className={styles.footerLinks}>
-            <Link href="/privacy" className={styles.footerLink}>Privacy</Link>
-            <Link href="/terms" className={styles.footerLink}>Terms</Link>
-            <Link href="/cookies" className={styles.footerLink}>Cookies</Link>
+          <Box className={styles.footerMain}>
+            <Box className={styles.footerLogo}>
+              <img src="/logo1.png" alt="Wakapadi logo" className={styles.footerLogoImage} />
+              <Typography variant="body2" className={styles.footerTagline}>
+                {t('footerTagline')}
+              </Typography>
+            </Box>
+            
+            <Box className={styles.footerLinks}>
+              <Box className={styles.footerLinkGroup}>
+                <Typography variant="subtitle2" className={styles.footerLinkTitle}>
+                  {t('explore')}
+                </Typography>
+                <Link href="/whois" className={styles.footerLink}>
+                  {t('whoisNearby')}
+                </Link>
+                <Link href="/tours" className={styles.footerLink}>
+                  {t('availableTours')}
+                </Link>
+                <Link href="/featured" className={styles.footerLink}>
+                  {t('featuredTours')}
+                </Link>
+              </Box>
+              
+              <Box className={styles.footerLinkGroup}>
+                <Typography variant="subtitle2" className={styles.footerLinkTitle}>
+                  {t('company')}
+                </Typography>
+                <Link href="/about" className={styles.footerLink}>
+                  {t('aboutUs')}
+                </Link>
+                <Link href="/blog" className={styles.footerLink}>
+                  {t('blog')}
+                </Link>
+                <Link href="/contact" className={styles.footerLink}>
+                  {t('contact')}
+                </Link>
+              </Box>
+              
+              <Box className={styles.footerLinkGroup}>
+                <Typography variant="subtitle2" className={styles.footerLinkTitle}>
+                  {t('legal')}
+                </Typography>
+                <Link href="/privacy" className={styles.footerLink}>
+                  {t('privacyPolicy')}
+                </Link>
+                <Link href="/terms" className={styles.footerLink}>
+                  {t('termsOfUse')}
+                </Link>
+                <Link href="/cookies" className={styles.footerLink}>
+                  {t('cookiePolicy')}
+                </Link>
+              </Box>
+            </Box>
+          </Box>
+          
+          <Divider className={styles.footerDivider} />
+          
+          <Box className={styles.footerBottom}>
+            <Typography variant="body2" className={styles.copyright}>
+              &copy; {new Date().getFullYear()} Wakapadi. {t('allRightsReserved')}.
+            </Typography>
+            
+            <Box className={styles.socialLinks}>
+              <Link href="#" className={styles.socialLink}>
+                <img src="/icons/facebook.svg" alt="Facebook" />
+              </Link>
+              <Link href="#" className={styles.socialLink}>
+                <img src="/icons/twitter.svg" alt="Twitter" />
+              </Link>
+              <Link href="#" className={styles.socialLink}>
+                <img src="/icons/instagram.svg" alt="Instagram" />
+              </Link>
+            </Box>
           </Box>
         </Container>
       </Box>

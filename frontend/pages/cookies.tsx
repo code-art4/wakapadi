@@ -1,19 +1,17 @@
-import { Typography, Box, List, ListItem, Container, Paper } from "@mui/material";
+import { Typography, Container, Paper, List, ListItem } from "@mui/material";
 import Head from "next/head";
 import Layout from "../components/Layout";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { motion } from "framer-motion";
+import styles from '../styles/FooterPages.module.css';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i = 1) => ({
     opacity: 1,
     y: 0,
-    transition: {
-      delay: i * 0.15,
-      duration: 0.5
-    }
+    transition: { delay: i * 0.15, duration: 0.5 }
   })
 };
 
@@ -26,51 +24,37 @@ export default function CookiePolicy() {
         <meta name="robots" content="noindex, nofollow" />
       </Head>
 
-      <Container maxWidth="md">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeInUp}
-        >
-          <Paper elevation={3} sx={{ p: 4, mt: 4, mb: 6 }}>
+      <Container className={styles.container}>
+        <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
+          <Paper className={styles.contentPaper}>
             <motion.div variants={fadeInUp} custom={1}>
-              <Typography variant="h3" gutterBottom textAlign="center">
+              <Typography variant="h3" className={styles.pageTitle}>
                 {t("cookiePolicy")}
               </Typography>
             </motion.div>
 
             <motion.div variants={fadeInUp} custom={2}>
-              <Typography variant="body1" paragraph>
+              <Typography className={styles.bodyText}>
                 Wakapadi uses cookies to enhance your experience, store user preferences,
-                improve functionality, and analyze traffic. By continuing to use the site,
-                you agree to our use of cookies.
+                improve functionality, and analyze traffic.
               </Typography>
             </motion.div>
 
             <motion.div variants={fadeInUp} custom={3}>
-              <Typography variant="h5" gutterBottom mt={4}>
+              <Typography variant="h5" className={styles.sectionTitle}>
                 Types of Cookies We Use
               </Typography>
-              <Box component="div" sx={{ pl: 2 }}>
-                <List>
-                  <ListItem>
-                    <strong>Essential cookies:</strong> Necessary for the website to function properly
-                  </ListItem>
-                  <ListItem>
-                    <strong>Analytics cookies:</strong> Help us understand how users interact with the site
-                  </ListItem>
-                  <ListItem>
-                    <strong>Functional cookies:</strong> Enable enhanced features and personalization
-                  </ListItem>
-                </List>
-              </Box>
-            </motion.div>
-
-            <motion.div variants={fadeInUp} custom={4}>
-              <Typography variant="body1" paragraph>
-                You can control or delete cookies through your browser settings at any time.
-                Disabling some cookies may affect the functionality of the Wakapadi platform.
-              </Typography>
+              <List className={styles.list}>
+                <ListItem className={styles.listItem}>
+                  <strong>Essential cookies:</strong> Necessary for the website to function
+                </ListItem>
+                <ListItem className={styles.listItem}>
+                  <strong>Analytics cookies:</strong> Help us understand user interactions
+                </ListItem>
+                <ListItem className={styles.listItem}>
+                  <strong>Functional cookies:</strong> Enable enhanced features
+                </ListItem>
+              </List>
             </motion.div>
           </Paper>
         </motion.div>

@@ -21,6 +21,7 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
+import Head from 'next/head';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Layout from '../../components/Layout';
@@ -30,7 +31,7 @@ import moment from 'moment-timezone';
 import dynamic from 'next/dynamic';
 import ChatBubble from '../../components/ChatBubbles';
 import { useNotifications } from '../../hooks/useNotifications';
-
+import styles from '../../styles/chat.module.css';
 
 const Picker = dynamic(() => import('@emoji-mart/react'), { ssr: false });
 
@@ -82,9 +83,7 @@ export default function ChatPage() {
   const [socketConnected, setSocketConnected] = useState(false);
   const [messageOptionsAnchorEl, setMessageOptionsAnchorEl] =
     useState<null | HTMLElement>(null);
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
-    null
-  );
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [toName, setToName] = useState<string>('');
   const [toAvatar, setToAvatar] = useState<string>('');
 
@@ -93,6 +92,7 @@ export default function ChatPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messageDedupeMap = useRef<Set<string>>(new Set());
   const { clearNotificationsFromUser } = useNotifications(currentUserId);
+
 
   useEffect(() => {
     if (otherUserId) {
@@ -490,129 +490,63 @@ export default function ChatPage() {
   };
 
   // Render loading/error states
-  if (!router.isReady) {
-    return (
-      <Layout title="Chat">
-        <Container
-          sx={{
-            mt: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '80vh',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <CircularProgress />
-          <Typography variant="body1" mt={2}>
-            Loading chat...
-          </Typography>
-        </Container>
-      </Layout>
-    );
-  }
-
-  if (!otherUserId || !currentUserId) {
-    return (
-      <Layout title="Chat">
-        <Container
-          sx={{
-            mt: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '80vh',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Alert severity="error">
-            {connectionError || 'Chat cannot be loaded. Invalid user IDs.'}
-          </Alert>
-        </Container>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout title="Chat">
-      <Container
-        sx={{ mt: 4, display: 'flex', flexDirection: 'column', height: '80vh' }}
-      >
-        <Box
-  sx={{
-    display: 'flex',
-    alignItems: 'center',
-    gap: 2,
-    mb: 2,
-    p: 2,
-    bgcolor: 'background.paper',
-    borderRadius: 3,
-    boxShadow: 1,
-  }}
->
-  <Avatar sx={{ width: 48, height: 48 }} src={`${toAvatar}`} alt={toName} />
-  <Box>
-    <Typography variant="h6" fontWeight="bold">
-      Chatting with {toName}
-    </Typography>
-    <Typography variant="body2" color="text.secondary">
-      Always meet in public and secure locations.
-    </Typography>
-  </Box>
-</Box>
+    <Layout title={`Chat with ${toName}`}>
+      <Head>
+        <title>{`Chat with ${toName} | Wakapadi`}</title>
+        <meta name="description" content={`Chat with ${toName} on Wakapadi`} />
+      </Head>
 
-        <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
-  For your safety, always meet in secure public locations. Avoid sharing personal or financial information.
-</Alert>
+      <Container className={styles.chatContainer}>
+        {/* Header Section */}
+        <Box className={styles.chatHeader}>
+          <Avatar className={styles.chatAvatar} src={toAvatar} alt={toName} />
+          <Box className={styles.chatHeaderInfo}>
+            <Typography variant="h6" className={styles.chatTitle}>
+              Chat with {toName}
+            </Typography>
+            <Typography variant="body2" className={styles.chatSubtitle}>
+              {socketConnected ? 'Online' : 'Offline'}
+            </Typography>
+          </Box>
+        </Box>
 
-        <Snackbar
-          open={!!connectionError}
-          autoHideDuration={6000}
-          onClose={() => setConnectionError(null)}
-        >
-          <Alert severity="error" onClose={() => setConnectionError(null)}>
+        {/* Safety Alert */}
+        <Alert severity="warning" className={styles.safetyAlert}>
+          Always meet in public and secure locations. Never share personal information.
+        </Alert>
+
+        {/* Connection Error */}
+        {connectionError && (
+          <Alert severity="error" className={styles.errorAlert}>
             {connectionError}
           </Alert>
-        </Snackbar>
+        )}
 
-        {loading ? (
-          <Box display="flex" justifyContent="center" mt={4}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              flexGrow: 1,
-              overflowY: 'auto',
-              p: 1,
-              border: '1px solid #eee',
-              borderRadius: 2,
-            }}
-          >
-            {Object.entries(groupedMessages).map(([date, msgs]) => (
-              <Box key={date}>
-                <Divider textAlign="center" sx={{ my: 2 }}>
-                  <Chip label={date} />
-                </Divider>
-                {msgs.map((msg) => (
-                  <ListItem
-                    key={msg._id}
-                    sx={{
-                      justifyContent: msg.fromSelf ? 'flex-end' : 'flex-start',
-                      py: 0.5,
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: msg.fromSelf ? 'flex-end' : 'flex-start',
-                        maxWidth: '75%',
-                      }}
+        {/* Messages Area */}
+        <Box className={styles.messagesContainer}>
+          {loading ? (
+            <Box className={styles.loadingContainer}>
+              <CircularProgress />
+              <Typography variant="body2" className={styles.loadingText}>
+                Loading messages...
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              {Object.entries(groupedMessages).map(([date, msgs]) => (
+                <Box key={date} className={styles.messageGroup}>
+                  <Divider className={styles.dateDivider}>
+                    <Chip label={date} className={styles.dateChip} />
+                  </Divider>
+                  {msgs.map((msg) => (
+                    <ListItem
+                      key={msg._id}
+                      className={`${styles.messageItem} ${
+                        msg.fromSelf ? styles.messageItemSelf : styles.messageItemOther
+                      }`}
                     >
                       <ChatBubble
-                        key={msg._id}
                         message={msg.message}
                         fromSelf={msg.fromSelf!}
                         avatar={msg.avatar!}
@@ -621,34 +555,34 @@ export default function ChatPage() {
                         reactions={msg.reactions}
                         readStatus={getReadStatusText(msg)}
                       />
-                    </Box>
-                    <IconButton
-                      size="small"
-                      sx={{ alignSelf: 'flex-start', mt: 1, ml: 1, mr: 1 }}
-                      onClick={(e) => handleMessageOptionsClick(e, msg._id)}
-                    >
-                      <MoreVertIcon fontSize="small" />
-                    </IconButton>
-                  </ListItem>
-                ))}
-              </Box>
-            ))}
-            {typingUsers.size > 0 && (
-              <Box sx={{ px: 2, py: 1, color: 'text.secondary' }}>
-                <Typography variant="caption">
-                  
-                 {toName} is typing...
-                </Typography>
-              </Box>
-            )}
-            <div ref={bottomRef} />
-          </Box>
-        )}
+                      <IconButton
+                        className={styles.messageOptionsButton}
+                        onClick={(e) => handleMessageOptionsClick(e, msg._id)}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    </ListItem>
+                  ))}
+                </Box>
+              ))}
+              {typingUsers.size > 0 && (
+                <Box className={styles.typingIndicator}>
+                  <Typography variant="caption">
+                    {toName} is typing...
+                  </Typography>
+                </Box>
+              )}
+              <div ref={bottomRef} />
+            </>
+          )}
+        </Box>
 
+        {/* Message Options Menu */}
         <Menu
           anchorEl={messageOptionsAnchorEl}
           open={Boolean(messageOptionsAnchorEl)}
           onClose={handleMessageOptionsClose}
+          className={styles.messageOptionsMenu}
         >
           <MenuItem onClick={() => handleReaction('👍')}>👍 Like</MenuItem>
           <MenuItem onClick={() => handleReaction('❤️')}>❤️ Love</MenuItem>
@@ -658,24 +592,20 @@ export default function ChatPage() {
           <MenuItem onClick={() => handleReaction('😡')}>😡 Angry</MenuItem>
         </Menu>
 
-        <Box
-          display="flex"
-          gap={1}
-          alignItems="center"
-          mt={2}
-          p={1}
-          bgcolor="background.paper"
-          borderRadius={1}
-        >
-          <IconButton onClick={handleEmojiClick}>
+        {/* Input Area */}
+        <Box className={styles.inputContainer}>
+          <IconButton 
+            className={styles.emojiButton} 
+            onClick={handleEmojiClick}
+            aria-label="Add emoji"
+          >
             <InsertEmoticonIcon />
           </IconButton>
           <Popover
             open={!!emojiAnchorEl}
             anchorEl={emojiAnchorEl}
             onClose={() => setEmojiAnchorEl(null)}
-            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-            transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            className={styles.emojiPicker}
           >
             <Picker onEmojiSelect={handleEmojiSelect} />
           </Popover>
@@ -688,15 +618,13 @@ export default function ChatPage() {
             multiline
             maxRows={4}
             disabled={!socketConnected || loading || !otherUserId}
-            variant="outlined"
-            size="small"
+            className={styles.messageInput}
           />
           <Button
             variant="contained"
             onClick={handleSend}
-            disabled={
-              !text.trim() || !socketConnected || loading || !otherUserId
-            }
+            disabled={!text.trim() || !socketConnected || loading || !otherUserId}
+            className={styles.sendButton}
           >
             Send
           </Button>
@@ -705,3 +633,4 @@ export default function ChatPage() {
     </Layout>
   );
 }
+    

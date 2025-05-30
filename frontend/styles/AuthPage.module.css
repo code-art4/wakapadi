@@ -1,0 +1,109 @@
+.authContainer {
+    margin-top: 3rem;
+    padding: 2rem;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .title {
+    font-weight: 700 !important;
+    text-align: center;
+    color: #1a237e;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    text-align: center;
+    color: #616161;
+    margin-bottom: 2rem;
+  }
+  
+  .googleButtonContainer {
+    margin-bottom: 1.5rem;
+  }
+  
+  .divider {
+    margin: 1.5rem 0;
+    color: #757575;
+  }
+  
+  .divider::before,
+  .divider::after {
+    border-color: #e0e0e0 !important;
+  }
+  
+  .authForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .inputField {
+    margin-bottom: 0.5rem;
+  }
+  
+  .inputField .MuiOutlinedInput-root {
+    border-radius: 8px;
+  }
+  
+  .termsCheckbox {
+    margin: 0.5rem 0;
+    align-items: flex-start;
+  }
+  
+  .termsText {
+    font-size: 0.875rem;
+    color: #616161;
+  }
+  
+  .errorAlert {
+    margin: 1rem 0;
+    border-radius: 8px;
+  }
+  
+  .submitButton {
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 1rem;
+    background-color: #1a237e;
+  }
+  
+  .submitButton:hover {
+    background-color: #303f9f;
+  }
+  
+  .switchAuthMode {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #616161;
+  }
+  
+  .authModeLink {
+    margin-left: 0.25rem;
+    color: #1a237e;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .forgotPassword {
+    display: block;
+    margin-top: 0.5rem;
+    color: #616161;
+    font-size: 0.875rem;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 600px) {
+    .authContainer {
+      margin-top: 1rem;
+      padding: 1.5rem;
+      box-shadow: none;
+      border: 1px solid #e0e0e0;
+    }
+  
+    .title {
+      font-size: 1.75rem;
+    }
+  }
