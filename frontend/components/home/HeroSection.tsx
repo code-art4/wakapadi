@@ -91,6 +91,7 @@ export default function HeroSection({
             <SearchIcon className={styles.searchIcon} />
             <Autocomplete
               freeSolo
+              fullWidth
               options={locations}
               getOptionLabel={(option) => option}
               inputValue={input}
@@ -126,7 +127,7 @@ export default function HeroSection({
             <Button
               variant="outlined"
               startIcon={<NearMeIcon />}
-              onClick={() => router.push('/nearby')}
+              onClick={() => router.push('/whois')}
               className={styles.searchButton}
               fullWidth={isMobile}
             >

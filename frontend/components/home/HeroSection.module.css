@@ -52,12 +52,22 @@
 
 .searchContainer.fixed {
   position: fixed;
-  top: 1rem;
+  top: 8rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 95%;
+  width: 90%;
   z-index: 1022 !important;
   animation: slideDown 0.3s ease;
+}
+
+
+
+.inputField {
+  padding: 0.75rem 0;
+  border: none;
+  background: transparent;
+  width: 100% !important;
+  font-size: 1rem;
 }
 
 @keyframes slideDown {
@@ -130,28 +140,29 @@
 }
 
 /* Mobile Responsiveness */
+
+
 @media (max-width: 768px) {
   .heroBanner {
     min-height: 70vh;
     padding: 1.5rem;
   }
-  
+
   .searchContainer {
     width: 90%;
     padding: 0.75rem;
   }
-  
+
   .searchContent {
     flex-direction: column;
   }
-  
-  .inputField {
-    font-size: 0.9rem;
-  }
-  
+
   .searchButton {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
+  }
+  .searchContainer.fixed {
+    top: 2.1rem;
   }
 }
 
@@ -159,15 +170,25 @@
   .heroTitle {
     font-size: 1.8rem;
   }
-  
+
   .heroSubtitle {
     font-size: 0.9rem;
   }
-  
+
   .searchContainer {
     width: 85%;
   }
+
+  .searchButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .searchButton {
+    width: 100%;
+  }
 }
+
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {

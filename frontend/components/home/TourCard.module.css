@@ -1,6 +1,6 @@
 .cardWrapper {
   height: 100%;
-  padding: 8px;
+  padding: 4px;
 }
 
 .card {
@@ -105,17 +105,18 @@
   border-radius: 2px;
 }
 
-
-
-
 @media (min-width: 600px) {
   .imageContainer,
   .imagePlaceholder {
     height: 200px;
   }
-  
+
   .cardTitle {
     font-size: 1.1rem;
+  }
+
+  .cardWrapper {
+    padding: 1px;
   }
 }
 

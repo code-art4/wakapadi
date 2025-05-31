@@ -103,7 +103,7 @@ export default function Layout({
       <AppBar position="sticky" className={styles.appBar} elevation={0} style={{
          zIndex:"10",
       }}>
-        <Container maxWidth="xl">
+        <Container maxWidth="lg" disableGutters>
           <Toolbar className={styles.toolbar} disableGutters>
             <Box className={styles.logoContainer}>
               {isMobile && (
@@ -225,7 +225,8 @@ export default function Layout({
         <Box className={styles.drawerContainer}>
           <Box className={styles.drawerLogoWrapper}>
             <NextLink href="/" className={styles.logoImageWrapper} onClick={() => setDrawerOpen(false)}>
-              <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage} />
+              <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage1} />
+              
             </NextLink>
           </Box>
 

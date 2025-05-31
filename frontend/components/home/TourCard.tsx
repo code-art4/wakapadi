@@ -26,8 +26,6 @@ function extractPath(url:string):string {
   return `/tours${parsed.pathname}`;
 }
 
-// const url = "https://www.freetour.com/berlin/alternative-berlin";
-// console.log(extractPath(url));
 
 
 export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlight?: string }) {
