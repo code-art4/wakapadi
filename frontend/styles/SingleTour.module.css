@@ -44,6 +44,26 @@
     margin: 3rem 0;
   }
   
+
+  /* styles/SingleTour.module.css */
+
+.mapContainer {
+  height: 100%;
+  width: 100%;
+  border-radius: 8px; /* Match borderRadius of the parent Box */
+}
+
+/* You might need to add specific overrides for Leaflet styles if they clash with your Material-UI theme */
+/* For example, to ensure popups and markers are visible */
+.mapContainer :global(.leaflet-popup-content-wrapper) {
+  border-radius: 8px;
+}
+
+.mapContainer :global(.leaflet-control-zoom a) {
+  color: #333; /* Darken zoom controls for better visibility */
+}
+
+
   @media (max-width: 768px) {
     .imageContainer img {
       height: 300px;

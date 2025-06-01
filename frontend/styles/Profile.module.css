@@ -1,91 +1,318 @@
+/* Base Styles & Typography */
+:root {
+  --primary-color: #4A90E2; /* A vibrant blue for primary actions */
+  --secondary-color: #50E3C2; /* A complementary green for accents */
+  --text-color-dark: #333;
+  --text-color-light: #555;
+  --bg-color-light: #F8F9FA; /* A very light grey for overall background */
+  --card-bg-color: #FFFFFF;
+  --border-color: #E0E0E0;
+  --shadow-light: 0px 4px 15px rgba(0, 0, 0, 0.05);
+  --border-radius: 12px;
+}
+
+body {
+  font-family: 'Inter', sans-serif; /* Use a modern font, ensure it's imported in _app.js or similar */
+  background-color: var(--bg-color-light);
+  color: var(--text-color-dark);
+}
+
 .container {
+  padding: 3rem 1.5rem; /* More generous padding */
+  max-width: 960px; /* Slightly wider container */
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #6dd5ed 100%); /* Gradient background */
+  color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  position: relative; /* For potential future animations */
+}
+
+.title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.05em;
+  color: white; /* Ensure title is white on gradient */
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border: 5px solid rgba(255, 255, 255, 0.8); /* White border on gradient */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.avatar:hover {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.username {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  margin-top: 0.5rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.userBio {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+/* Section Styling */
+.section {
+  background: var(--card-bg-color);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-light);
+  transition: transform 0.2s ease-in-out;
+}
+
+.section:hover {
+  transform: translateY(-5px);
+}
+
+.sectionTitle {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--secondary-color); /* A subtle accent line */
+  padding-bottom: 0.5rem;
+  display: inline-block; /* To make border-bottom fit content */
+}
+
+/* Form Elements */
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formLabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-color-dark);
+  font-size: 1.05rem;
+}
+
+.helperText {
+  font-size: 0.85rem;
+  color: var(--text-color-light);
+  margin-top: 0.4rem;
+}
+
+.MuiOutlinedInput-root, .MuiTextField-root .MuiOutlinedInput-root {
+  border-radius: 8px; /* Match section border-radius */
+  background-color: var(--bg-color-light); /* Light background for inputs */
+}
+
+.MuiChip-root {
+  background-color: var(--secondary-color);
+  color: white;
+  font-weight: 500;
+}
+
+.MuiChip-deleteIcon {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Save Button */
+.saveButton {
+  margin: 1rem auto 3rem; /* Center the button and add more bottom margin */
+  padding: 0.9rem 3rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 50px; /* Pill shape */
+  background-color: var(--primary-color);
+  box-shadow: 0px 6px 15px rgba(var(--primary-color-rgb), 0.3); /* Dynamic shadow color (requires JS or preprocessor) */
+  transition: all 0.3s ease-in-out;
+  display: block; /* Make it a block element to allow margin: auto for centering */
+}
+
+.saveButton:hover {
+  background-color: #3f7ac4; /* Slightly darker on hover */
+  transform: translateY(-3px);
+  box-shadow: 0px 8px 20px rgba(var(--primary-color-rgb), 0.4);
+}
+
+/* Conversations Section */
+.conversationList {
+  background: var(--card-bg-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 0;
+  box-shadow: var(--shadow-light);
+}
+
+.conversationItem {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+  padding: 1rem 1.5rem;
+}
+
+.conversationItem:last-child {
+  border-bottom: none;
+}
+
+.conversationItem:hover {
+  background-color: #F0F4F8; /* Light blueish hover */
+  transform: translateX(5px);
+}
+
+.MuiListItemText-primary {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.MuiListItemText-secondary {
+  color: var(--text-color-light);
+}
+
+.MuiIconButton-root {
+  color: var(--primary-color);
+}
+
+.noConversations {
+  text-align: center;
+  color: var(--text-color-light);
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Loading & Error States */
+.loading, .errorMessage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background-color: var(--card-bg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  min-height: 200px;
+}
+
+.loading p, .errorMessage p {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: var(--text-color-light);
+}
+
+.errorMessage {
+  color: #D32F2F; /* Material-UI error red */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
     padding: 2rem 1rem;
   }
-  
-  .header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
+
   .title {
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #1a237e;
+    font-size: 2.2rem;
   }
-  
-  .userInfo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+
+  .username {
+    font-size: 1.5rem;
   }
-  
+
   .avatar {
     width: 100px;
     height: 100px;
-    border: 3px solid #1a237e;
   }
-  
-  .username {
-    font-weight: 600;
-  }
-  
+
   .section {
-    background: #f5f5f5;
-    border-radius: 8px;
     padding: 1.5rem;
-    margin-bottom: 2rem;
   }
-  
+
   .sectionTitle {
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #1a237e;
+    font-size: 1.5rem;
   }
-  
+
   .saveButton {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    padding: 0.8rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem 0.5rem;
+  }
+
+  .header {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .username {
+    font-size: 1.3rem;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .section {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .saveButton {
+    width: 100%;
     margin: 1rem 0 2rem;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
+    padding: 0.75rem 1.5rem;
   }
-  
-  .conversationList {
-    background: white;
-    border-radius: 8px;
-    padding: 0;
-  }
-  
+
   .conversationItem {
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.3s ease;
+    padding: 0.8rem 1rem;
   }
-  
-  .conversationItem:hover {
-    background-color: #f9f9f9;
+}
+
+/* Animations (Optional, for extra coolness) */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
-  
-  .loading {
-    display: flex;
-    justify-content: center;
-    padding: 2rem;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  /* Responsive Styles */
-  @media (max-width: 600px) {
-    .container {
-      padding: 1rem;
-    }
-  
-    .avatar {
-      width: 80px;
-      height: 80px;
-    }
-  
-    .section {
-      padding: 1rem;
-    }
-  
-    .saveButton {
-      width: 100%;
-    }
-  }
+}
+
+.container {
+  animation: fadeInScale 0.5s ease-out forwards;
+}

@@ -87,10 +87,10 @@ export class ScraperService {
     return { added: true, message: `Scraping complete for new city: ${normalizedCity}` };
   }
   
-async scrapeSingleTour(city: any, tourSlug: any): Promise<any> {
+async scrapeSingleTour(city: string, tourSlug: string): Promise<any> {
       const url = `https://www.freetour.com/${city}/${tourSlug}`;
+
     let browser;
-  console.log("url", url)
     try {
         browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
@@ -103,66 +103,76 @@ async scrapeSingleTour(city: any, tourSlug: any): Promise<any> {
 
         // Extract all the required data
         const tourData = await page.evaluate(() => {
-            // Helper function to safely get text content
-            const getText = (selector: string) => 
-                document.querySelector(selector)?.textContent?.trim() || null;
-
-            // Helper function to get multiple elements
-            const getList = (selector: string) => 
-                Array.from(document.querySelectorAll(selector)).map(el => el.textContent?.trim());
-
-            const getImages = (selector: string) => 
-                Array.from(document.querySelectorAll(selector)).map(el => el.getAttribute("src"));
-              
-              const getBrPointText = (selector: string) => {
-                  const el = document.querySelector(selector);
-                  if (!el) return null;
-              
-                  return Array.from(el.childNodes)
-                      .map(node => {
-                          if (node.nodeType === Node.TEXT_NODE) return node.textContent?.trim();
-                          if (node.nodeName === 'br') return '\n';
-                          return (node as HTMLElement).innerText?.trim(); // Handle nested elements
-                      })
-                      .join('')
-                      .split('\n')
-                      .map(line => line.trim())
-                      .filter(Boolean); // remove empty lines
-              };
-                          // Extract JSON-LD structured data if available
-            let structuredData = null;
-            
-            const ldJson = document.querySelector('script[type="application/ld+json"]');
-            if (ldJson) {
-                try {
-                    structuredData = JSON.parse(ldJson.textContent || '');
-                } catch (e) {
-                    console.error('Error parsing structured data', e);
-                }
-            }
-
-            // Extract tour ID from the page
-            const tourIdMatch = window.location.pathname.match(/\/(\d+)\//);
-            const tourId = tourIdMatch ? tourIdMatch[1] : null;
-
-            return {
-                title: getText('h1.tour-title'),
-                tourRating: getText('.tour-rating__count'),
-                description: getText('.tour-block__text'),
-                mainImage: getImages('.tour-gallery__item img'),
-                details: getList('.tour-details__info-value'),
-                provider:{
+          // Helper function to safely get text content
+          const getText = (selector: string) => 
+              document.querySelector(selector)?.textContent?.trim() || null;
+      
+          const getList = (selector: string) => 
+              Array.from(document.querySelectorAll(selector)).map(el => el.textContent?.trim());
+      
+          const getImages = (selector: string) => 
+              Array.from(document.querySelectorAll(selector)).map(el => el.getAttribute("src"));
+      
+          const getBrPointText = (selector: string) => {
+              const el = document.querySelector(selector);
+              if (!el) return null;
+      
+              return Array.from(el.childNodes)
+                  .map(node => {
+                      if (node.nodeType === Node.TEXT_NODE) return node.textContent?.trim();
+                      if (node.nodeName === 'br') return '\n';
+                      return (node as HTMLElement).innerText?.trim();
+                  })
+                  .join('')
+                  .split('\n')
+                  .map(line => line.trim())
+                  .filter(Boolean);
+          };
+      
+          let structuredData = null;
+          const ldJson = document.querySelector('script[type="application/ld+json"]');
+          if (ldJson) {
+              try {
+                  structuredData = JSON.parse(ldJson.textContent || '');
+              } catch (e) {
+                  console.error('Error parsing structured data', e);
+              }
+          }
+      
+          const tourMapUrl = document.querySelector(".tour-maps a")?.getAttribute("href") || null;
+          let latitude: number | null = null;
+          let longitude: number | null = null;
+      
+          if (tourMapUrl) {
+              const match = tourMapUrl.match(/maps\?q=([-.\d]+),([-.\d]+)/);
+              if (match) {
+                  latitude = parseFloat(match[1]);
+                  longitude = parseFloat(match[2]);
+              }
+          }
+      
+          return {
+              title: getText('h1.tour-title'),
+              tourRating: getText('.tour-rating__count'),
+              description: getText('.tour-block__text'),
+              mainImage: getImages('.tour-gallery__item img'),
+              details: getList('.tour-details__info-value'),
+              provider: {
                   name: getText(".tour-company__link"),
-                  url: document.querySelector(".tour-company__link")?.getAttribute("href") 
-                },
-                activities: getList(".tour-list li"),
-                takeNote: getBrPointText(".tour-text"),
-                tourType: getText('.tour-type'),
-                tourMap: document.querySelector(".tour-maps a")?.getAttribute("href"),
-            };
-        });
+                  url: document.querySelector(".tour-company__link")?.getAttribute("href")
+              },
+              activities: getList(".tour-list li"),
+              takeNote: getBrPointText(".tour-text"),
+              tourType: getText('.tour-type'),
+              tourMap: tourMapUrl,
+              latitude,
+              longitude,
+             
+          };
+      });
+      
 
-        return tourData;
+        return {...tourData,  tourUrl:url};
 
     } catch (error) {
         console.error(`Error scraping tour ${tourSlug} in ${city}:`, error);

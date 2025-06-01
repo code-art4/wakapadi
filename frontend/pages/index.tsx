@@ -1,8 +1,9 @@
-// pages/index.tsx
+// Updated for SEO, Accessibility, and Production Readiness
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
-  Box, Button, Typography, Grid, Pagination, Skeleton, Container
+  Box, Button, Typography, Pagination, Skeleton, Container
 } from '@mui/material';
+import Head from 'next/head';
 import Layout from '../components/Layout';
 import { api } from '../lib/api/index';
 import { useTranslation } from 'next-i18next';
@@ -38,6 +39,7 @@ export default function HomePage() {
   const topRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { q } = router.query;
+
   const filteredTours = useMemo(() => {
     if (!tours.length) return [];
     return search
@@ -75,13 +77,10 @@ export default function HomePage() {
     }
   }, [q]);
 
-  const debouncedSearch = useMemo(
-    () => debounce((value: string) => {
-      setSearch(value);
-      setPage(1);
-    }, 400),
-    []
-  );
+  const debouncedSearch = useMemo(() => debounce((value: string) => {
+    setSearch(value);
+    setPage(1);
+  }, 400), []);
 
   const handleSearchInput = useCallback((value: string) => {
     setSuggestion(value);
@@ -101,46 +100,28 @@ export default function HomePage() {
 
   const handlePageChange = useCallback((_: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
-    window.scrollTo({
-      top: topRef.current?.offsetTop || 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: topRef.current?.offsetTop || 0, behavior: 'smooth' });
   }, []);
 
   const locations = useMemo(() => [...new Set(tours.map(t => t.location))], [tours]);
 
-  // 📍 Geolocation + new city scraping
   useEffect(() => {
     const detectAndScrapeCity = async () => {
       try {
         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
         });
-
         const { latitude, longitude } = position.coords;
-        // const res = await fetch(`/api/get-city?lat=${latitude}&lon=${longitude}`);
         const res = await fetch(
           `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
         );
         const geocode = await res.json();
-        const city = (
-          geocode.address.city ||
-          geocode.address.town ||
-          ''
-        )
-          .trim()
-          .toLowerCase();
+        const city = (geocode.address.city || geocode.address.town || '').trim().toLowerCase();
         if (!city) return;
 
-        const scrapeRes = await await api.post('/scraper/new/city', {
-          city
-        });
-
+        const scrapeRes = await api.post('/scraper/new/city', { city });
         const result = await scrapeRes.json();
-        if (result.added) {
-          await fetchTours();
-        }
-
+        if (result.added) await fetchTours();
       } catch (err) {
         console.warn('Skipping geolocation-based scraping', err);
       }
@@ -148,99 +129,110 @@ export default function HomePage() {
 
     detectAndScrapeCity();
   }, [fetchTours]);
+
   return (
-    <Layout title={t('homePageTitle')}>
-      <div ref={topRef} className={styles.anchor} aria-hidden="true" />
-      <HeroSection 
-        locations={locations} 
-        onSearch={handleSearchInput} 
-        initialValue={typeof q === 'string' ? q : ''}
-      />
+    <>
+      <Head>
+        <title>{t('homePageTitle')}</title>
+        <meta name="description" content={t('homePageDescription')} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content={t('homePageTitle')} />
+        <meta property="og:description" content={t('homePageDescription')} />
+      </Head>
+      <Layout title={t('homePageTitle')}>
+        <div ref={topRef} className={styles.anchor} aria-hidden="true" />
+        <HeroSection 
+          locations={locations} 
+          onSearch={handleSearchInput} 
+          initialValue={typeof q === 'string' ? q : ''}
+        />
 
-      <Container maxWidth="lg" className={styles.tourContainer}>
-        <Typography 
-          variant="h2" 
-          className={styles.sectionTitle}
-          component="h2"
-          aria-label={t('availableTours')}
-        >
-          {t('availableTours')}
-        </Typography>
+        <Container maxWidth="lg" className={styles.tourContainer} component="section" aria-labelledby="tours-section-title">
+          <Typography 
+            variant="h2" 
+            className={styles.sectionTitle}
+            component="h2"
+            id="tours-section-title"
+          >
+            {t('availableTours')}
+          </Typography>
 
-        {error ? (
-          <Box className={styles.errorContainer}>
-            <Typography color="error">{error}</Typography>
-            <Button 
-              variant="outlined" 
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
-              {t('retry')}
-            </Button>
-          </Box>
-        ) : (
-          <>
-            <div className={styles.tourGrid}>
-              {loading ? (
-                Array.from({ length: PER_PAGE }).map((_, i) => (
-                  <div key={`skeleton-${i}`} className={styles.gridItem}>
-                    <Skeleton variant="rectangular" className={styles.skeletonCard} height={380} />
-                  </div>
-                ))
-              ) : (
-                paginatedTours.map(tour => (
-                  <div key={tour.id} className={styles.gridItem}>
-                    <TourCard 
-                      tour={tour} 
-                      highlight={search} 
-                      aria-label={`Tour to ${tour.location}`}
-                    />
-                  </div>
-                ))
-              )}
-            </div>
-
-            {!loading && totalPages > 1 && (
-              <Box className={styles.paginationContainer}>
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={handlePageChange}
-                  color="primary"
-                  shape="rounded"
-                  siblingCount={1}
-                  boundaryCount={1}
-                  showFirstButton
-                  showLastButton
-                  aria-label={t('paginationNavigation')}
-                  classes={{
-                    root: styles.paginationRoot,
-                    ul: styles.paginationList
-                  }}
-                />
-              </Box>
-            )}
-          </>
-        )}
-
-        {!loading && !error && filteredTours.length === 0 && (
-          <Box className={styles.noResults}>
-            <Typography variant="h5" className={styles.noResultsText}>
-              {t('noToursFound')}
-            </Typography>
-            {search && (
+          {error ? (
+            <Box className={styles.errorContainer} role="alert">
+              <Typography color="error">{error}</Typography>
               <Button 
-                variant="text" 
-                onClick={() => setSearch('')}
-                className={styles.clearSearchButton}
+                variant="outlined" 
+                onClick={() => window.location.reload()}
+                className={styles.retryButton}
               >
-                {t('clearSearch')}
+                {t('retry')}
               </Button>
-            )}
-          </Box>
-        )}
-      </Container>
-    </Layout>
+            </Box>
+          ) : (
+            <>
+              <div className={styles.tourGrid} role="list">
+                {loading ? (
+                  Array.from({ length: PER_PAGE }).map((_, i) => (
+                    <div key={`skeleton-${i}`} className={styles.gridItem} role="listitem">
+                      <Skeleton variant="rectangular" className={styles.skeletonCard} height={380} />
+                    </div>
+                  ))
+                ) : (
+                  paginatedTours.map(tour => (
+                    <div key={tour.id} className={styles.gridItem} role="listitem">
+                      <TourCard 
+                        tour={tour} 
+                        highlight={search} 
+                        aria-label={`Tour to ${tour.location}`}
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {!loading && totalPages > 1 && (
+                <Box className={styles.paginationContainer}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handlePageChange}
+                    color="primary"
+                    shape="rounded"
+                    siblingCount={1}
+                    boundaryCount={1}
+                    showFirstButton
+                    showLastButton
+                    aria-label={t('paginationNavigation')}
+                    classes={{
+                      root: styles.paginationRoot,
+                      ul: styles.paginationList
+                    }}
+                  />
+                </Box>
+              )}
+            </>
+          )}
+
+          {!loading && !error && filteredTours.length === 0 && (
+            <Box className={styles.noResults} role="alert">
+              <Typography variant="h5" className={styles.noResultsText}>
+                {t('noToursFound')}
+              </Typography>
+              {search && (
+                <Button 
+                  variant="text" 
+                  onClick={() => setSearch('')}
+                  className={styles.clearSearchButton}
+                >
+                  {t('clearSearch')}
+                </Button>
+              )}
+            </Box>
+          )}
+        </Container>
+      </Layout>
+    </>
   );
 }
 

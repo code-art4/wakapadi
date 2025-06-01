@@ -122,184 +122,205 @@ export default function ProfilePage() {
 
   return (
     <Layout title="My Profile">
-      <Container maxWidth="md" className={styles.container}>
-        {/* Profile Header */}
-        <Box className={styles.header}>
-          <Typography variant="h4" className={styles.title}>
-            My Profile
-          </Typography>
-          {user && (
-            <Box className={styles.userInfo}>
-              <Avatar
-                src={user.avatarUrl || `/default-avatar.png`}
-                className={styles.avatar}
-              />
-              <Typography variant="h6" className={styles.username}>
-                {user.username}
-              </Typography>
-            </Box>
-          )}
-        </Box>
+  <Container maxWidth="md" className={styles.container}>
+    {/* Profile Header */}
+    <header className={styles.header}>
+      <h1 className={styles.title}>My Profile</h1>
+      {user && (
+        <div className={styles.userInfo}>
+          <Avatar
+            src={user.avatarUrl || `/default-avatar.png`}
+            alt={`${user.username}'s avatar`}
+            className={styles.avatar}
+          />
+          <h2 className={styles.username}>{user.username}</h2>
+          {/* Add a short bio or tagline here if available from API */}
+          {user.bio && <p className={styles.userBio}>{user.bio}</p>}
+        </div>
+      )}
+    </header>
 
-        {/* Main Content */}
-        {loading ? (
-          <Box className={styles.loading}>
-            <CircularProgress />
-          </Box>
-        ) : user ? (
-          <>
-            {/* Preferences Section */}
-            <Box className={styles.section}>
-              <Typography variant="h6" className={styles.sectionTitle}>
-                Preferences
-              </Typography>
-              
-              <Box mb={3}>
-                <Typography>Travel Interests</Typography>
-                <Select
-                  multiple
-                  value={travelPrefs}
-                  onChange={(e) => setTravelPrefs(e.target.value as string[])}
-                  input={<OutlinedInput />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
-                    </Box>
-                  )}
-                  fullWidth
-                >
-                  {travelOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
+    {/* Main Content */}
+    {loading ? (
+      <div className={styles.loading} role="status" aria-live="polite">
+        <CircularProgress aria-label="Loading profile data" />
+        <p>Loading your profile...</p>
+      </div>
+    ) : user ? (
+      <main>
+        {/* Preferences Section */}
+        <section className={styles.section} aria-labelledby="preferences-heading">
+          <h2 id="preferences-heading" className={styles.sectionTitle}>Preferences</h2>
+          
+          <div className={styles.formGroup}>
+            <label htmlFor="travel-interests" className={styles.formLabel}>Travel Interests</label>
+            <Select
+              multiple
+              value={travelPrefs}
+              onChange={(e) => setTravelPrefs(e.target.value as string[])}
+              input={<OutlinedInput id="travel-interests" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} onDelete={() => setTravelPrefs(prev => prev.filter(item => item !== value))} aria-label={`Remove ${value}`} />
                   ))}
-                </Select>
-              </Box>
-
-              <Box mb={3}>
-                <Typography>Languages</Typography>
-                <Select
-                  multiple
-                  value={languages}
-                  onChange={(e) => setLanguages(e.target.value as string[])}
-                  input={<OutlinedInput />}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
-                    </Box>
-                  )}
-                  fullWidth
-                >
-                  {languageOptions.map((lang) => (
-                    <MenuItem key={lang} value={lang}>
-                      {lang}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Box>
-            </Box>
-
-            {/* Social Media Section */}
-            <Box className={styles.section}>
-              <Typography variant="h6" className={styles.sectionTitle}>
-                Social Media
-              </Typography>
-              <TextField
-                label="Instagram"
-                value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
-                fullWidth
-                margin="normal"
-                InputProps={{
-                  startAdornment: <Typography mr={1}>@</Typography>,
-                }}
-              />
-              <TextField
-                label="Twitter"
-                value={twitter}
-                onChange={(e) => setTwitter(e.target.value)}
-                fullWidth
-                margin="normal"
-                InputProps={{
-                  startAdornment: <Typography mr={1}>@</Typography>,
-                }}
-              />
-            </Box>
-
-            {/* Save Button */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              className={styles.saveButton}
+                </Box>
+              )}
+              fullWidth
+              aria-describedby="travel-interests-help"
             >
-              Save Changes
-            </Button>
+              {travelOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+            <p id="travel-interests-help" className={styles.helperText}>Select your preferred travel activities.</p>
+          </div>
 
-            {/* Conversations Section */}
-            <Box className={styles.section}>
-              <Typography variant="h6" className={styles.sectionTitle}>
-                Recent Chats
-              </Typography>
-              <List className={styles.conversationList}>
-                {conversations.length > 0 ? (
-                  conversations.map((conv) => (
-                    <ListItem key={conv._id} className={styles.conversationItem}>
-                      <ListItemAvatar>
-                        <Avatar src={conv.otherUser.avatarUrl} />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={conv.otherUser.username}
-                        secondary={
-                          <>
-                            <Typography component="span">
-                              {conv.message.message}
-                            </Typography>
-                            <Typography variant="caption" display="block">
-                              {moment(conv.message.createdAt).fromNow()}
-                            </Typography>
-                          </>
-                        }
-                      />
-                      <IconButton
-                        component={Link}
-                        href={`/chat/${conv.otherUser._id}`}
-                      >
-                        <ChatIcon />
-                      </IconButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <Typography>No conversations yet</Typography>
-                )}
-              </List>
-            </Box>
-          </>
-        ) : (
-          <Typography color="error">Failed to load profile</Typography>
-        )}
+          <div className={styles.formGroup}>
+            <label htmlFor="languages" className={styles.formLabel}>Languages</label>
+            <Select
+              multiple
+              value={languages}
+              onChange={(e) => setLanguages(e.target.value as string[])}
+              input={<OutlinedInput id="languages" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} onDelete={() => setLanguages(prev => prev.filter(item => item !== value))} aria-label={`Remove ${value}`} />
+                  ))}
+                </Box>
+              )}
+              fullWidth
+              aria-describedby="languages-help"
+            >
+              {languageOptions.map((lang) => (
+                <MenuItem key={lang} value={lang}>
+                  {lang}
+                </MenuItem>
+              ))}
+            </Select>
+            <p id="languages-help" className={styles.helperText}>Indicate the languages you speak.</p>
+          </div>
+        </section>
 
-        {/* Notifications */}
-        <Snackbar
-          open={!!notifications.success}
-          autoHideDuration={6000}
-          onClose={closeNotification}
+        {/* Social Media Section */}
+        <section className={styles.section} aria-labelledby="social-media-heading">
+          <h2 id="social-media-heading" className={styles.sectionTitle}>Social Media</h2>
+          <TextField
+            label="Instagram"
+            value={instagram}
+            onChange={(e) => setInstagram(e.target.value)}
+            fullWidth
+            margin="normal"
+            InputProps={{
+              startAdornment: <Typography mr={1}>@</Typography>,
+            }}
+            aria-label="Instagram username"
+            placeholder="yourinstagramhandle"
+          />
+          <TextField
+            label="Twitter"
+            value={twitter}
+            onChange={(e) => setTwitter(e.target.value)}
+            fullWidth
+            margin="normal"
+            InputProps={{
+              startAdornment: <Typography mr={1}>@</Typography>,
+            }}
+            aria-label="Twitter username"
+            placeholder="yourtwitterhandle"
+          />
+        </section>
+
+        {/* Save Button */}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSave}
+          className={styles.saveButton}
+          aria-label="Save all changes to profile"
         >
-          <Alert severity="success">{notifications.success}</Alert>
-        </Snackbar>
-        <Snackbar
-          open={!!notifications.error}
-          autoHideDuration={6000}
-          onClose={closeNotification}
-        >
-          <Alert severity="error">{notifications.error}</Alert>
-        </Snackbar>
-      </Container>
-    </Layout>
+          Save Changes
+        </Button>
+
+        {/* Conversations Section */}
+        <section className={styles.section} aria-labelledby="recent-chats-heading">
+          <h2 id="recent-chats-heading" className={styles.sectionTitle}>Recent Chats</h2>
+          <List className={styles.conversationList}>
+            {conversations.length > 0 ? (
+              conversations.map((conv) => (
+                <ListItem 
+                  key={conv._id} 
+                  className={styles.conversationItem}
+                  button 
+                  component={Link} 
+                  href={`/chat/${conv.otherUser._id}`}
+                  aria-label={`Chat with ${conv.otherUser.username}`}
+                >
+                  <ListItemAvatar>
+                    <Avatar 
+                      src={conv.otherUser.avatarUrl} 
+                      alt={`${conv.otherUser.username}'s avatar`} 
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={conv.otherUser.username}
+                    secondary={
+                      <>
+                        <Typography component="span" variant="body2" color="text.primary">
+                          {conv.message.message}
+                        </Typography>
+                        <Typography variant="caption" display="block" color="text.secondary">
+                          {moment(conv.message.createdAt).fromNow()}
+                        </Typography>
+                      </>
+                    }
+                  />
+                  <IconButton
+                    edge="end"
+                    aria-label={`Go to chat with ${conv.otherUser.username}`}
+                  >
+                    <ChatIcon />
+                  </IconButton>
+                </ListItem>
+              ))
+            ) : (
+              <p className={styles.noConversations}>No conversations yet. Start exploring to connect with others!</p>
+            )}
+          </List>
+        </section>
+      </main>
+    ) : (
+      <div className={styles.errorMessage} role="alert">
+        <Typography color="error">Failed to load profile. Please try again later.</Typography>
+      </div>
+    )}
+
+    {/* Notifications */}
+    <Snackbar
+      open={!!notifications.success}
+      autoHideDuration={6000}
+      onClose={closeNotification}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert onClose={closeNotification} severity="success" sx={{ width: '100%' }} variant="filled">
+        {notifications.success}
+      </Alert>
+    </Snackbar>
+    <Snackbar
+      open={!!notifications.error}
+      autoHideDuration={6000}
+      onClose={closeNotification}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert onClose={closeNotification} severity="error" sx={{ width: '100%' }} variant="filled">
+        {notifications.error}
+      </Alert>
+    </Snackbar>
+  </Container>
+</Layout>
   );
 }
 

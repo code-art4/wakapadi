@@ -168,6 +168,7 @@
   .sectionTitle::after {
     width: 60px;
     height: 3px;
+    margin-top: 0;
   }
   
   .noResults {
