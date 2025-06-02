@@ -4,8 +4,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { WhoisPresence, WhoisPresenceSchema } from '../schemas/whois.schema';
 import { WhoisService } from '../services/whois.service';
 import { WhoisController } from '../controllers/whois.controller';
-import { WhoisMessage, WhoisMessageSchema } from 'src/schemas/whois-message.schema';
-import { UserSchema, User } from 'src/schemas/user.schema';
+import { WhoisMessage, WhoisMessageSchema } from '../schemas/whois-message.schema';
+import { UserSchema, User } from '../schemas/user.schema';
 
 @Module({
   imports: [

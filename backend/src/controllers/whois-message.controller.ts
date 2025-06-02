@@ -3,7 +3,7 @@ import { Controller, Post, Get, Param, Body, Req, UseGuards, Query, Patch } from
 import { WhoisMessageService } from '../services/whois-message.service';
 import { AuthGuard } from '../gateways/auth.guard';
 import { Request } from 'express';
-import { UsersService } from 'src/services/user.service';
+import { UsersService } from '../services/user.service';
 
 interface AuthRequest extends Request {
   user?: { id: string };

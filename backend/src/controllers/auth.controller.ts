@@ -1,7 +1,7 @@
 // src/auth/auth.controller.ts
 import { Controller, Post, Body, Get, UseGuards, Req, Patch } from '@nestjs/common';
-import { AuthGuard } from 'src/gateways/auth.guard';
-import { GoogleAuthGuard } from 'src/gateways/google-auth.guard';
+import { AuthGuard } from '../gateways/auth.guard';
+import { GoogleAuthGuard } from '../gateways/google-auth.guard';
 import { AuthService } from '../services/auth.service';
 
 @Controller('auth')

@@ -15,6 +15,14 @@ import { PresenceModule } from './modules/PresenceModule';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './modules/email.module';
 import { CityModule } from './modules/city.module';
+import { QdrantService } from './services/qdrant.service';
+import { EmbeddingService } from './services/embedding.service';
+import { BotGateway } from './gateways/bot.gateway';
+import { NLPService } from './services/nlp.service';
+import { ResponseService } from './services/response.service';
+import { ConversationService } from './services/conversation.service';
+import { FeedbackModule } from './modules/feedback.module';
+import { TrainingModule } from './modules/training.module';
 
 
 @Module({
@@ -26,6 +34,7 @@ import { CityModule } from './modules/city.module';
     MongooseModule.forRoot('mongodb://localhost:27017/wakapadi'),
     AssistantModule,
     TourModule,
+    FeedbackModule,
     ScraperModule,
     WhoisMessageModule,
     AuthModule,
@@ -34,11 +43,11 @@ import { CityModule } from './modules/city.module';
     CityModule,
     EmailModule,
     PresenceModule,
+    TrainingModule,
     WhoisModule, // ✅ Add this line
-
   ], 
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmbeddingService, QdrantService, BotGateway, NLPService,ResponseService,ConversationService ],
 })
 export class AppModule {}
 
