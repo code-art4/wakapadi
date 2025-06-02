@@ -1,35 +1,83 @@
 // src/services/nlp.service.ts
 import { Injectable, Logger } from '@nestjs/common';
+import { QdrantService } from './qdrant.service'; // Inject this in NLPService
+import { TourService } from './tour.service';
+
+interface IntentResult {
+  intent: string;
+  entities: {
+    city?: string;
+    activity?: string;
+    number?: number;
+    date?: string;
+    priceRange?: string;
+  };
+}
 
 @Injectable()
 export class NLPService {
+  constructor(
+    private readonly qdrantService: QdrantService,
+    private readonly tourService: TourService) {}
+  
   private readonly logger = new Logger(NLPService.name);
   
-  // Intent detection patterns
-  private readonly greetingPatterns = [
-    /^hello$|^hi$|^hey$|^greetings$|^welcome$|^good\s(morning|afternoon|evening)$/i
-  ];
-  
-  private readonly farewellPatterns = [
-    /^bye$|^goodbye$|^see\syou$|^later$|^exit$|^quit$/i
-  ];
-  
-  private readonly thanksPatterns = [
-    /^thanks$|^thank\syou$|^appreciate$|^cheers$/i
-  ];
-  
-  private readonly tourKeywords = new Set([
-    'tour', 'tours', 'activity', 'activities', 'visit', 'visits',
-    'see', 'do', 'experience', 'guide', 'walking', 'sightseeing',
-    'attraction', 'attractions', 'excursion', 'excursions'
-  ]);
+  // Enhanced intent detection patterns
+  private readonly intentPatterns = {
+    greeting: [
+      /^(hello|hi|hey|greetings|welcome|good\s(morning|afternoon|evening))\b/i,
+      /^(what's\sup|how\sare\syou)\b/i
+    ],
+    farewell: [
+      /^(bye|goodbye|see\sya?|later|exit|quit|stop)\b/i,
+      /^(take\scare|have\sa\sgood\s(day|night))\b/i
+    ],
+    thanks: [
+      /^(thanks|thank\syou|appreciate|cheers|thx|ty)\b/i,
+      /^(much\sappreciated|you're\sthe\sbest)\b/i
+    ],
+    help: [
+      /^(help|support|what\scan\syou\sdo|options)\b/i
+    ],
+    tourSearch: [
+      /(find|search|look|want|need|book|reserve|recommend|suggest|explore|discover)\b.*\b(tour|activity|visit|see|do|experience|guide|walking|sightseeing|attraction|excursion)\b/i,
+      /(what|where|which|how|can).*(to\s)?(do|see|visit|experience|explore)\b/i,
+      /(best|top|good|great|interesting).*(to\s)?(do|see|visit)\b/i
+    ],
+    tourDetail: [
+      /^(show|details|about|more|info|information)\b.*\b(\d+)\b/i,
+      /^(tell|give)\s(me\s)?(more|details)\b.*\b(\d+)\b/i
+    ]
+  };
 
-  private readonly activityVerbs = new Set([
-    'find', 'search', 'look', 'want', 'need', 'book', 'reserve',
-    'recommend', 'suggest', 'explore', 'discover'
-  ]);
+  private readonly entityKeywords = {
+    tourTypes: new Set([
+      'tour', 'tours', 'activity', 'activities', 'visit', 'visits',
+      'see', 'do', 'experience', 'guide', 'walking', 'sightseeing',
+      'attraction', 'attractions', 'excursion', 'excursions',
+      'museum', 'historical', 'adventure', 'food', 'culinary',
+      'shopping', 'nightlife', 'cultural', 'art', 'architecture'
+    ]),
+    verbs: new Set([
+      'find', 'search', 'look', 'want', 'need', 'book', 'reserve',
+      'recommend', 'suggest', 'explore', 'discover', 'show', 'tell',
+      'give', 'see', 'visit', 'experience'
+    ]),
+    cities: new Set([
+      'paris', 'london', 'new york', 'tokyo', 'rome', 'barcelona',
+      'berlin', 'amsterdam', 'dubai', 'sydney', 'san francisco'
+    ]),
+    priceIndicators: new Set([
+      'cheap', 'affordable', 'budget', 'expensive', 'luxury',
+      'price', 'cost', '$', '€', '£'
+    ]),
+    timeIndicators: new Set([
+      'today', 'tomorrow', 'weekend', 'morning', 'afternoon',
+      'evening', 'night', 'next week', 'this month'
+    ])
+  };
 
-  detectIntent(text: string): { intent: string; entities: { city?: string; activity?: string } } {
+  detectIntent(text: string): IntentResult {
     if (!text?.trim()) {
       this.logger.warn('Received empty text for intent detection');
       return { intent: 'unknown', entities: {} };
@@ -47,103 +95,166 @@ export class NLPService {
     const entities = this.extractEntities(cleanText, lowerText);
     this.logExtraction(cleanText, entities);
 
+    // Check for tour detail request (e.g., "show me #3")
+    const tourDetailIntent = this.checkTourDetailIntent(lowerText);
+    if (tourDetailIntent) return tourDetailIntent;
+
     // Determine if this is a tour-related query
     if (this.isTourQuery(lowerText, entities)) {
       return { intent: 'tour_search', entities };
-    }
-
-    // Fallback to location-only search if city is detected
-    if (entities.city) {
-      return { 
-        intent: 'tour_search', 
-        entities: { city: entities.city } 
-      };
     }
 
     this.logger.warn(`Could not determine intent for: "${cleanText}"`);
     return { intent: 'unknown', entities: {} };
   }
 
-  private checkBasicIntents(text: string) {
-    if (this.greetingPatterns.some(p => p.test(text))) {
-      return { intent: 'greeting', entities: {} };
-    }
-    if (this.farewellPatterns.some(p => p.test(text))) {
-      return { intent: 'farewell', entities: {} };
-    }
-    if (this.thanksPatterns.some(p => p.test(text))) {
-      return { intent: 'thanks', entities: {} };
+  private checkBasicIntents(text: string): IntentResult | null {
+    for (const [intent, patterns] of Object.entries(this.intentPatterns)) {
+      if (patterns.some(p => p.test(text))) {
+        return { intent, entities: {} };
+      }
     }
     return null;
   }
 
-  private extractEntities(fullText: string, lowerText: string): { city?: string; activity?: string } {
+  private extractEntities(fullText: string, lowerText: string): IntentResult['entities'] {
+    return {
+      city: this.extractCity(fullText, lowerText),
+      activity: this.extractActivity(fullText, lowerText),
+      number: this.extractNumber(lowerText),
+      date: this.extractDate(lowerText),
+      priceRange: this.extractPriceRange(lowerText)
+    };
+  }
+
+  private extractCity(fullText: string, lowerText: string): string | undefined {
     // Try structured patterns first
-    const structured = this.extractStructuredEntities(lowerText);
-    if (structured.city || structured.activity) {
-      return structured;
+    const cityPatterns = [
+      /(?:in|at|near|around|for|within|inside|outside|close\sto)\s+(?:the\s+)?([a-z][a-z\s]+?)(?=\s|$|[,.!?])/i,
+      /(?:from|to|going\sto|visiting|destination)\s+(?:the\s+)?([a-z][a-z\s]+?)(?=\s|$|[,.!?])/i
+    ];
+
+    for (const pattern of cityPatterns) {
+      const match = lowerText.match(pattern);
+      if (match?.[1]) {
+        return this.formatCityName(match[1].trim());
+      }
     }
 
-    // Fallback to keyword analysis for simple queries
-    return this.analyzeKeywords(fullText, lowerText);
-  }
-
-  private extractStructuredEntities(text: string) {
-    // Enhanced city extraction with support for more patterns
-    const cityMatch = text.match(
-      /(?:in|at|near|around|for|within|inside|outside|close\sto)\s+(?:the\s+)?([a-z][a-z\s]+?)(?=\s|$|[,.!?])/i
-    );
-    
-    // Enhanced activity extraction
-    const activityMatch = text.match(
-      /(?:looking\sfor|want|find|searching\sfor|interested\sin|need|book|reserve)\s+([a-z][a-z\s]+?)(?=\s|$|[,.!?])/i
-    );
-
-    return {
-      city: cityMatch?.[1]?.trim(),
-      activity: activityMatch?.[1]?.trim()
-    };
-  }
-
-  private analyzeKeywords(fullText: string, lowerText: string) {
+    // Fallback to known cities or longest capitalized word
     const words = fullText.split(/\s+/);
-    const keywords = new Set(words.map(w => w.toLowerCase()));
-    
-    // Find the most likely city (longest non-keyword)
-    let city = words
-      .filter(w => w.length > 3 && !this.tourKeywords.has(w.toLowerCase()))
-      .sort((a, b) => b.length - a.length)[0];
-    
-    // Find activity terms (either keywords or verb-noun combinations)
-    let activity = [...keywords].filter(k => this.tourKeywords.has(k)).join(' ') ||
-                  this.findActivityPhrase(words);
+    const possibleCities = words.filter(word => 
+      word.length > 3 && 
+      (this.entityKeywords.cities.has(word.toLowerCase()) || 
+       /^[A-Z][a-z]+$/.test(word))
+    );
 
-    return {
-      city: city || undefined,
-      activity: activity || undefined
-    };
+    if (possibleCities.length) {
+      return this.formatCityName(
+        possibleCities.sort((a, b) => b.length - a.length)[0]
+      );
+    }
+
+    return undefined;
   }
 
-  private findActivityPhrase(words: string[]): string | undefined {
-    for (let i = 0; i < words.length - 1; i++) {
-      const current = words[i].toLowerCase();
-      const next = words[i + 1].toLowerCase();
-      
-      if (this.activityVerbs.has(current) && this.tourKeywords.has(next)) {
-        return `${current} ${next}`;
+  private extractActivity(fullText: string, lowerText: string): string | undefined {
+    // Try structured patterns
+    const activityPatterns = [
+      /(?:looking\sfor|want|find|searching\sfor|interested\sin|need|book|reserve)\s+([a-z][a-z\s]+?)(?=\s|$|[,.!?])/i,
+      /(?:show\sme|recommend|suggest)\s+([a-z][a-z\s]+?)(?=\s|$|[,.!?])/i
+    ];
+
+    for (const pattern of activityPatterns) {
+      const match = lowerText.match(pattern);
+      if (match?.[1]) {
+        const activity = match[1].trim();
+        if (this.isValidActivity(activity)) {
+          return activity;
+        }
+      }
+    }
+
+    // Fallback to keyword matching
+    const words = fullText.split(/\s+/);
+    const activityKeywords = words.filter(word => 
+      this.entityKeywords.tourTypes.has(word.toLowerCase())
+    );
+
+    if (activityKeywords.length) {
+      return activityKeywords.join(' ');
+    }
+
+    return undefined;
+  }
+
+  private extractNumber(text: string): number | undefined {
+    const match = text.match(/\b(\d+)\b/);
+    return match ? parseInt(match[1], 10) : undefined;
+  }
+
+  private extractDate(text: string): string | undefined {
+    const datePatterns = [
+      /(today|tomorrow|this weekend|next week)/i,
+      /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:st|nd|rd|th)?/i,
+      /\d{1,2}[\/\-]\d{1,2}[\/\-]?\d{0,4}/i
+    ];
+
+    for (const pattern of datePatterns) {
+      const match = text.match(pattern);
+      if (match?.[0]) {
+        return match[0];
       }
     }
     return undefined;
   }
 
-  private isTourQuery(text: string, entities: { city?: string; activity?: string }): boolean {
+  private extractPriceRange(text: string): string | undefined {
+    const pricePatterns = [
+      /(cheap|affordable|budget|expensive|luxury)/i,
+      /(under|below|less\sthan)\s(\$|€|£)?\d+/i,
+      /(\$|€|£)\d+\s?-\s?(\$|€|£)?\d+/i
+    ];
+
+    for (const pattern of pricePatterns) {
+      const match = text.match(pattern);
+      if (match?.[0]) {
+        return match[0];
+      }
+    }
+    return undefined;
+  }
+
+  private checkTourDetailIntent(text: string): IntentResult | null {
+    const detailPatterns = [
+      /^(show|details|about|more|info|information)\b.*\b(\d+)\b/i,
+      /^(tell|give)\s(me\s)?(more|details)\b.*\b(\d+)\b/i,
+      /^#?(\d+)\b/i
+    ];
+
+    for (const pattern of detailPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        const number = parseInt(match[match.length - 1], 10);
+        if (!isNaN(number)) {
+          return { 
+            intent: 'tour_detail', 
+            entities: { number } 
+          };
+        }
+      }
+    }
+    return null;
+  }
+
+  private isTourQuery(text: string, entities: IntentResult['entities']): boolean {
     // Check for explicit tour keywords
-    if ([...this.tourKeywords].some(kw => text.includes(kw))) {
+    if ([...this.entityKeywords.tourTypes].some(kw => text.includes(kw))) {
       return true;
     }
 
     // Check for activity verbs
-    if ([...this.activityVerbs].some(verb => text.includes(verb))) {
+    if ([...this.entityKeywords.verbs].some(verb => text.includes(verb))) {
       return true;
     }
 
@@ -152,14 +263,47 @@ export class NLPService {
       return true;
     }
 
-    // If we already detected entities, likely a tour search
-    return !!entities.city || !!entities.activity;
+    // If we already detected relevant entities, likely a tour search
+    return !!entities.city || !!entities.activity || !!entities.date || !!entities.priceRange;
   }
 
-  private logExtraction(text: string, entities: any) {
-    this.logger.debug(`Extracted from "${text}":`, {
-      city: entities.city || 'none',
-      activity: entities.activity || 'none'
-    });
+  private isValidActivity(activity: string): boolean {
+    const words = activity.toLowerCase().split(/\s+/);
+    return words.some(word => 
+      this.entityKeywords.tourTypes.has(word) || 
+      this.entityKeywords.verbs.has(word)
+    );
   }
+
+  private formatCityName(city: string): string {
+    return city.split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  private logExtraction(text: string, entities: IntentResult['entities']) {
+    this.logger.debug(`Extracted from "${text}":`, JSON.stringify(entities, null, 2));
+  }
+
+
+
+async detectIntentWithFallback(text: string): Promise<IntentResult> {
+  const result = this.detectIntent(text);
+  
+  if (result.intent !== 'unknown') {
+    return result;
+  }
+
+  // Fallback to training phrases in Qdrant
+  const embedding = await this.tourService.embedText(text);
+  const similar = await this.qdrantService.findSimilarTrainingPhrases(embedding, 1);
+
+  if (similar.length && similar[0].score > 0.7) {
+    const city = similar[0].payload.city;
+    this.logger.debug(`Fallback NLP match from Qdrant: ${similar[0].payload.phrase} → intent: tour_search, city: ${city}`);
+    return { intent: 'tour_search', entities: { city } };
+  }
+
+  return result; // Still unknown
+}
 }

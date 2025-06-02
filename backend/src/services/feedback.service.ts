@@ -11,11 +11,12 @@ export class FeedbackService {
   ) {}
 
   async recordFeedback(
+    isHelpful: boolean,
     sessionId: string,
     message: string,
     response: string,
-    isHelpful: boolean,
     feedbackText?: string,
+
   ) {
     const feedback = new this.feedbackModel({
       sessionId,

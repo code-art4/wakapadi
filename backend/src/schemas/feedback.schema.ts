@@ -15,7 +15,7 @@ export class Feedback {
   @Prop({ required: true })
   response: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: Boolean })
   isHelpful: boolean;
 
   @Prop()

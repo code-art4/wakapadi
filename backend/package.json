@@ -36,6 +36,7 @@
     "bcrypt": "^6.0.0",
     "cheerio": "^1.0.0",
     "class-validator": "^0.14.2",
+    "compromise": "^14.14.4",
     "cron": "^4.3.0",
     "formdata-node": "^5.0.1",
     "formdata-polyfill": "^4.0.10",

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Box,
   Button,
-  CircularProgress,
   Container,
   IconButton,
   Popover,
@@ -15,6 +14,7 @@ import Layout from '../components/Layout';
 import dynamic from 'next/dynamic';
 import io, { Socket } from 'socket.io-client';
 import styles from '../styles/bot.module.css';
+import TourCard from '../components/ChatTourCard';
 
 const Picker = dynamic(() => import('@emoji-mart/react'), { ssr: false });
 
@@ -23,6 +23,7 @@ interface ChatMessage {
   fromSelf: boolean;
   timestamp?: Date;
   followUp?: boolean;
+  results?: any[];
 }
 
 interface BotResponse {
@@ -31,7 +32,7 @@ interface BotResponse {
   followUp?: boolean;
 }
 
-const ChatBubble = ({ message, fromSelf, avatar, createdAt }) => {
+const ChatBubble = ({ message, fromSelf, avatar, createdAt, followUp, onFeedback }) => {
   return (
     <div className={`${styles.messageItem} ${fromSelf ? styles.messageItemSelf : styles.messageItemOther}`}>
       {!fromSelf && avatar && (
@@ -41,9 +42,18 @@ const ChatBubble = ({ message, fromSelf, avatar, createdAt }) => {
         <div className={styles.messageText}>{message}</div>
         <div className={styles.messageMeta}>
           <span className={styles.messageTime}>
-            {new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {createdAt ? new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
           </span>
         </div>
+        {followUp && !fromSelf && (
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="caption">Was this helpful?</Typography>
+            <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+              <Button size="small" onClick={() => onFeedback(true)}>👍 Yes</Button>
+              <Button size="small" onClick={() => onFeedback(false)}>👎 No</Button>
+            </Box>
+          </Box>
+        )}
       </div>
     </div>
   );
@@ -52,7 +62,6 @@ const ChatBubble = ({ message, fromSelf, avatar, createdAt }) => {
 export default function ChatBotPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState('');
-  const [loading, setLoading] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emojiAnchorEl, setEmojiAnchorEl] = useState<null | HTMLElement>(null);
@@ -62,8 +71,25 @@ export default function ChatBotPage() {
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Initialize socket connection
   useEffect(() => {
+    const saved = localStorage.getItem('chatHistory');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setMessages(parsed);
+        }
+      } catch {
+        console.warn('Could not parse saved chat history');
+      }
+    } else {
+      setMessages([{
+        text: "🤖 Hello! I'm your tour assistant. Ask me about tours in any city!",
+        fromSelf: false,
+        timestamp: new Date()
+      }]);
+    }
+
     const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
       path: '/socket.io',
       transports: ['websocket'],
@@ -74,38 +100,44 @@ export default function ChatBotPage() {
 
     socketRef.current = socket;
 
-    const onConnect = () => {
+    socket.on('connect', () => {
       setSocketConnected(true);
       setError(null);
-    };
+    });
 
-    const onDisconnect = () => {
+    socket.on('disconnect', () => {
       setSocketConnected(false);
-    };
+    });
 
-    const onConnectError = (err: Error) => {
+    socket.on('connect_error', (err: Error) => {
       console.error('Connection error:', err);
       setError('Failed to connect to the bot service. Trying to reconnect...');
-    };
+    });
 
-    const onBotResponse = (response: string | BotResponse) => {
+    socket.on('bot:response', (response: string | BotResponse) => {
       let messageText: string;
       let followUp = false;
-      
+      let results = [];
+
       if (typeof response === 'string') {
         messageText = response;
       } else {
         messageText = response.text;
         followUp = response.followUp || false;
+        results = response.results || [];
       }
 
-      setMessages((prev) => [...prev, { 
-        text: messageText, 
-        fromSelf: false,
-        timestamp: new Date(),
-        followUp 
-      }]);
-      setLoading(false);
+      setMessages((prev) => {
+        const updated = [...prev, {
+          text: messageText,
+          fromSelf: false,
+          timestamp: new Date(),
+          followUp,
+          results
+        }];
+        return updated.slice(-100);
+      });
+
       setIsBotTyping(false);
 
       if (followUp) {
@@ -115,101 +147,49 @@ export default function ChatBotPage() {
           "What's the most popular?"
         ]);
       }
-    };
-
-    const onBotTyping = (typing: boolean) => {
-      setIsBotTyping(typing);
-    };
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('connect_error', onConnectError);
-    socket.on('bot:response', onBotResponse);
-    socket.on('bot:typing', onBotTyping);
-    socket.onAny((event, ...args) => {
-      console.log('Socket event:', event, args);
     });
 
-    // Initial bot greeting
-    setMessages([{
-      text: "🤖 Hello! I'm your tour assistant. Ask me about tours in any city!",
-      fromSelf: false,
-      timestamp: new Date()
-    }]);
+    socket.on('bot:typing', (typing: boolean) => {
+      setIsBotTyping(typing);
+    });
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('connect_error', onConnectError);
-      socket.off('bot:response', onBotResponse);
-      socket.off('bot:typing', onBotTyping);
       socket.disconnect();
     };
   }, []);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const trimmed = [...messages].slice(-100);
+    localStorage.setItem('chatHistory', JSON.stringify(trimmed));
   }, [messages]);
 
-  const verifyConnection = useCallback(() => {
-    if (!socketRef.current) return false;
-    
-    try {
-      socketRef.current.emit('ping', (response: string) => {
-        if (response !== 'pong') {
-          setError('Connection verification failed');
-          return false;
-        }
-        return true;
-      });
-    } catch (err) {
-      setError('Connection check error');
-      return false;
-    }
-  }, []);
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       if (socketConnected && !verifyConnection()) {
-//         setSocketConnected(false);
-//         setError('Connection lost. Reconnecting...');
-//       }
-//     }, 10000);
-    
-//     return () => clearInterval(interval);
-//   }, [socketConnected, verifyConnection]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isBotTyping]);
 
   const handleSend = useCallback(() => {
     if (!text.trim() || !socketRef.current) return;
-    
-    const newMessage: ChatMessage = { 
-      text, 
+
+    const newMessage: ChatMessage = {
+      text,
       fromSelf: true,
       timestamp: new Date()
     };
-    
-    setMessages((prev) => [...prev, newMessage]);
-    setLoading(true);
+
+    setMessages((prev) => [...prev, newMessage].slice(-100));
     setText('');
     setSuggestedFollowUps([]);
-    console.log("msg", text)
-    socketRef.current.emit('bot:message', { 
+    setIsBotTyping(true);
+
+    socketRef.current.emit('bot:message', {
       message: text,
       context: {
         lastMessages: messages.slice(-3).map(m => m.text)
       }
-     
     }, (err: Error) => {
       if (err) {
-        // console.log("err", err)
         setError('Failed to send message');
-        setLoading(false);
-        // setMessages(prev => [...prev, {
-        //   text: "⚠️ Couldn't reach the bot. Please try again.",
-        //   fromSelf: false,
-        //   timestamp: new Date()
-        // }]);
+        setIsBotTyping(false);
       }
     });
   }, [text, messages]);
@@ -242,11 +222,11 @@ export default function ChatBotPage() {
             Chat with Tour Assistant
           </Typography>
           <Box display="flex" alignItems="center">
-            <Box 
-              width={10} 
-              height={10} 
-              bgcolor={socketConnected ? 'success.main' : 'error.main'} 
-              borderRadius="50%" 
+            <Box
+              width={10}
+              height={10}
+              bgcolor={socketConnected ? 'success.main' : 'error.main'}
+              borderRadius="50%"
               mr={1}
             />
             <Typography variant="body2" className={styles.chatSubtitle}>
@@ -268,15 +248,40 @@ export default function ChatBotPage() {
                 message={msg.text}
                 fromSelf={msg.fromSelf}
                 avatar={msg.fromSelf ? '' : '/bot_avatar.png'}
-                createdAt={msg.timestamp?.toISOString()}
+                createdAt={msg.timestamp!.toString()}
+                followUp={msg.followUp}
+                onFeedback={(helpful: boolean) => {
+                  if (socketRef.current) {
+                    socketRef.current.emit('bot:feedback', {
+                  
+                      isHelpful: Boolean(helpful),  // Ensures it's a real boolean
+                      response:helpful?"helpful":"not helpful",
+                      messageId: msg.text,
+                    });
+                  }
+                }}
               />
+              {msg.results?.length > 0 && (
+                <Box sx={{ ml: msg.fromSelf ? 0 : 6 }}>
+                  {msg.results.map((tour, idx) => (
+                    <TourCard
+                      key={idx}
+                      title={tour.payload.title}
+                      location={tour.payload.location}
+                      rating={tour.payload.rating}
+                      url={tour.payload.externalPageUrl}
+                      shortDescription={tour.payload.description?.slice(0, 150)}
+                    />
+                  ))}
+                </Box>
+              )}
             </Box>
           ))}
-          
-          {loading && (
+
+          {isBotTyping && (
             <Box className={styles.messageItem}>
               <ChatBubble
-                message={<CircularProgress size={20} />}
+                message={<span className={styles.typingDots}>...</span>}
                 fromSelf={false}
                 avatar="/bot_avatar.png"
                 createdAt={new Date().toISOString()}
@@ -284,16 +289,6 @@ export default function ChatBotPage() {
             </Box>
           )}
 
-          {isBotTyping && (
-            <Box className={styles.messageItem}>
-              <ChatBubble
-                message="Typing..."
-                fromSelf={false}
-                avatar="/bot_avatar.png"
-              />
-            </Box>
-          )}
-          
           <div ref={bottomRef} />
         </Box>
 
@@ -319,55 +314,41 @@ export default function ChatBotPage() {
           <IconButton onClick={handleEmojiClick} disabled={!socketConnected}>
             <InsertEmoticonIcon />
           </IconButton>
-          
+
           <Popover
             open={!!emojiAnchorEl}
             anchorEl={emojiAnchorEl}
             onClose={() => setEmojiAnchorEl(null)}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
-            <Picker 
-              onEmojiSelect={handleEmojiSelect} 
+            <Picker
+              onEmojiSelect={handleEmojiSelect}
               theme="light"
               previewPosition="none"
             />
           </Popover>
-          
+
           <TextField
             fullWidth
             placeholder={socketConnected ? "Ask me about tours..." : "Connecting..."}
             value={text}
             onChange={handleTyping}
             onKeyDown={handleKeyDown}
-            disabled={!socketConnected || loading}
+            disabled={!socketConnected || isBotTyping}
             multiline
             maxRows={4}
           />
-          
+
           <Button
             variant="contained"
             onClick={handleSend}
-            disabled={!text.trim() || !socketConnected || loading}
+            disabled={!text.trim() || !socketConnected || isBotTyping}
             className={styles.sendButton}
           >
             Send
           </Button>
         </Box>
-
-        <Button 
-          onClick={() => verifyConnection()} 
-          variant="outlined"
-          sx={{ mt: 2, alignSelf: 'center' }}
-        >
-          Test Connection
-        </Button>
       </Container>
     </Layout>
   );

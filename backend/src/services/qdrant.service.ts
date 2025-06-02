@@ -21,6 +21,8 @@ export class QdrantService implements OnModuleInit {
 
   onModuleInit() {
     this.recreateToursCollection(); // recreates with correct payload_schema
+    this.createTrainingCollection();
+
   }
 
   private get headers() {
@@ -206,4 +208,26 @@ export class QdrantService implements OnModuleInit {
       throw error;
     }
   }
+
+  async createTrainingCollection() {
+    try {
+      await axios.put(`${this.baseURL}/collections/training_phrases`, {
+        vectors: {
+          size: 384,
+          distance: 'Cosine',
+        },
+        on_disk_payload: true,
+        payload_schema: {
+          city: { type: 'keyword' },
+          phrase: { type: 'text' },
+          type: { type: 'keyword' },
+        },
+      }, { headers: this.headers });
+  
+      console.log('✅ Created "training_phrases" collection');
+    } catch (err) {
+      console.error('❌ Failed to create "training_phrases" collection:', err.response?.data || err.message);
+    }
+  }
+  
 }
