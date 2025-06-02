@@ -23,6 +23,8 @@ import { ResponseService } from './services/response.service';
 import { ConversationService } from './services/conversation.service';
 import { FeedbackModule } from './modules/feedback.module';
 import { TrainingModule } from './modules/training.module';
+import { LLMService } from './services/llm.service';
+import { HttpService } from '@nestjs/axios';
 
 
 @Module({
@@ -47,7 +49,7 @@ import { TrainingModule } from './modules/training.module';
     WhoisModule, // ✅ Add this line
   ], 
   controllers: [AppController],
-  providers: [AppService, EmbeddingService, QdrantService, BotGateway, NLPService,ResponseService,ConversationService ],
+  providers: [AppService, EmbeddingService, QdrantService, BotGateway, NLPService,ResponseService,ConversationService, LLMService, ],
 })
 export class AppModule {}
 

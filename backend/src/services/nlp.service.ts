@@ -2,6 +2,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { QdrantService } from './qdrant.service'; // Inject this in NLPService
 import { TourService } from './tour.service';
+import { LLMService } from './llm.service';
 
 interface IntentResult {
   intent: string;
@@ -12,13 +13,18 @@ interface IntentResult {
     date?: string;
     priceRange?: string;
   };
+  response?: string;
+  isLLMFallback?: boolean;
 }
+
 
 @Injectable()
 export class NLPService {
   constructor(
     private readonly qdrantService: QdrantService,
-    private readonly tourService: TourService) {}
+    private readonly tourService: TourService,
+    private readonly llmService: LLMService
+    ) {}
   
   private readonly logger = new Logger(NLPService.name);
   
@@ -287,23 +293,33 @@ export class NLPService {
 
 
 
-async detectIntentWithFallback(text: string): Promise<IntentResult> {
-  const result = this.detectIntent(text);
-  
-  if (result.intent !== 'unknown') {
-    return result;
+  async detectIntentWithFallback(text: string): Promise<IntentResult> {
+    const result = this.detectIntent(text);
+
+    if (result.intent !== 'unknown') {
+      return result;
+    }
+
+    // Fallback to training phrases in Qdrant
+    const embedding = await this.tourService.embedText(text);
+    const similar = await this.qdrantService.findSimilarTrainingPhrases(embedding, 1);
+
+    if (similar.length && similar[0].score > 0.7) {
+      const city = similar[0].payload.city;
+      this.logger.debug(`Fallback NLP match from Qdrant: ${similar[0].payload.phrase} → intent: tour_search, city: ${city}`);
+      return { intent: 'tour_search', entities: { city } };
+    }
+
+    // Final fallback to LLM
+    const response = await this.llmService.generateResponse(
+      `User said: "${text}". Provide a helpful travel/tour assistant response.`
+    );
+
+    return {
+      intent: 'unknown',
+      entities: {},
+      response,
+      isLLMFallback: true
+    };
   }
-
-  // Fallback to training phrases in Qdrant
-  const embedding = await this.tourService.embedText(text);
-  const similar = await this.qdrantService.findSimilarTrainingPhrases(embedding, 1);
-
-  if (similar.length && similar[0].score > 0.7) {
-    const city = similar[0].payload.city;
-    this.logger.debug(`Fallback NLP match from Qdrant: ${similar[0].payload.phrase} → intent: tour_search, city: ${city}`);
-    return { intent: 'tour_search', entities: { city } };
-  }
-
-  return result; // Still unknown
-}
 }

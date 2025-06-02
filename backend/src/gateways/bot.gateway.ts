@@ -17,7 +17,8 @@ import {
   import { ConversationService } from '../services/conversation.service';
   import { FeedbackService } from '../services/feedback.service';
   import { ConversationContext } from '../services/conversation.service';
-  
+  import { LLMService } from '../services/llm.service';
+
   interface BotResponse {
     text: string;
     results?: any[];
@@ -42,6 +43,9 @@ import {
       private readonly responseService: ResponseService,
       private readonly conversationService: ConversationService,
       private readonly feedbackService: FeedbackService,
+      private readonly llmService: LLMService, // ⬅️ Add this
+
+      
     ) {}
   
     afterInit() {
@@ -105,7 +109,10 @@ import {
         this.simulateTyping(client, true);
         const context = this.conversationService.getContext(client.id);
     
-        const { intent, entities } = await this.nlpService.detectIntentWithFallback(text);
+        // const { intent, entities } = await this.nlpService.detectIntentWithFallback(text);
+        const intentResult = await this.nlpService.detectIntentWithFallback(text);
+        const { intent, entities, response: llmResponse, isLLMFallback } = intentResult;
+
         this.logger.debug(`Detected intent: ${intent}`, { entities });
     
         // Follow-up selection (e.g., "2" after seeing tour list)
@@ -113,7 +120,9 @@ import {
         if (followUpResponse) return followUpResponse;
     
         // Now route all intents through centralized handler
-        return this.processIntent(client, text, intent, entities);
+        // return this.processIntent(client, text, intent, entities);
+        return this.processIntent(client, text, intent, entities, llmResponse, isLLMFallback);
+
       } catch (error) {
         this.logger.error(`Message processing error: ${error.message}`, error.stack);
         return this.sendErrorMessage(client);
@@ -136,10 +145,12 @@ import {
     }
   
     private async processIntent(
-        client: Socket,
-        text: string,
-        intent: string,
-        entities: { city?: string; number?: number }
+      client: Socket,
+      text: string,
+      intent: string,
+      entities: { city?: string; number?: number },
+      llmResponse?: string,
+      isLLMFallback?: boolean
       ) {
         const context = this.conversationService.getContext(client.id);
       
@@ -209,10 +220,11 @@ import {
           }
       
           default:
-            return client.emit('bot:response', {
-              text: "I specialize in finding tours. Try something like: 'Find historical tours in Berlin'",
-              followUp: false,
-            });
+  return client.emit('bot:response', {
+    text: llmResponse || "I specialize in finding tours. Try something like: 'Find historical tours in Berlin'",
+    followUp: false
+  });
+
         }
       }
       
