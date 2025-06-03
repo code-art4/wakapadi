@@ -192,16 +192,24 @@ export class WhoisGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       // 4. Emit a notification to the receiver's specific user room (if not self-chat)
       if (fromUserId !== data.to && senderUser) {
-        this.server.to(`user-${data.to}`).emit('notification:new', {
-          type: 'new_message',
-          fromUserId,
-          fromUsername: senderUser.username,
-          messagePreview: savedMessage.message.substring(0, 50),
-          conversationId: conversationRoom,
-          createdAt: savedMessage.createdAt.toISOString(),
-        });
+        const receiverSocketId = this.userSockets.get(data.to);
+        const socketsInRoom = await this.server.in(conversationRoom).allSockets();
+        const isRecipientInRoom = socketsInRoom.has(receiverSocketId as string);
+      
+        if (!isRecipientInRoom) {
+          this.server.to(`user-${data.to}`).emit('notification:new', {
+            type: 'new_message',
+            fromUserId,
+            fromUsername: senderUser.username,
+            messagePreview: savedMessage.message.substring(0, 50),
+            conversationId: conversationRoom,
+            createdAt: savedMessage.createdAt.toISOString(),
+          });
+          console.log(`Notification emitted to receiver's personal room: user-${data.to}`);
+        } else {
+          console.log(`Notification skipped — user already in conversation room: ${conversationRoom}`);
+        }
       }
-        console.log(`Notification emitted to receiver's personal room: user-${data.to}`);
       
 
     } catch (error) {
