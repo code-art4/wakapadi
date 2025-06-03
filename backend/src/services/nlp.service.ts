@@ -100,7 +100,9 @@ export class NLPService {
     // Extract entities with improved logic
     const entities = this.extractEntities(cleanText, lowerText);
     this.logExtraction(cleanText, entities);
-
+    if(entities.activity!=="tour"){
+      return {intent:"unknown", entities}
+    }
     // Check for tour detail request (e.g., "show me #3")
     const tourDetailIntent = this.checkTourDetailIntent(lowerText);
     if (tourDetailIntent) return tourDetailIntent;
@@ -288,6 +290,12 @@ export class NLPService {
   }
 
   private logExtraction(text: string, entities: IntentResult['entities']) {
+    // if(entities.activity!=="tour"){
+    //   const response = await this.llmService.generateResponse(
+    //     `User said: "${text}". Provide a helpful travel/tour assistant response.`
+    //   );
+  
+    // }
     this.logger.debug(`Extracted from "${text}":`, JSON.stringify(entities, null, 2));
   }
 

@@ -188,7 +188,7 @@ export default function ChatBotPage() {
       }
     }, (err: Error) => {
       if (err) {
-        setError('Failed to send message');
+        // setError('Failed to send message');
         setIsBotTyping(false);
       }
     });
