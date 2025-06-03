@@ -25,7 +25,8 @@ import { FeedbackModule } from './modules/feedback.module';
 import { TrainingModule } from './modules/training.module';
 import { LLMService } from './services/llm.service';
 import { ContactModule } from './modules/contact.module';
-
+import { GeolocationService } from './services/geolocation.service';
+import { GeolocationModule } from './modules/geolocation..module';
 
 @Module({
   imports: [
@@ -46,12 +47,21 @@ import { ContactModule } from './modules/contact.module';
     EmailModule,
     PresenceModule,
     TrainingModule,
-    WhoisModule, 
-    ContactModule
-  ], 
+    WhoisModule,
+    ContactModule,
+    GeolocationModule
+  ],
   controllers: [AppController],
-  providers: [AppService, EmbeddingService, QdrantService, BotGateway, NLPService,ResponseService,ConversationService, LLMService, ],
+  providers: [
+    AppService,
+    EmbeddingService,
+    QdrantService,
+    BotGateway,
+    NLPService,
+    ResponseService,
+    ConversationService,
+    LLMService,
+    // GeolocationService,
+  ],
 })
 export class AppModule {}
-
-

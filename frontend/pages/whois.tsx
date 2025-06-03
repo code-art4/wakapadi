@@ -171,18 +171,13 @@ export default function WhoisPage() {
         navigator.geolocation.getCurrentPosition(
           async (pos) => {
             clearTimeout(timeout);
-            console.log(
-              'pos.coords.latitude',
-              pos.coords.latitude,
-              'pos.coords.longitude',
-              pos.coords.longitude
-            );
 
             try {
-              const res = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
+              const res = await api.get(
+                `/geolocation/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
               );
-              const geocode = await res.json();
+
+              const geocode = res.data;
               const detectedCity = (
                 geocode.address.city ||
                 geocode.address.town ||
@@ -190,7 +185,6 @@ export default function WhoisPage() {
               )
                 .trim()
                 .toLowerCase();
-
               setCity(detectedCity);
               if (isLoggedIn) await pingPresence(detectedCity);
               await fetchNearby(detectedCity);
