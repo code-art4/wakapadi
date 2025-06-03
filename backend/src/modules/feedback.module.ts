@@ -1,7 +1,7 @@
 // src/modules/feedback.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FeedbackService } from '../services/feedback.service';
+import { FeedbackService } from '../services/bot_feedback.service';
 import { Feedback, FeedbackSchema } from '../schemas/feedback.schema';
 
 @Module({

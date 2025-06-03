@@ -24,7 +24,7 @@ import { ConversationService } from './services/conversation.service';
 import { FeedbackModule } from './modules/feedback.module';
 import { TrainingModule } from './modules/training.module';
 import { LLMService } from './services/llm.service';
-import { HttpService } from '@nestjs/axios';
+import { ContactModule } from './modules/contact.module';
 
 
 @Module({
@@ -46,7 +46,8 @@ import { HttpService } from '@nestjs/axios';
     EmailModule,
     PresenceModule,
     TrainingModule,
-    WhoisModule, // ✅ Add this line
+    WhoisModule, 
+    ContactModule
   ], 
   controllers: [AppController],
   providers: [AppService, EmbeddingService, QdrantService, BotGateway, NLPService,ResponseService,ConversationService, LLMService, ],

@@ -1,3 +1,4 @@
+// layout.tsx
 import {
   AppBar,
   Toolbar,
@@ -15,7 +16,7 @@ import {
   useMediaQuery,
   useTheme,
   Typography,
-  Divider, // Added Divider for visual separation
+  Divider,
   ListItemIcon
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -27,11 +28,8 @@ import i18nextConfig from '../next-i18next.config';
 import { useTranslation } from 'next-i18next';
 import NotificationsDropdown from './NotificationsDropdown';
 import styles from './Layout.module.css';
-
-// Import country flags (you'll need to install react-country-flag)
 import ReactCountryFlag from 'react-country-flag';
 
-// Language configuration with flags
 const languages = [
   { code: 'en', name: 'English', flag: 'US' },
   { code: 'de', name: 'Deutsch', flag: 'DE' },
@@ -98,32 +96,20 @@ export default function Layout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-       <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
 
-      <AppBar position="sticky" className={styles.appBar} elevation={0} style={{
-         zIndex:"10",
-      }}>
+      <AppBar position="sticky" className={styles.appBar} elevation={0} style={{ zIndex: '10' }}>
         <Container maxWidth="lg" disableGutters>
           <Toolbar className={styles.toolbar} disableGutters>
             <Box className={styles.logoContainer}>
               {isMobile && (
-                <IconButton
-                  edge="start"
-                  color="inherit"
-                  onClick={() => setDrawerOpen(true)}
-                  className={styles.menuButton}
-                  aria-label="menu"
-                >
+                <IconButton edge="start" color="inherit" onClick={() => setDrawerOpen(true)} className={styles.menuButton} aria-label="menu">
                   <MenuIcon />
                 </IconButton>
               )}
               <NextLink href="/" className={styles.logoImageWrapper}>
-                <img
-                  src="/logo1.png"
-                  alt="Wakapadi logo"
-                  className={styles.logoImage}
-                />
+                <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage} />
               </NextLink>
             </Box>
 
@@ -131,6 +117,9 @@ export default function Layout({
               <Box className={styles.desktopNav}>
                 <Link href="/whois" className={styles.navLink}>
                   {t('whoisNearby')}
+                </Link>
+                <Link href="/contact-us" className={styles.navLink}>
+                  {t('contactUs')}
                 </Link>
                 {isLoggedIn && (
                   <>
@@ -140,30 +129,17 @@ export default function Layout({
                     <NotificationsDropdown currentUserId={currentUserId} />
                   </>
                 )}
-                
                 <Box className={styles.authSection}>
                   {isLoggedIn ? (
-                    <Button 
-                      onClick={handleLogout} 
-                      className={styles.logoutButton}
-                      variant="text"
-                    >
+                    <Button onClick={handleLogout} className={styles.logoutButton} variant="text">
                       {t('logout')}
                     </Button>
                   ) : (
                     <>
-                      <Button 
-                        href="/login" 
-                        className={styles.loginButton}
-                        variant="outlined"
-                      >
+                      <Button href="/login" className={styles.loginButton} variant="outlined">
                         {t('login')}
                       </Button>
-                      <Button 
-                        href="/register" 
-                        className={styles.registerButton}
-                        variant="contained"
-                      >
+                      <Button href="/register" className={styles.registerButton} variant="contained">
                         {t('register')}
                       </Button>
                     </>
@@ -174,36 +150,28 @@ export default function Layout({
                   onClick={handleLanguageMenu}
                   className={styles.languageButton}
                   startIcon={
-                    <ReactCountryFlag 
-                      countryCode={currentLanguage.flag} 
-                      svg 
-                      style={{ width: '1.5em', height: '1.5em', lineHeight: '1.5em' }} // Added lineHeight for better alignment
+                    <ReactCountryFlag
+                      countryCode={currentLanguage.flag}
+                      svg
+                      style={{ width: '1.5em', height: '1.5em', lineHeight: '1.5em' }}
                     />
                   }
                 >
                   {currentLanguage.code.toUpperCase()}
                 </Button>
 
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleLanguageClose}
-                  className={styles.languageMenu}
-                  MenuListProps={{ // Added ListMenuProps for better padding control
-                    dense: true,
-                  }}
-                >
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleLanguageClose} className={styles.languageMenu}>
                   {languages.map((language) => (
-                    <MenuItem 
-                      key={language.code} 
+                    <MenuItem
+                      key={language.code}
                       onClick={() => changeLanguage(language.code)}
                       selected={language.code === currentLocale}
                       className={styles.languageMenuItem}
                     >
                       <ListItemIcon className={styles.languageListItemIcon}>
-                        <ReactCountryFlag 
-                          countryCode={language.flag} 
-                          svg 
+                        <ReactCountryFlag
+                          countryCode={language.flag}
+                          svg
                           style={{ width: '1.5em', height: '1.5em' }}
                         />
                       </ListItemIcon>
@@ -217,22 +185,14 @@ export default function Layout({
         </Container>
       </AppBar>
 
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        classes={{ paper: styles.drawerPaper }}
-      >
+      <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} classes={{ paper: styles.drawerPaper }}>
         <Box className={styles.drawerContainer}>
           <Box className={styles.drawerLogoWrapper}>
             <NextLink href="/" className={styles.logoImageWrapper} onClick={() => setDrawerOpen(false)}>
               <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage1} />
-              
             </NextLink>
           </Box>
-
-          <Divider className={styles.drawerDivider} /> {/* Added Divider */}
-
+          <Divider className={styles.drawerDivider} />
           <List className={styles.drawerList}>
             <ListItem
               button
@@ -242,6 +202,16 @@ export default function Layout({
               className={styles.drawerItem}
             >
               <ListItemText primary={t('whoisNearby')} className={styles.drawerItemText} />
+            </ListItem>
+
+            <ListItem
+              button
+              component={NextLink}
+              href="/contact-us"
+              onClick={() => setDrawerOpen(false)}
+              className={styles.drawerItem}
+            >
+              <ListItemText primary={t('contactUs')} className={styles.drawerItemText} />
             </ListItem>
 
             {isLoggedIn && (
@@ -258,7 +228,7 @@ export default function Layout({
           </List>
 
           <Box className={styles.drawerFooter}>
-            <Divider className={styles.drawerDivider} /> {/* Added Divider */}
+            <Divider className={styles.drawerDivider} />
             <List>
               {languages.map((language) => (
                 <ListItem
@@ -272,9 +242,9 @@ export default function Layout({
                   selected={language.code === currentLocale}
                 >
                   <ListItemIcon className={styles.languageListItemIcon}>
-                    <ReactCountryFlag 
-                      countryCode={language.flag} 
-                      svg 
+                    <ReactCountryFlag
+                      countryCode={language.flag}
+                      svg
                       style={{ width: '1.5em', height: '1.5em' }}
                     />
                   </ListItemIcon>
@@ -282,14 +252,15 @@ export default function Layout({
                 </ListItem>
               ))}
             </List>
-
-            <Divider className={styles.drawerDivider} /> {/* Added Divider */}
-
+            <Divider className={styles.drawerDivider} />
             {isLoggedIn ? (
               <ListItem
                 button
-                onClick={() => { handleLogout(); setDrawerOpen(false); }}
-                className={`${styles.drawerItem} ${styles.logoutDrawerItem}`} // Added specific class for logout button
+                onClick={() => {
+                  handleLogout();
+                  setDrawerOpen(false);
+                }}
+                className={`${styles.drawerItem} ${styles.logoutDrawerItem}`}
               >
                 <ListItemText primary={t('logout')} className={styles.drawerItemText} />
               </ListItem>
@@ -300,7 +271,7 @@ export default function Layout({
                   component={NextLink}
                   href="/login"
                   onClick={() => setDrawerOpen(false)}
-                  className={`${styles.drawerItem} ${styles.loginDrawerItem}`} // Specific class for login
+                  className={`${styles.drawerItem} ${styles.loginDrawerItem}`}
                 >
                   <ListItemText primary={t('login')} className={styles.drawerItemText} />
                 </ListItem>
@@ -309,7 +280,7 @@ export default function Layout({
                   component={NextLink}
                   href="/register"
                   onClick={() => setDrawerOpen(false)}
-                  className={`${styles.drawerItem} ${styles.registerDrawerItem}`} // Specific class for register
+                  className={`${styles.drawerItem} ${styles.registerDrawerItem}`}
                 >
                   <ListItemText primary={t('register')} className={styles.drawerItemText} />
                 </ListItem>
@@ -330,7 +301,7 @@ export default function Layout({
                 {t('footerTagline')}
               </Typography>
             </Box>
-            
+
             <Box className={styles.footerLinks}>
               <Box className={styles.footerLinkGroup}>
                 <Typography variant="subtitle2" className={styles.footerLinkTitle}>
@@ -346,7 +317,7 @@ export default function Layout({
                   {t('featuredTours')}
                 </Link>
               </Box>
-              
+
               <Box className={styles.footerLinkGroup}>
                 <Typography variant="subtitle2" className={styles.footerLinkTitle}>
                   {t('company')}
@@ -357,11 +328,11 @@ export default function Layout({
                 <Link href="/blog" className={styles.footerLink}>
                   {t('blog')}
                 </Link>
-                <Link href="/contact" className={styles.footerLink}>
-                  {t('contact')}
+                <Link href="/contact-us" className={styles.footerLink}>
+                  {t('contactUs')}
                 </Link>
               </Box>
-              
+
               <Box className={styles.footerLinkGroup}>
                 <Typography variant="subtitle2" className={styles.footerLinkTitle}>
                   {t('legal')}
@@ -378,14 +349,14 @@ export default function Layout({
               </Box>
             </Box>
           </Box>
-          
+
           <Divider className={styles.footerDivider} />
-          
+
           <Box className={styles.footerBottom}>
             <Typography variant="body2" className={styles.copyright}>
               &copy; {new Date().getFullYear()} Wakapadi. {t('allRightsReserved')}.
             </Typography>
-            
+
             <Box className={styles.socialLinks}>
               <Link href="#" className={styles.socialLink}>
                 <img src="/icons/facebook.svg" alt="Facebook" />

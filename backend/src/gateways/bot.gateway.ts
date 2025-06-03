@@ -15,7 +15,7 @@ import { QdrantService } from '../services/qdrant.service';
 import { NLPService } from '../services/nlp.service';
 import { ResponseService } from '../services/response.service';
 import { ConversationService } from '../services/conversation.service';
-import { FeedbackService } from '../services/feedback.service';
+import { FeedbackService } from '../services/bot_feedback.service';
 import { ConversationContext } from '../services/conversation.service';
 import { LLMService } from '../services/llm.service';
 
