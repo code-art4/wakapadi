@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useTranslation } from "next-i18next";
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import {
   Box,
@@ -15,7 +15,7 @@ import {
   Avatar,
   Chip,
   Alert,
-  Skeleton
+  Skeleton,
 } from '@mui/material';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -25,7 +25,10 @@ import { api } from '../lib/api/index';
 import { motion } from 'framer-motion';
 import PlaceIcon from '@mui/icons-material/Place';
 import styles from '../styles/whois.module.css';
+import funNames from '../lib/data/funNames.json';
 
+const getRandomFunName = () =>
+  funNames[Math.floor(Math.random() * funNames.length)];
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
   visible: (i = 1) => ({
@@ -34,15 +37,15 @@ const fadeInUp = {
     transition: {
       delay: i * 0.1,
       duration: 0.4,
-      ease: [0.25, 0.1, 0.25, 1]
-    }
-  })
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  }),
 };
 
 const statusColors = {
   active: '#10b981',
   idle: '#f59e0b',
-  offline: '#94a3b8'
+  offline: '#94a3b8',
 };
 
 interface User {
@@ -67,8 +70,15 @@ export default function WhoisPage() {
   const [hasMore, setHasMore] = useState(true);
   const [ref, inView] = useInView();
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation('common');
 
+  const chatbotUser: User = {
+    _id: 'chatbot-id',
+    userId: 'chatbot',
+    username: 'Lola the Bot 🤖',
+    anonymous: false,
+    lastSeen: new Date().toISOString(),
+  };
   useEffect(() => {
     setHasMounted(true);
     const token = localStorage.getItem('token');
@@ -77,40 +87,42 @@ export default function WhoisPage() {
     if (storedUserId) setUserId(storedUserId);
   }, []);
 
-  const fetchNearby = useCallback(async (targetCity: string, pageNum = 1) => {
-    try {
-      pageNum === 1 ? setLoading(true) : setLoadingMore(true);
-      setError(null);
-      
-      const res = await api.get('/whois/nearby', {
-        params: { 
-          city: targetCity, 
-          userId,
-          page: pageNum,
-          limit: 15
-        },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      
-      if (pageNum === 1) {
-        setUsers(res.data);
-      } else {
-        setUsers(prev => [...prev, ...res.data]);
-      }
-      
-      setHasMore(res.data.length === 15);
-    } catch (err) {
-      console.error('Fetch nearby failed:', err);
-      setError(t('fetchError'));
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, [userId, t]);
+  const fetchNearby = useCallback(
+    async (targetCity: string, pageNum = 1) => {
+      try {
+        pageNum === 1 ? setLoading(true) : setLoadingMore(true);
+        setError(null);
 
- 
+        const res = await api.get('/whois/nearby', {
+          params: {
+            city: targetCity,
+            userId,
+            page: pageNum,
+            limit: 15,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (pageNum === 1) {
+          console.log({ ...res.data });
+          setUsers([chatbotUser, ...res.data]);
+        } else {
+          setUsers((prev) => [chatbotUser, ...prev, ...res.data]);
+        }
+
+        setHasMore(res.data.length === 15);
+      } catch (err) {
+        console.error('Fetch nearby failed:', err);
+        setError(t('fetchError'));
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [userId, t]
+  );
 
   const pingPresence = async (targetCity: string) => {
     try {
@@ -134,7 +146,8 @@ export default function WhoisPage() {
 
   const getUserStatus = (lastSeen?: string) => {
     if (!lastSeen) return 'offline';
-    const minutesAgo = (new Date().getTime() - new Date(lastSeen).getTime()) / (1000 * 60);
+    const minutesAgo =
+      (new Date().getTime() - new Date(lastSeen).getTime()) / (1000 * 60);
     if (minutesAgo < 5) return 'active';
     if (minutesAgo < 30) return 'idle';
     return 'offline';
@@ -158,7 +171,12 @@ export default function WhoisPage() {
         navigator.geolocation.getCurrentPosition(
           async (pos) => {
             clearTimeout(timeout);
-            console.log("pos.coords.latitude", pos.coords.latitude, "pos.coords.longitude", pos.coords.longitude)
+            console.log(
+              'pos.coords.latitude',
+              pos.coords.latitude,
+              'pos.coords.longitude',
+              pos.coords.longitude
+            );
 
             try {
               const res = await fetch(
@@ -178,7 +196,9 @@ export default function WhoisPage() {
               await fetchNearby(detectedCity);
             } catch (geoErr) {
               console.error('Geocoding failed:', geoErr);
-              setError('Could not determine your location. Please try again or enter your city manually.');
+              setError(
+                'Could not determine your location. Please try again or enter your city manually.'
+              );
             } finally {
               setLoading(false);
             }
@@ -186,7 +206,9 @@ export default function WhoisPage() {
           (geoErr) => {
             clearTimeout(timeout);
             console.error('Geolocation error:', geoErr);
-            setError('Location access denied. Please enable location services to see nearby users.');
+            setError(
+              'Location access denied. Please enable location services to see nearby users.'
+            );
             setLoading(false);
           }
         );
@@ -245,7 +267,10 @@ export default function WhoisPage() {
                 <Typography variant="h1" className={styles.headerTitle}>
                   #{t('whoisNearby')}
                 </Typography>
-                <Typography variant="subtitle1" className={styles.headerSubtitle}>
+                <Typography
+                  variant="subtitle1"
+                  className={styles.headerSubtitle}
+                >
                   {t('discoverTravelers')}
                 </Typography>
               </motion.div>
@@ -257,7 +282,9 @@ export default function WhoisPage() {
                   transition={{ delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
                 >
                   <Chip
-                    label={`📍 ${t('near')} ${city.charAt(0).toUpperCase() + city.slice(1)}`}
+                    label={`📍 ${t('near')} ${
+                      city.charAt(0).toUpperCase() + city.slice(1)
+                    }`}
                     className={styles.locationChip}
                     icon={<PlaceIcon fontSize="small" />}
                   />
@@ -268,9 +295,9 @@ export default function WhoisPage() {
             {error && (
               <Alert severity="error" className={styles.errorAlert}>
                 {error}
-                <Button 
-                  variant="text" 
-                  color="inherit" 
+                <Button
+                  variant="text"
+                  color="inherit"
                   onClick={() => window.location.reload()}
                   sx={{ ml: 1 }}
                 >
@@ -291,12 +318,17 @@ export default function WhoisPage() {
                     color="primary"
                     inputProps={{ 'aria-label': t('toggleVisibility') }}
                   />
-                  <Typography ml={1} color={visible ? 'primary.main' : 'text.secondary'}>
+                  <Typography
+                    ml={1}
+                    color={visible ? 'primary.main' : 'text.secondary'}
+                  >
                     {visible ? t('visibleToOthers') : t('hidden')}
                   </Typography>
                 </Box>
                 <Typography variant="caption" mt={1} color="text.secondary">
-                  {visible ? t('visibilityDescription') : t('hiddenDescription')}
+                  {visible
+                    ? t('visibilityDescription')
+                    : t('hiddenDescription')}
                 </Typography>
               </Box>
             ) : (
@@ -343,13 +375,16 @@ export default function WhoisPage() {
                             <Box sx={{ overflow: 'hidden' }}>
                               <Typography className={styles.userName}>
                                 {user.anonymous
-                                  ? t('anonymousTraveler')
+                                  ? getRandomFunName()
                                   : user.username}
                                 <Box
                                   component="span"
                                   className={styles.statusIndicator}
                                   sx={{
-                                    backgroundColor: statusColors[getUserStatus(user.lastSeen)],
+                                    backgroundColor:
+                                      statusColors[
+                                        getUserStatus(user.lastSeen)
+                                      ],
                                     ...(user.anonymous && {
                                       backgroundColor: statusColors.offline,
                                     }),
@@ -372,8 +407,16 @@ export default function WhoisPage() {
                               variant="outlined"
                               color="primary"
                               className={styles.chatButton}
-                              onClick={() => router.push(`/chat/${user.userId}`)}
-                              aria-label={t('chatWith', { username: user.username })}
+                              onClick={() =>
+                                router.push(
+                                  user.userId === 'chatbot'
+                                    ? 'chatbot'
+                                    : `/chat/${user.userId}`
+                                )
+                              }
+                              aria-label={t('chatWith', {
+                                username: user.username,
+                              })}
                               startIcon={<span>💬</span>}
                             >
                               {t('chat')}
@@ -381,11 +424,13 @@ export default function WhoisPage() {
                           )}
                         </Box>
                       </ListItem>
-                      {index < users.length - 1 && <Divider className={styles.userDivider} />}
+                      {index < users.length - 1 && (
+                        <Divider className={styles.userDivider} />
+                      )}
                     </motion.div>
                   ))}
                 </List>
-                
+
                 <div ref={ref} className={styles.infiniteScrollLoader}>
                   {loadingMore && <CircularProgress size={24} />}
                   {!hasMore && users.length > 0 && (
@@ -398,9 +443,7 @@ export default function WhoisPage() {
             ) : (
               <Box className={styles.emptyState}>
                 <Typography variant="body1" mb={2}>
-                  {isLoggedIn
-                    ? t('noUsersFound')
-                    : t('loginPrompt')}
+                  {isLoggedIn ? t('noUsersFound') : t('loginPrompt')}
                 </Typography>
                 {!isLoggedIn && (
                   <Button
