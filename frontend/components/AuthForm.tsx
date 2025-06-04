@@ -88,6 +88,7 @@ export default function AuthPage() {
       localStorage.setItem('userId', res.data.userId);
       handleSuccessfulAuth();
     } catch (err) {
+      console.error('error', err);
       setError('Google login failed. Please try another method.');
     }
   };
