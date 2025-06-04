@@ -71,8 +71,10 @@ export default function AuthPage() {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('userId', res.data.userId);
       handleSuccessfulAuth();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Authentication failed');
+    } catch (err: { err: { response: { data: { message: string } } } }) {
+      setError(
+        (err && err?.response?.data?.message) || 'Authentication failed'
+      );
     }
   };
 
