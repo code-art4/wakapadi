@@ -146,6 +146,7 @@ export default function HomePage() {
           locations={locations} 
           onSearch={handleSearchInput} 
           initialValue={typeof q === 'string' ? q : ''}
+          suggestion={suggestion}
         />
 
         <Container maxWidth="lg" className={styles.tourContainer} component="section" aria-labelledby="tours-section-title">

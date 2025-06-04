@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, MouseEvent } from 'react';
 import { useRouter } from 'next/router';
 import {
   Avatar,
@@ -9,14 +9,10 @@ import {
   Container,
   Divider,
   IconButton,
-  List,
   ListItem,
-  ListItemAvatar,
-  ListItemText,
   Popover,
   TextField,
   Typography,
-  Snackbar,
   Alert,
   Menu,
   MenuItem,
@@ -83,7 +79,9 @@ export default function ChatPage() {
   const [socketConnected, setSocketConnected] = useState(false);
   const [messageOptionsAnchorEl, setMessageOptionsAnchorEl] =
     useState<null | HTMLElement>(null);
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null
+  );
   const [toName, setToName] = useState<string>('');
   const [toAvatar, setToAvatar] = useState<string>('');
 
@@ -92,7 +90,6 @@ export default function ChatPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messageDedupeMap = useRef<Set<string>>(new Set());
   const { clearNotificationsFromUser } = useNotifications(currentUserId);
-
 
   useEffect(() => {
     if (otherUserId) {
@@ -107,7 +104,7 @@ export default function ChatPage() {
     const unreadIds = messages
       .filter((msg) => !msg.read && msg.fromUserId === otherUserId)
       .map((msg) => msg._id);
-  
+
     if (unreadIds.length > 0 && socketRef.current) {
       socketRef.current.emit('message:read', {
         toUserId: currentUserId,
@@ -116,7 +113,7 @@ export default function ChatPage() {
       });
     }
   }, [messages, currentUserId, otherUserId]);
-  
+
   // Main socket effect
   useEffect(() => {
     if (!router.isReady || !currentUserId) {
@@ -138,15 +135,12 @@ export default function ChatPage() {
       return;
     }
 
-    const socket = io(
-      process.env.NEXT_PUBLIC_SOCKET_URL!,
-      {
-        path: '/socket.io',
-        transports: ['websocket'],
-        auth: { token: localStorage.getItem('token') || '' },
-        withCredentials: true,
-      }
-    );
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
+      path: '/socket.io',
+      transports: ['websocket'],
+      auth: { token: localStorage.getItem('token') || '' },
+      withCredentials: true,
+    });
 
     socketRef.current = socket;
 
@@ -223,7 +217,7 @@ export default function ChatPage() {
       );
     };
 
-    const onNewMessage = (msg: any) => {
+    const onNewMessage = (msg: Message) => {
       // Deduplication check
       if (
         messageDedupeMap.current.has(msg._id) ||
@@ -275,7 +269,7 @@ export default function ChatPage() {
             reactions: msg.reactions || [],
             status: 'sent',
           };
-            console.log("new m", newMessage)
+          console.log('new m', newMessage);
           if (newMessage.fromUserId === otherUserId && !newMessage.read) {
             socket.emit('message:read', {
               toUserId: currentUserId,
@@ -283,12 +277,12 @@ export default function ChatPage() {
               messageIds: [newMessage._id],
             });
             return [...prev, newMessage];
-          // if (newMessage.fromUserId === otherUserId && !newMessage.read) {
-          //   return [...prev, newMessage]; // don't mark read immediately
+            // if (newMessage.fromUserId === otherUserId && !newMessage.read) {
+            //   return [...prev, newMessage]; // don't mark read immediately
           }
-          
-            // return [...prev, { ...newMessage, read: true }];
-          
+
+          // return [...prev, { ...newMessage, read: true }];
+
           return [...prev, newMessage];
         }
       });
@@ -314,7 +308,7 @@ export default function ChatPage() {
         const res = await api.get(
           `/whois/chat/${otherUserId}/${otherUserIdParam}`
         );
-        const msgs = res.data.messages.map((msg: any) => ({
+        const msgs = res.data.messages.map((msg: Message) => ({
           _id: msg._id,
           message: msg.message,
           fromUserId: msg.fromUserId,
@@ -328,7 +322,7 @@ export default function ChatPage() {
           status: 'sent',
         }));
         setToName(res.data.otherUser.username);
-        setToAvatar(res.data.otherUser.avatarUrl)
+        setToAvatar(res.data.otherUser.avatarUrl);
         // Add to dedupe map
         msgs.forEach((msg: Message) => messageDedupeMap.current.add(msg._id));
 
@@ -439,7 +433,7 @@ export default function ChatPage() {
     setEmojiAnchorEl(e.currentTarget);
   };
 
-  const handleEmojiSelect = (emoji: any) => {
+  const handleEmojiSelect = (emoji: {native:boolean}) => {
     setText((prev) => prev + emoji.native);
     setEmojiAnchorEl(null);
   };
@@ -513,7 +507,8 @@ export default function ChatPage() {
 
         {/* Safety Alert */}
         <Alert severity="warning" className={styles.safetyAlert}>
-          Always meet in public and secure locations. Never share personal information.
+          Always meet in public and secure locations. Never share personal
+          information.
         </Alert>
 
         {/* Connection Error */}
@@ -543,7 +538,9 @@ export default function ChatPage() {
                     <ListItem
                       key={msg._id}
                       className={`${styles.messageItem} ${
-                        msg.fromSelf ? styles.messageItemSelf : styles.messageItemOther
+                        msg.fromSelf
+                          ? styles.messageItemSelf
+                          : styles.messageItemOther
                       }`}
                     >
                       <ChatBubble
@@ -557,7 +554,7 @@ export default function ChatPage() {
                       />
                       <IconButton
                         className={styles.messageOptionsButton}
-                        onClick={(e) => handleMessageOptionsClick(e, msg._id)}
+                        onClick={(e: MouseEvent<HTMLElement, MouseEvent>) => handleMessageOptionsClick(e, msg._id)}
                       >
                         <MoreVertIcon />
                       </IconButton>
@@ -594,8 +591,8 @@ export default function ChatPage() {
 
         {/* Input Area */}
         <Box className={styles.inputContainer}>
-          <IconButton 
-            className={styles.emojiButton} 
+          <IconButton
+            className={styles.emojiButton}
             onClick={handleEmojiClick}
             aria-label="Add emoji"
           >
@@ -623,7 +620,9 @@ export default function ChatPage() {
           <Button
             variant="contained"
             onClick={handleSend}
-            disabled={!text.trim() || !socketConnected || loading || !otherUserId}
+            disabled={
+              !text.trim() || !socketConnected || loading || !otherUserId
+            }
             className={styles.sendButton}
           >
             Send
@@ -633,4 +632,3 @@ export default function ChatPage() {
     </Layout>
   );
 }
-    

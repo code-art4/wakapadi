@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import {
   Container, Typography, CircularProgress, ListItemAvatar,
-  Avatar, Box, List, ListItem, ListItemText, Chip, Divider, Button,
+  Avatar, Box, List, ListItem, ListItemText, Chip, Button,
   TextField, MenuItem, Select, OutlinedInput, Snackbar, Alert, IconButton
 } from '@mui/material';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Chat as ChatIcon, Person as PersonIcon } from '@mui/icons-material';
+import { Chat as ChatIcon } from '@mui/icons-material';
 import Link from 'next/link';
 import io, { Socket } from 'socket.io-client';
 import Layout from '../components/Layout';

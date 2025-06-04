@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {
   Container, Typography, Box, Chip, CircularProgress,
-  Avatar, Divider, List, ListItem, ListItemText, ListItemAvatar, Button, Snackbar, Alert, IconButton
+  Avatar, Divider, List, ListItem, ListItemText, ListItemAvatar, Snackbar, Alert, IconButton
 } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import BlockIcon from '@mui/icons-material/Block';
@@ -11,15 +11,33 @@ import ReportIcon from '@mui/icons-material/Report';
 import Layout from '../../components/Layout';
 import { api } from '../../lib/api/index';
 import moment from 'moment-timezone';
+interface Peer {
+  _id: string;
+  username: string;
+  avatarUrl?: string;
+  travelPrefs?: string[];
+  languages?: string[];
+  socials?: {
+    instagram?: string;
+    twitter?: string;
+  };
+}
+
+interface Message {
+  fromUserId: string;
+  toUserId: string;
+  message: string;
+  timestamp?: string;
+}
 
 const PeerProfile = () => {
   const router = useRouter();
   const { userId } = router.query;
 
-  const [peer, setPeer] = useState<any>(null);
+  const [peer, setPeer] = useState<Peer>(null);
   const [loading, setLoading] = useState(true);
   const [lastSeen, setLastSeen] = useState<string>('');
-  const [mutualMessages, setMutualMessages] = useState<any[]>([]);
+  const [mutualMessages, setMutualMessages] = useState<Message[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {

@@ -62,8 +62,12 @@ export default function AuthPage() {
 
     try {
       const endpoint = isLogin ? 'login' : 'register';
-      const res = await api.post(`/auth/${endpoint}`, { email, username, password });
-      
+      const res = await api.post(`/auth/${endpoint}`, {
+        email,
+        username,
+        password,
+      });
+
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('userId', res.data.userId);
       handleSuccessfulAuth();
@@ -72,12 +76,14 @@ export default function AuthPage() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse: {
+    credential: { response: string };
+  }) => {
     try {
-      const res = await api.post('/auth/google/token', { 
-        idToken: credentialResponse.credential 
+      const res = await api.post('/auth/google/token', {
+        idToken: credentialResponse.credential,
       });
-      
+
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('userId', res.data.userId);
       handleSuccessfulAuth();
@@ -156,7 +162,8 @@ export default function AuthPage() {
             }
             label={
               <span className={styles.termsText}>
-                I agree to the <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>
+                I agree to the <Link href="/terms">Terms</Link> and{' '}
+                <Link href="/privacy">Privacy Policy</Link>
               </span>
             }
             className={styles.termsCheckbox}
@@ -182,7 +189,7 @@ export default function AuthPage() {
       <Box className={styles.switchAuthMode}>
         <Typography variant="body2">
           {isLogin ? "Don't have an account?" : 'Already have an account?'}
-          <Link 
+          <Link
             onClick={() => {
               setIsLogin(!isLogin);
               setError('');

@@ -29,7 +29,7 @@ export default function ContactForm() {
     e.preventDefault();
     setStatus('Sending...');
     try {
-      const res = await api.post(`/contact`, { ...form });
+      await api.post(`/contact`, { ...form });
 
       setStatus('Message sent!');
       setForm(initialForm);

@@ -2,16 +2,15 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Layout from '../../../components/Layout';
-import styles from '../../../styles/SingleTour.module.css'; // Make sure this CSS module exists and is correctly referenced
+import styles from '../../../styles/SingleTour.module.css'; 
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-import dynamic from 'next/dynamic'; // Import dynamic
+import dynamic from 'next/dynamic';
 
 import {
   Box,
   Typography,
-  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -269,7 +268,7 @@ export default function SingleTourPage() {
           }} role="alert">
             <WarningIcon color="error" sx={{ fontSize: 40, mb: 2 }} aria-hidden="true" />
             <Typography variant="h5" color="error" gutterBottom>
-              Failed to load tour
+              Failed to load tour: {t("failed")}
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
               {error}

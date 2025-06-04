@@ -1,9 +1,10 @@
-import { Card, CardContent, CardMedia, Typography, Button, Box, Skeleton } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, Skeleton } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { Tour } from '../../pages';
 import styles from './TourCard.module.css';
 import Image from 'next/image';
 import { useState } from 'react';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const highlightText = (text: string = '', highlight: string = '') => {
   if (!highlight || !text) return text;
@@ -56,7 +57,7 @@ export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlig
           </div>
         ) : (
           <div className={styles.imagePlaceholder}>
-            <LocationOn className={styles.placeholderIcon} />
+            <LocationOnIcon className={styles.placeholderIcon} />
           </div>
         )}
 

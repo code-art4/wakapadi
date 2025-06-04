@@ -21,12 +21,14 @@ interface HeroSectionProps {
   locations?: string[];
   onSearch?: (term: string) => void;
   initialValue?: string;
+  suggestion?: string; // ✅ Added
 }
 
 export default function HeroSection({ 
   locations = [], 
   onSearch, 
-  initialValue = '' 
+  initialValue = '', 
+  suggestion // ✅ Accept the prop
 }: HeroSectionProps) {
   const { t } = useTranslation('common');
   const [input, setInput] = useState(initialValue);
@@ -35,6 +37,13 @@ export default function HeroSection({
   const heroRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const isMobile = useMediaQuery('(max-width:768px)');
+
+  // ✅ Update input when suggestion changes
+  useEffect(() => {
+    if (typeof suggestion === 'string') {
+      setInput(suggestion);
+    }
+  }, [suggestion]);
 
   // Debounced search
   useEffect(() => {
@@ -80,9 +89,7 @@ export default function HeroSection({
 
       {/* Search Container */}
       <div 
-      style={{
-        zIndex:"1200",
-      }}
+        style={{ zIndex: '1200' }}
         className={`${styles.searchContainer} ${isFixed ? styles.fixed : ''}`}
         aria-live="polite"
       >

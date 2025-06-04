@@ -1,12 +1,11 @@
 // pages/reset-password.tsx
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Container,
   TextField,
   Typography,
   Button,
-  Alert,
-  Box,
+  Alert
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { api } from '../lib/api/index';

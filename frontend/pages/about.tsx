@@ -11,13 +11,13 @@ export default function AboutPage() {
   return (
     <Layout title="About | Wakapadi">
       <Head>
-        <meta name="description" content="Learn about Wakapadi's mission to connect travelers worldwide" />
+        <meta name="description" content="Learn about Wakapadi&apos;s mission to connect travelers worldwide" />
       </Head>
 
       <Container className={styles.container}>
         <Paper className={styles.contentPaper}>
           <Typography variant="h2" className={styles.pageTitle}>
-            Our Story
+            {t("ourStory")}
           </Typography>
           
           <Typography className={styles.bodyText}>
@@ -53,8 +53,8 @@ export default function AboutPage() {
           </Typography>
           
           <Typography className={styles.bodyText}>
-            Whether you're a traveler seeking authentic experiences or a local wanting to 
-            share your city's hidden gems, we'd love to have you onboard. Connect with us 
+            Whether you&apos;re a traveler seeking authentic experiences or a local wanting to 
+            share your city&apos;s hidden gems, we&apos;d love to have you onboard. Connect with us 
             at <span className={styles.contactEmail}>hello@wakapadi.com</span>.
           </Typography>
         </Paper>

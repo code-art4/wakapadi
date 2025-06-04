@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 import {
   Box,
   Button,
@@ -17,40 +17,83 @@ import styles from '../styles/bot.module.css';
 import TourCard from '../components/ChatTourCard';
 
 const Picker = dynamic(() => import('@emoji-mart/react'), { ssr: false });
-
+interface Result {
+  payload: {
+    title: string;
+    location: string;
+    rating: number;
+    externalPageUrl: string;
+    description: string;
+  };
+}
 interface ChatMessage {
   text: string;
   fromSelf: boolean;
   timestamp?: Date;
   followUp?: boolean;
-  results?: any[];
+  results?: Result[];
 }
 
 interface BotResponse {
   text: string;
-  results?: any[];
+  results?: Result[];
   followUp?: boolean;
 }
 
-const ChatBubble = ({ message, fromSelf, avatar, createdAt, followUp, onFeedback }) => {
+const ChatBubble = ({
+  message,
+  fromSelf,
+  avatar,
+  createdAt,
+  followUp,
+  onFeedback,
+}: {
+  message: ReactNode;
+  fromSelf: boolean;
+  avatar: string;
+  createdAt: string;
+  followUp?: boolean;
+  onFeedback?: (helpful: boolean) => void;
+}) => {
   return (
-    <div className={`${styles.messageItem} ${fromSelf ? styles.messageItemSelf : styles.messageItemOther}`}>
+    <div
+      className={`${styles.messageItem} ${
+        fromSelf ? styles.messageItemSelf : styles.messageItemOther
+      }`}
+    >
       {!fromSelf && avatar && (
         <img src={avatar} className={styles.avatar} alt="Bot avatar" />
       )}
-      <div className={`${styles.messageBubble} ${fromSelf ? styles.messageBubbleSelf : styles.messageBubbleOther}`}>
+      <div
+        className={`${styles.messageBubble} ${
+          fromSelf ? styles.messageBubbleSelf : styles.messageBubbleOther
+        }`}
+      >
         <div className={styles.messageText}>{message}</div>
         <div className={styles.messageMeta}>
           <span className={styles.messageTime}>
-            {createdAt ? new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+            {createdAt
+              ? new Date(createdAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : ''}
           </span>
         </div>
         {followUp && !fromSelf && (
           <Box sx={{ mt: 1 }}>
             <Typography variant="caption">Was this helpful?</Typography>
             <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-              <Button size="small" onClick={() => onFeedback(true)}>👍 Yes</Button>
-              <Button size="small" onClick={() => onFeedback(false)}>👎 No</Button>
+              {onFeedback && (
+                <Button size="small" onClick={() => onFeedback(true)}>
+                  👍 Yes
+                </Button>
+              )}
+              {onFeedback && (
+                <Button size="small" onClick={() => onFeedback(false)}>
+                  👎 No
+                </Button>
+              )}
             </Box>
           </Box>
         )}
@@ -83,11 +126,13 @@ export default function ChatBotPage() {
         console.warn('Could not parse saved chat history');
       }
     } else {
-      setMessages([{
-        text: "🤖 Hello! I'm your tour assistant. Ask me about tours in any city!",
-        fromSelf: false,
-        timestamp: new Date()
-      }]);
+      setMessages([
+        {
+          text: "🤖 Hello! I'm your tour assistant. Ask me about tours in any city!",
+          fromSelf: false,
+          timestamp: new Date(),
+        },
+      ]);
     }
 
     const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
@@ -117,7 +162,7 @@ export default function ChatBotPage() {
     socket.on('bot:response', (response: string | BotResponse) => {
       let messageText: string;
       let followUp = false;
-      let results = [];
+      let results: Result[] = [];
 
       if (typeof response === 'string') {
         messageText = response;
@@ -128,13 +173,16 @@ export default function ChatBotPage() {
       }
 
       setMessages((prev) => {
-        const updated = [...prev, {
-          text: messageText,
-          fromSelf: false,
-          timestamp: new Date(),
-          followUp,
-          results
-        }];
+        const updated = [
+          ...prev,
+          {
+            text: messageText,
+            fromSelf: false,
+            timestamp: new Date(),
+            followUp,
+            results,
+          },
+        ];
         return updated.slice(-100);
       });
 
@@ -142,9 +190,9 @@ export default function ChatBotPage() {
 
       if (followUp) {
         setSuggestedFollowUps([
-          "Show more options",
-          "Find cheaper alternatives",
-          "What's the most popular?"
+          'Show more options',
+          'Find cheaper alternatives',
+          "What's the most popular?",
         ]);
       }
     });
@@ -173,7 +221,7 @@ export default function ChatBotPage() {
     const newMessage: ChatMessage = {
       text,
       fromSelf: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, newMessage].slice(-100));
@@ -181,17 +229,21 @@ export default function ChatBotPage() {
     setSuggestedFollowUps([]);
     setIsBotTyping(true);
 
-    socketRef.current.emit('bot:message', {
-      message: text,
-      context: {
-        lastMessages: messages.slice(-3).map(m => m.text)
+    socketRef.current.emit(
+      'bot:message',
+      {
+        message: text,
+        context: {
+          lastMessages: messages.slice(-3).map((m) => m.text),
+        },
+      },
+      (err: Error) => {
+        if (err) {
+          // setError('Failed to send message');
+          setIsBotTyping(false);
+        }
       }
-    }, (err: Error) => {
-      if (err) {
-        // setError('Failed to send message');
-        setIsBotTyping(false);
-      }
-    });
+    );
   }, [text, messages]);
 
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,7 +254,7 @@ export default function ChatBotPage() {
     setEmojiAnchorEl(e.currentTarget);
   };
 
-  const handleEmojiSelect = (emoji: any) => {
+  const handleEmojiSelect = (emoji: { native: string }) => {
     setText((prev) => prev + emoji.native);
     setEmojiAnchorEl(null);
   };
@@ -253,17 +305,16 @@ export default function ChatBotPage() {
                 onFeedback={(helpful: boolean) => {
                   if (socketRef.current) {
                     socketRef.current.emit('bot:feedback', {
-                  
-                      isHelpful: Boolean(helpful),  // Ensures it's a real boolean
-                      response:helpful?"helpful":"not helpful",
+                      isHelpful: Boolean(helpful), // Ensures it's a real boolean
+                      response: helpful ? 'helpful' : 'not helpful',
                       messageId: msg.text,
                     });
                   }
                 }}
               />
-              {msg.results?.length > 0 && (
+              {msg.results && msg.results.length > 0 && (
                 <Box sx={{ ml: msg.fromSelf ? 0 : 6 }}>
-                  {msg.results.map((tour, idx) => (
+                  {msg.results?.map((tour, idx) => (
                     <TourCard
                       key={idx}
                       title={tour.payload.title}
@@ -331,7 +382,9 @@ export default function ChatBotPage() {
 
           <TextField
             fullWidth
-            placeholder={socketConnected ? "Ask me about tours..." : "Connecting..."}
+            placeholder={
+              socketConnected ? 'Ask me about tours...' : 'Connecting...'
+            }
             value={text}
             onChange={handleTyping}
             onKeyDown={handleKeyDown}
