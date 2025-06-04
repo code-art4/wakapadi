@@ -90,7 +90,9 @@ export default function WhoisPage() {
   const fetchNearby = useCallback(
     async (targetCity: string, pageNum = 1) => {
       try {
-        pageNum === 1 ? setLoading(true) : setLoadingMore(true);
+        // (() => {
+        //   pageNum === 1 ? setLoading(true) : setLoadingMore(true);
+        // })();
         setError(null);
 
         const res = await api.get('/whois/nearby', {
