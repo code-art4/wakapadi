@@ -139,7 +139,7 @@ export default function ChatPage() {
     }
 
     const socket = io(
-      process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
+      process.env.NEXT_PUBLIC_SOCKET_URL!,
       {
         path: '/socket.io',
         transports: ['websocket'],

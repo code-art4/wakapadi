@@ -34,7 +34,7 @@ import { GeolocationModule } from './modules/geolocation..module';
     ConfigModule.forRoot({ isGlobal: true }),
 
     ScheduleModule.forRoot(),
-    MongooseModule.forRoot('mongodb://localhost:27017/wakapadi'),
+    MongooseModule.forRoot(process.env.MONGODB_URI!),
     AssistantModule,
     TourModule,
     FeedbackModule,
