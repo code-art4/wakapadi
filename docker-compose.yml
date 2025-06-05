@@ -20,6 +20,7 @@ services:
       - MAILGUN_API_KEY=${MAILGUN_API_KEY}
       - MAILGUN_DOMAIN=${MAILGUN_DOMAIN}
       - NODE_ENV=${NODE_ENV}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     # depends_on:
     #   - qdrant
     #   - ollama
