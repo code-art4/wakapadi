@@ -21,7 +21,6 @@ services:
       - MAILGUN_DOMAIN=${MAILGUN_DOMAIN}
       - NODE_ENV=${NODE_ENV}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - EMBED_SERVICE_URL=http://embed_service:5000
     depends_on:
       - embed_service
       # - qdrant
@@ -49,7 +48,7 @@ services:
     build: ./embed_service
     container_name: embed_service
     ports:
-      - '5050:5000'
+      - '5050:5050'
 volumes:
   qdrant_data:
   ollama_models:
