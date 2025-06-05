@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <Layout title='Login Page - Wakapadi'>
     <Container sx={{ mt: 6 }}>
-      <AuthForm mode="login" />
+      <AuthForm />
     </Container>
     </Layout>
   );

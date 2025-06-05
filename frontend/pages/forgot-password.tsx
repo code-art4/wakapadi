@@ -1,5 +1,5 @@
 // pages/forgot-password.tsx
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import { Container, TextField, Typography, Button, Alert } from '@mui/material';
 import { api } from '../lib/api/index';
 import Layout from '../components/Layout';
@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setError('');
     setMessage('');
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
             label="Email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: { target: { value: SetStateAction<string>; }; }) => setEmail(e.target.value)}
             margin="normal"
             required
           />

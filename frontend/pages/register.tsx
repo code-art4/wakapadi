@@ -8,7 +8,7 @@ export default function RegisterPage() {
     <Layout title='Registration Page - Wakapadi'>
 
     <Container sx={{ mt: 6 }}>
-      <AuthForm mode="register" />
+      <AuthForm />
     </Container>
     </Layout>
   );

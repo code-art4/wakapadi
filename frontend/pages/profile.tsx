@@ -27,6 +27,7 @@ import Layout from '../components/Layout';
 import moment from 'moment';
 import { api } from '../lib/api/index';
 import styles from '../styles/Profile.module.css';
+import { StringNullableChain } from 'lodash';
 
 interface User {
   _id: string;
@@ -34,6 +35,7 @@ interface User {
   avatarUrl?: string;
   travelPrefs?: string[];
   languages?: string[];
+  bio?:StringNullableChain;
   socials?: {
     instagram?: string;
     twitter?: string;
@@ -172,7 +174,7 @@ export default function ProfilePage() {
               />
               <h2 className={styles.username}>{user.username}</h2>
               {/* Add a short bio or tagline here if available from API */}
-              {user.bio && <p className={styles.userBio}>{user.bio}</p>}
+              {/* {user.bio && <div><p className={styles.userBio}>{user.bio}.</p></div>} */}
             </div>
           )}
         </header>
@@ -332,7 +334,6 @@ export default function ProfilePage() {
                     <ListItem
                       key={conv._id}
                       className={styles.conversationItem}
-                      button
                       component={Link}
                       href={`/chat/${conv.otherUser._id}`}
                       aria-label={`Chat with ${conv.otherUser.username}`}

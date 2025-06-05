@@ -1,7 +1,11 @@
-// Updated for SEO, Accessibility, and Production Readiness
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
-  Box, Button, Typography, Pagination, Skeleton, Container
+  Box,
+  Button,
+  Typography,
+  Pagination,
+  Skeleton,
+  Container,
 } from '@mui/material';
 import Head from 'next/head';
 import Layout from '../components/Layout';
@@ -43,9 +47,10 @@ export default function HomePage() {
   const filteredTours = useMemo(() => {
     if (!tours.length) return [];
     return search
-      ? tours.filter(t =>
-          t.location.toLowerCase().includes(search.toLowerCase()) ||
-          t.title.toLowerCase().includes(search.toLowerCase())
+      ? tours.filter(
+          (t) =>
+            t.location.toLowerCase().includes(search.toLowerCase()) ||
+            t.title.toLowerCase().includes(search.toLowerCase())
         )
       : tours;
   }, [tours, search]);
@@ -77,15 +82,22 @@ export default function HomePage() {
     }
   }, [q]);
 
-  const debouncedSearch = useMemo(() => debounce((value: string) => {
-    setSearch(value);
-    setPage(1);
-  }, 400), []);
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearch(value);
+        setPage(1);
+      }, 400),
+    []
+  );
 
-  const handleSearchInput = useCallback((value: string) => {
-    setSuggestion(value);
-    debouncedSearch(value);
-  }, [debouncedSearch]);
+  const handleSearchInput = useCallback(
+    (value: string) => {
+      setSuggestion(value);
+      debouncedSearch(value);
+    },
+    [debouncedSearch]
+  );
 
   useEffect(() => {
     setTotalPages(Math.ceil(filteredTours.length / PER_PAGE) || 1);
@@ -98,30 +110,42 @@ export default function HomePage() {
     return filteredTours.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   }, [filteredTours, page]);
 
-  const handlePageChange = useCallback((_: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-    window.scrollTo({ top: topRef.current?.offsetTop || 0, behavior: 'smooth' });
-  }, []);
+  const handlePageChange = useCallback(
+    (_: React.ChangeEvent<unknown>, value: number) => {
+      setPage(value);
+      window.scrollTo({
+        top: topRef.current?.offsetTop || 0,
+        behavior: 'smooth',
+      });
+    },
+    []
+  );
 
-  const locations = useMemo(() => [...new Set(tours.map(t => t.location))], [tours]);
+  const locations = useMemo(
+    () => [...new Set(tours.map((t) => t.location))],
+    [tours]
+  );
 
   useEffect(() => {
     const detectAndScrapeCity = async () => {
       try {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-        });
-        const { latitude, longitude } = position.coords;
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+        const position = await new Promise<GeolocationPosition>(
+          (resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          }
         );
-        const geocode = await res.json();
-        const city = (geocode.address.city || geocode.address.town || '').trim().toLowerCase();
-        if (!city) return;
+        const { latitude, longitude } = position.coords;
+        const res = await api.get(
+          `/geolocation/reverse?lat=${latitude}&lon=${longitude}`
+        );
 
-        const scrapeRes = await api.post('/scraper/new/city', { city });
-        const result = await scrapeRes.json();
-        if (result.added) await fetchTours();
+        const geocode = res.data;
+        const city = (geocode.address.city || geocode.address.town || '')
+          .trim()
+          .toLowerCase();
+        await api.post('/scraper/new/city', { city });
+        const result = await res.data;
+        if (result) await fetchTours();
       } catch (err) {
         console.warn('Skipping geolocation-based scraping', err);
       }
@@ -142,16 +166,21 @@ export default function HomePage() {
       </Head>
       <Layout title={t('homePageTitle')}>
         <div ref={topRef} className={styles.anchor} aria-hidden="true" />
-        <HeroSection 
-          locations={locations} 
-          onSearch={handleSearchInput} 
+        <HeroSection
+          locations={locations}
+          onSearch={handleSearchInput}
           initialValue={typeof q === 'string' ? q : ''}
           suggestion={suggestion}
         />
 
-        <Container maxWidth="lg" className={styles.tourContainer} component="section" aria-labelledby="tours-section-title">
-          <Typography 
-            variant="h2" 
+        <Container
+          maxWidth="lg"
+          className={styles.tourContainer}
+          component="section"
+          aria-labelledby="tours-section-title"
+        >
+          <Typography
+            variant="h2"
             className={styles.sectionTitle}
             component="h2"
             id="tours-section-title"
@@ -162,8 +191,8 @@ export default function HomePage() {
           {error ? (
             <Box className={styles.errorContainer} role="alert">
               <Typography color="error">{error}</Typography>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 onClick={() => window.location.reload()}
                 className={styles.retryButton}
               >
@@ -173,23 +202,33 @@ export default function HomePage() {
           ) : (
             <>
               <div className={styles.tourGrid} role="list">
-                {loading ? (
-                  Array.from({ length: PER_PAGE }).map((_, i) => (
-                    <div key={`skeleton-${i}`} className={styles.gridItem} role="listitem">
-                      <Skeleton variant="rectangular" className={styles.skeletonCard} height={380} />
-                    </div>
-                  ))
-                ) : (
-                  paginatedTours.map(tour => (
-                    <div key={tour.id} className={styles.gridItem} role="listitem">
-                      <TourCard 
-                        tour={tour} 
-                        highlight={search} 
-                        aria-label={`Tour to ${tour.location}`}
-                      />
-                    </div>
-                  ))
-                )}
+                {loading
+                  ? Array.from({ length: PER_PAGE }).map((_, i) => (
+                      <div
+                        key={`skeleton-${i}`}
+                        className={styles.gridItem}
+                        role="listitem"
+                      >
+                        <Skeleton
+                          variant="rectangular"
+                          className={styles.skeletonCard}
+                          height={380}
+                        />
+                      </div>
+                    ))
+                  : paginatedTours.map((tour) => (
+                      <div
+                        key={tour.id}
+                        className={styles.gridItem}
+                        role="listitem"
+                      >
+                        <TourCard
+                          tour={tour}
+                          highlight={search}
+                          aria-label={`Tour to ${tour.location}`}
+                        />
+                      </div>
+                    ))}
               </div>
 
               {!loading && totalPages > 1 && (
@@ -207,7 +246,7 @@ export default function HomePage() {
                     aria-label={t('paginationNavigation')}
                     classes={{
                       root: styles.paginationRoot,
-                      ul: styles.paginationList
+                      ul: styles.paginationList,
                     }}
                   />
                 </Box>
@@ -221,8 +260,8 @@ export default function HomePage() {
                 {t('noToursFound')}
               </Typography>
               {search && (
-                <Button 
-                  variant="text" 
+                <Button
+                  variant="text"
                   onClick={() => setSearch('')}
                   className={styles.clearSearchButton}
                 >

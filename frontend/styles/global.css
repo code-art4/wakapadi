@@ -1,3 +1,17 @@
+/* Base Styles & Typography */
+:root {
+  --primary-color: #4A90E2; 
+  --secondary-color: #50E3C2; 
+  --text-color-dark: #333;
+  --text-color-light: #555;
+  --bg-color-light: #F8F9FA; 
+  --card-bg-color: #FFFFFF;
+  --border-color: #E0E0E0;
+  --shadow-light: 0px 4px 15px rgba(0, 0, 0, 0.05);
+  --border-radius: 12px;
+}
+
+
 /* Optional: Add smooth scrolling */
 html {
     scroll-behavior: smooth;
@@ -8,4 +22,10 @@ html {
     /* font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; */
     color: #333;
     line-height: 1.6;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif; /* Use a modern font, ensure it's imported in _app.js or similar */
+    background-color: var(--bg-color-light);
+    color: var(--text-color-dark);
   }

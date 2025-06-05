@@ -34,7 +34,7 @@ const PeerProfile = () => {
   const router = useRouter();
   const { userId } = router.query;
 
-  const [peer, setPeer] = useState<Peer>(null);
+  const [peer, setPeer] = useState<Peer|null>(null);
   const [loading, setLoading] = useState(true);
   const [lastSeen, setLastSeen] = useState<string>('');
   const [mutualMessages, setMutualMessages] = useState<Message[]>([]);
@@ -57,7 +57,7 @@ const PeerProfile = () => {
           console.log('History:', history.data);
           setMutualMessages(history.data.messages || []);
         } catch (err) {
-          console.error('Failed to load peer profile:', err.config?.url, err.response?.data || err.message);
+          console.error('Failed to load peer profile:', err);
         } finally {
           setLoading(false);
         }

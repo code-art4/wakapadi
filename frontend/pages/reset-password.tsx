@@ -1,12 +1,6 @@
 // pages/reset-password.tsx
-import { useState } from 'react';
-import {
-  Container,
-  TextField,
-  Typography,
-  Button,
-  Alert
-} from '@mui/material';
+import { SetStateAction, useState } from 'react';
+import { Container, TextField, Typography, Button, Alert } from '@mui/material';
 import { useRouter } from 'next/router';
 import { api } from '../lib/api/index';
 import Layout from '../components/Layout';
@@ -19,7 +13,7 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setError('');
     setMessage('');
@@ -78,7 +72,9 @@ export default function ResetPasswordPage() {
             type="password"
             margin="normal"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: { target: { value: SetStateAction<string> } }) =>
+              setPassword(e.target.value)
+            }
             required
           />
           <TextField
@@ -87,7 +83,9 @@ export default function ResetPasswordPage() {
             type="password"
             margin="normal"
             value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            onChange={(e: { target: { value: SetStateAction<string> } }) =>
+              setConfirm(e.target.value)
+            }
             required
           />
 

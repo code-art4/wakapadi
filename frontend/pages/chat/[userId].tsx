@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, MouseEvent } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import {
   Avatar,
@@ -433,7 +433,7 @@ export default function ChatPage() {
     setEmojiAnchorEl(e.currentTarget);
   };
 
-  const handleEmojiSelect = (emoji: {native:boolean}) => {
+  const handleEmojiSelect = (emoji: { native: boolean }) => {
     setText((prev) => prev + emoji.native);
     setEmojiAnchorEl(null);
   };
@@ -554,7 +554,7 @@ export default function ChatPage() {
                       />
                       <IconButton
                         className={styles.messageOptionsButton}
-                        onClick={(e: MouseEvent<HTMLElement, MouseEvent>) => handleMessageOptionsClick(e, msg._id)}
+                        onClick={(e) => handleMessageOptionsClick(e, msg._id)}
                       >
                         <MoreVertIcon />
                       </IconButton>

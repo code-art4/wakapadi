@@ -87,14 +87,12 @@ export default function SingleTourPage() {
         setLoading(true);
         setError(null);
         try {
-          // Simulate network delay for skeleton loader
-          // await new Promise(resolve => setTimeout(resolve, 1500));
-          console.log({ city, slug })
           const res = await api.post("/scraper/scrape-tour", { city, slug });
           if (res.data) {
             setTour(res.data);
           } else {
-            setError(res.error || 'Failed to fetch tour');
+            console.error("error", res)
+            setError('Failed to fetch tour');
           }
         } catch (err) {
           console.error("Failed to fetch tour:", err);
@@ -694,6 +692,7 @@ export default function SingleTourPage() {
                 Book now or contact the provider for more information
               </Typography>
               <Button
+                component="a"
                 variant="contained"
                 size="large"
                 href={tour.tourUrl}

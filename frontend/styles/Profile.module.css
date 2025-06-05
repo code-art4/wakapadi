@@ -1,22 +1,3 @@
-/* Base Styles & Typography */
-:root {
-  --primary-color: #4A90E2; /* A vibrant blue for primary actions */
-  --secondary-color: #50E3C2; /* A complementary green for accents */
-  --text-color-dark: #333;
-  --text-color-light: #555;
-  --bg-color-light: #F8F9FA; /* A very light grey for overall background */
-  --card-bg-color: #FFFFFF;
-  --border-color: #E0E0E0;
-  --shadow-light: 0px 4px 15px rgba(0, 0, 0, 0.05);
-  --border-radius: 12px;
-}
-
-body {
-  font-family: 'Inter', sans-serif; /* Use a modern font, ensure it's imported in _app.js or similar */
-  background-color: var(--bg-color-light);
-  color: var(--text-color-dark);
-}
-
 .container {
   padding: 3rem 1.5rem; /* More generous padding */
   max-width: 960px; /* Slightly wider container */

@@ -39,9 +39,9 @@ export default function AuthPage() {
     const lastPage = localStorage.getItem('lastPageBeforeLogin');
     if (lastPage) {
       router.push(lastPage);
-      localStorage.removeItem('lastPageBeforeLogin'); // Clean up after use
+      localStorage.removeItem('lastPageBeforeLogin');
     } else {
-      router.push('/whois'); // Default route
+      router.push('/whois'); 
     }
   };
 
