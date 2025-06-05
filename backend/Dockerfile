@@ -1,20 +1,20 @@
 # nestjs/Dockerfile
-FROM node:20
+# FROM node:20
 
-WORKDIR /app
+# WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
-RUN npm install
+# # Install dependencies
+# COPY package*.json ./
+# RUN npm install
 
-# Copy the rest of the code
-COPY . .
+# # Copy the rest of the code
+# COPY . .
 
-RUN npm run build
+# RUN npm run build
 
-EXPOSE 3000
+# EXPOSE 3000
 
-CMD ["npm", "run", "start:prod"]
+# CMD ["npm", "run", "start:prod"]
 
 
 # # Use official Node 20 base image
@@ -41,23 +41,23 @@ CMD ["npm", "run", "start:prod"]
 
 
 
-# FROM node:20-alpine
+FROM node:20-alpine
 
-# WORKDIR /app
+WORKDIR /app
 
-# # Install Nest CLI globally
-# RUN npm install -g @nestjs/cli
+# Install Nest CLI globally
+RUN npm install -g @nestjs/cli
 
-# # Copy and install project deps
-# COPY package*.json ./
-# RUN npm install
+# Copy and install project deps
+COPY package*.json ./
+RUN npm install
 
-# # Copy source files
-# COPY . .
+# Copy source files
+COPY . .
 
-# # Build NestJS project
-# RUN npm run build
+# Build NestJS project
+RUN npm run build
 
-# EXPOSE 3000
+EXPOSE 3000
 
-# CMD ["node", "dist/main"]
+CMD ["node", "dist/main"]
