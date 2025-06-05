@@ -195,7 +195,6 @@ export default function Layout({
           <Divider className={styles.drawerDivider} />
           <List className={styles.drawerList}>
             <ListItem
-              button
               component={NextLink}
               href="/whois"
               onClick={() => setDrawerOpen(false)}
