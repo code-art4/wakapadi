@@ -745,7 +745,7 @@ export async function getStaticProps({ locale }: { locale: string }) {
 
 export async function getStaticPaths() {
   return {
-    paths: [], // Let pages be generated at runtime
-    fallback: 'blocking', // SSG page generated on first request, then cached
+    paths: [], 
+    fallback: 'blocking',
   };
 }
