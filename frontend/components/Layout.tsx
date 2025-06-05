@@ -294,14 +294,14 @@ export default function Layout({
             <Divider className={styles.drawerDivider} />
             <List>
               {languages.map((language) => (
-                <ListItem
+                <MenuItem
                   key={language.code}
                   onClick={() => {
                     changeLanguage(language.code);
                     setDrawerOpen(false);
                   }}
-                  className={styles.drawerItem}
                   selected={language.code === currentLocale}
+                  className={styles.drawerItem}
                 >
                   <ListItemIcon className={styles.languageListItemIcon}>
                     <ReactCountryFlag
@@ -311,7 +311,7 @@ export default function Layout({
                     />
                   </ListItemIcon>
                   <ListItemText primary={language.name} />
-                </ListItem>
+                </MenuItem>
               ))}
             </List>
             <Divider className={styles.drawerDivider} />
