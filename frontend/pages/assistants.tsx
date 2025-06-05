@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Container, Typography, TextField, Box } from '@mui/material';
-import AssistantCard from '../components/AssistantCard';
+// import AssistantCard from '../components/AssistantCard';
 import CreateAssistantForm from '../components/CreateAssistantForm';
 import { api } from '../lib/api/index';
 
@@ -45,11 +45,11 @@ export default function AssistantsPage() {
 
       <CreateAssistantForm onSuccess={() => fetchAssistants(search)} />
 
-      <Box>
+      {/* <Box>
         {assistants.map((a, i) => (
           <AssistantCard key={i} {...a} />
         ))}
-      </Box>
+      </Box> */}
     </Container>
   );
 }
