@@ -16,7 +16,7 @@ import {
   useTheme,
   Typography,
   Divider,
-  ListItemIcon
+  ListItemIcon,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/router';
@@ -34,7 +34,7 @@ const languages = [
   { code: 'en', name: 'English', flag: 'US' },
   { code: 'de', name: 'Deutsch', flag: 'DE' },
   { code: 'es', name: 'Español', flag: 'ES' },
-  { code: 'fr', name: 'Français', flag: 'FR' }
+  { code: 'fr', name: 'Français', flag: 'FR' },
 ];
 
 export default function Layout({
@@ -83,7 +83,8 @@ export default function Layout({
     router.push('/');
   };
 
-  const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
+  const currentLanguage =
+    languages.find((lang) => lang.code === currentLocale) || languages[0];
 
   return (
     <div className={styles.layoutContainer}>
@@ -94,22 +95,44 @@ export default function Layout({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <link rel="icon" type="image/png" href="/favicon.png" />
       </Head>
 
-      <AppBar position="sticky" className={styles.appBar} elevation={0} style={{ zIndex: '10' }}>
+      <AppBar
+        position="sticky"
+        className={styles.appBar}
+        elevation={0}
+        style={{ zIndex: '10' }}
+      >
         <Container maxWidth="lg" disableGutters>
           <Toolbar className={styles.toolbar} disableGutters>
             <Box className={styles.logoContainer}>
               {isMobile && (
-                <IconButton edge="start" color="inherit" onClick={() => setDrawerOpen(true)} className={styles.menuButton} aria-label="menu">
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  onClick={() => setDrawerOpen(true)}
+                  className={styles.menuButton}
+                  aria-label="menu"
+                >
                   <MenuIcon />
                 </IconButton>
               )}
               <NextLink href="/" className={styles.logoImageWrapper}>
-                <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage} />
+                <img
+                  src="/logo1.png"
+                  alt="Wakapadi logo"
+                  className={styles.logoImage}
+                />
               </NextLink>
             </Box>
 
@@ -131,15 +154,27 @@ export default function Layout({
                 )}
                 <Box className={styles.authSection}>
                   {isLoggedIn ? (
-                    <Button onClick={handleLogout} className={styles.logoutButton} variant="text">
+                    <Button
+                      onClick={handleLogout}
+                      className={styles.logoutButton}
+                      variant="text"
+                    >
                       {t('logout')}
                     </Button>
                   ) : (
                     <>
-                      <Button href="/login" className={styles.loginButton} variant="outlined">
+                      <Button
+                        href="/login"
+                        className={styles.loginButton}
+                        variant="outlined"
+                      >
                         {t('login')}
                       </Button>
-                      <Button href="/register" className={styles.registerButton} variant="contained">
+                      <Button
+                        href="/register"
+                        className={styles.registerButton}
+                        variant="contained"
+                      >
                         {t('register')}
                       </Button>
                     </>
@@ -153,14 +188,23 @@ export default function Layout({
                     <ReactCountryFlag
                       countryCode={currentLanguage.flag}
                       svg
-                      style={{ width: '1.5em', height: '1.5em', lineHeight: '1.5em' }}
+                      style={{
+                        width: '1.5em',
+                        height: '1.5em',
+                        lineHeight: '1.5em',
+                      }}
                     />
                   }
                 >
                   {currentLanguage.code.toUpperCase()}
                 </Button>
 
-                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleLanguageClose} className={styles.languageMenu}>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleLanguageClose}
+                  className={styles.languageMenu}
+                >
                   {languages.map((language) => (
                     <MenuItem
                       key={language.code}
@@ -185,11 +229,24 @@ export default function Layout({
         </Container>
       </AppBar>
 
-      <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} classes={{ paper: styles.drawerPaper }}>
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        classes={{ paper: styles.drawerPaper }}
+      >
         <Box className={styles.drawerContainer}>
           <Box className={styles.drawerLogoWrapper}>
-            <Link href="/" className={styles.logoImageWrapper} onClick={() => setDrawerOpen(false)}>
-              <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage1} />
+            <Link
+              href="/"
+              className={styles.logoImageWrapper}
+              onClick={() => setDrawerOpen(false)}
+            >
+              <img
+                src="/logo1.png"
+                alt="Wakapadi logo"
+                className={styles.logoImage1}
+              />
             </Link>
           </Box>
           <Divider className={styles.drawerDivider} />
@@ -200,28 +257,35 @@ export default function Layout({
               onClick={() => setDrawerOpen(false)}
               className={styles.drawerItem}
             >
-              <ListItemText primary={t('whoisNearby')} className={styles.drawerItemText} />
+              <ListItemText
+                primary={t('whoisNearby')}
+                className={styles.drawerItemText}
+              />
             </ListItem>
 
             <ListItem
-              button
               component={NextLink}
               href="/contact-us"
               onClick={() => setDrawerOpen(false)}
               className={styles.drawerItem}
             >
-              <ListItemText primary={t('contactUs')} className={styles.drawerItemText} />
+              <ListItemText
+                primary={t('contactUs')}
+                className={styles.drawerItemText}
+              />
             </ListItem>
 
             {isLoggedIn && (
               <ListItem
-                button
                 component={NextLink}
                 href="/profile"
                 onClick={() => setDrawerOpen(false)}
                 className={styles.drawerItem}
               >
-                <ListItemText primary={t('profile')} className={styles.drawerItemText} />
+                <ListItemText
+                  primary={t('profile')}
+                  className={styles.drawerItemText}
+                />
               </ListItem>
             )}
           </List>
@@ -232,7 +296,6 @@ export default function Layout({
               {languages.map((language) => (
                 <ListItem
                   key={language.code}
-                  button
                   onClick={() => {
                     changeLanguage(language.code);
                     setDrawerOpen(false);
@@ -254,34 +317,40 @@ export default function Layout({
             <Divider className={styles.drawerDivider} />
             {isLoggedIn ? (
               <ListItem
-                button
                 onClick={() => {
                   handleLogout();
                   setDrawerOpen(false);
                 }}
                 className={`${styles.drawerItem} ${styles.logoutDrawerItem}`}
               >
-                <ListItemText primary={t('logout')} className={styles.drawerItemText} />
+                <ListItemText
+                  primary={t('logout')}
+                  className={styles.drawerItemText}
+                />
               </ListItem>
             ) : (
               <>
                 <ListItem
-                  button
                   component={NextLink}
                   href="/login"
                   onClick={() => setDrawerOpen(false)}
                   className={`${styles.drawerItem} ${styles.loginDrawerItem}`}
                 >
-                  <ListItemText primary={t('login')} className={styles.drawerItemText} />
+                  <ListItemText
+                    primary={t('login')}
+                    className={styles.drawerItemText}
+                  />
                 </ListItem>
                 <ListItem
-                  button
                   component={NextLink}
                   href="/register"
                   onClick={() => setDrawerOpen(false)}
                   className={`${styles.drawerItem} ${styles.registerDrawerItem}`}
                 >
-                  <ListItemText primary={t('register')} className={styles.drawerItemText} />
+                  <ListItemText
+                    primary={t('register')}
+                    className={styles.drawerItemText}
+                  />
                 </ListItem>
               </>
             )}
@@ -295,7 +364,11 @@ export default function Layout({
         <Container maxWidth="lg" className={styles.footerContent}>
           <Box className={styles.footerMain}>
             <Box className={styles.footerLogo}>
-              <img src="/logo1.png" alt="Wakapadi logo" className={styles.footerLogoImage} />
+              <img
+                src="/logo1.png"
+                alt="Wakapadi logo"
+                className={styles.footerLogoImage}
+              />
               <Typography variant="body2" className={styles.footerTagline}>
                 {t('footerTagline')}
               </Typography>
@@ -303,7 +376,10 @@ export default function Layout({
 
             <Box className={styles.footerLinks}>
               <Box className={styles.footerLinkGroup}>
-                <Typography variant="subtitle2" className={styles.footerLinkTitle}>
+                <Typography
+                  variant="subtitle2"
+                  className={styles.footerLinkTitle}
+                >
                   {t('explore')}
                 </Typography>
                 <Link href="/whois" className={styles.footerLink}>
@@ -318,7 +394,10 @@ export default function Layout({
               </Box>
 
               <Box className={styles.footerLinkGroup}>
-                <Typography variant="subtitle2" className={styles.footerLinkTitle}>
+                <Typography
+                  variant="subtitle2"
+                  className={styles.footerLinkTitle}
+                >
                   {t('company')}
                 </Typography>
                 <Link href="/about" className={styles.footerLink}>
@@ -333,7 +412,10 @@ export default function Layout({
               </Box>
 
               <Box className={styles.footerLinkGroup}>
-                <Typography variant="subtitle2" className={styles.footerLinkTitle}>
+                <Typography
+                  variant="subtitle2"
+                  className={styles.footerLinkTitle}
+                >
                   {t('legal')}
                 </Typography>
                 <Link href="/privacy" className={styles.footerLink}>
@@ -353,7 +435,8 @@ export default function Layout({
 
           <Box className={styles.footerBottom}>
             <Typography variant="body2" className={styles.copyright}>
-              &copy; {new Date().getFullYear()} Wakapadi. {t('allRightsReserved')}.
+              &copy; {new Date().getFullYear()} Wakapadi.{' '}
+              {t('allRightsReserved')}.
             </Typography>
 
             <Box className={styles.socialLinks}>
