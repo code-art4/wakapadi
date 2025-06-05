@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { api } from '../lib/api/index';
 import { useRouter } from 'next/router';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import styles from '../styles/AuthPage.module.css';
 
 export default function AuthPage() {
@@ -78,18 +78,21 @@ export default function AuthPage() {
         'response' in err &&
         typeof (err as { response?: unknown }).response === 'object' &&
         (err as { response?: { data?: unknown } }).response?.data &&
-        typeof (err as { response: { data: { message?: unknown } } }).response.data.message === 'string'
+        typeof (err as { response: { data: { message?: unknown } } }).response
+          .data.message === 'string'
       ) {
-        setError((err as { response: { data: { message: string } } }).response.data.message);
+        setError(
+          (err as { response: { data: { message: string } } }).response.data
+            .message
+        );
       } else {
         setError('Authentication failed');
       }
     }
-    
   };
-  const handleGoogleSuccess = async (credentialResponse: {
-    credential: { response: string };
-  }) => {
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse
+  ) => {
     try {
       const res = await api.post('/auth/google/token', {
         idToken: credentialResponse.credential,
@@ -99,7 +102,7 @@ export default function AuthPage() {
       localStorage.setItem('userId', res.data.userId);
       handleSuccessfulAuth();
     } catch (err) {
-      console.error('error', err);
+      console.error('Google login error', err);
       setError('Google login failed. Please try another method.');
     }
   };
