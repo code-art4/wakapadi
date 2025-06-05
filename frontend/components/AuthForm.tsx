@@ -71,13 +71,19 @@ export default function AuthPage() {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('userId', res.data.userId);
       handleSuccessfulAuth();
-    } catch (err: { err: { response: { data: { message: string } } } }) {
-      setError(
-        (err && err?.response?.data?.message) || 'Authentication failed'
-      );
+    } catch (err: unknown) {
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof (err as any).response?.data?.message === 'string'
+      ) {
+        setError((err as any).response.data.message);
+      } else {
+        setError('Authentication failed');
+      }
     }
   };
-
   const handleGoogleSuccess = async (credentialResponse: {
     credential: { response: string };
   }) => {
