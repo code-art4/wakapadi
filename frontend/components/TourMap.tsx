@@ -4,8 +4,6 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Fix for default icon issue with Leaflet
-// This code must only run on the client side
 if (typeof window !== 'undefined') {
   delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
@@ -20,7 +18,7 @@ interface TourMapProps {
   longitude: number;
   title: string;
   address?: string;
-  className?: string; // Prop for CSS module class
+  className?: string; 
 }
 
 const TourMap: React.FC<TourMapProps> = ({ latitude, longitude, title, address, className }) => {
