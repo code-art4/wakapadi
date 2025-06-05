@@ -6,8 +6,8 @@ import axios from 'axios';
 export class LLMService {
   async generateResponse(prompt: string): Promise<string> {
     try {
-      const res = await axios.post('http://localhost:11434/api/generate', {
-        model: 'mistral', // or mixtral, gemma, etc.
+      const res = await axios.post('http://116.203.158.7:11434/api/generate', {
+        model: 'gemma:2b', // or mixtral, gemma, etc.
         prompt,
         stream: false
       });
@@ -18,3 +18,4 @@ export class LLMService {
     }
   }
 }
+
