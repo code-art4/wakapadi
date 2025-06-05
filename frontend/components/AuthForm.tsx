@@ -76,13 +76,16 @@ export default function AuthPage() {
         typeof err === 'object' &&
         err !== null &&
         'response' in err &&
-        typeof (err as any).response?.data?.message === 'string'
+        typeof (err as { response?: unknown }).response === 'object' &&
+        (err as { response?: { data?: unknown } }).response?.data &&
+        typeof (err as { response: { data: { message?: unknown } } }).response.data.message === 'string'
       ) {
-        setError((err as any).response.data.message);
+        setError((err as { response: { data: { message: string } } }).response.data.message);
       } else {
         setError('Authentication failed');
       }
     }
+    
   };
   const handleGoogleSuccess = async (credentialResponse: {
     credential: { response: string };
