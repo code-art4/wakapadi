@@ -4,7 +4,6 @@ import {
   Toolbar,
   Container,
   Box,
-  Link,
   Button,
   IconButton,
   Drawer,
@@ -23,6 +22,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import NextLink from 'next/link';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import i18nextConfig from '../next-i18next.config';
 import { useTranslation } from 'next-i18next';
@@ -188,9 +188,9 @@ export default function Layout({
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} classes={{ paper: styles.drawerPaper }}>
         <Box className={styles.drawerContainer}>
           <Box className={styles.drawerLogoWrapper}>
-            <NextLink href="/" className={styles.logoImageWrapper} onClick={() => setDrawerOpen(false)}>
+            <Link href="/" className={styles.logoImageWrapper} onClick={() => setDrawerOpen(false)}>
               <img src="/logo1.png" alt="Wakapadi logo" className={styles.logoImage1} />
-            </NextLink>
+            </Link>
           </Box>
           <Divider className={styles.drawerDivider} />
           <List className={styles.drawerList}>
