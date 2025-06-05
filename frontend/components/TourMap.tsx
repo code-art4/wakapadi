@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
 if (typeof window !== 'undefined') {
-  delete L.Icon.Default.prototype._getIconUrl;
+  // delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl: '/leaflet/images/marker-icon-2x.png',
     iconUrl: '/leaflet/images/marker-icon.png',
