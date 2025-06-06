@@ -50,15 +50,15 @@
 .headerSubtitle {
   font-size: clamp(0.9rem, 2vw, 1.1rem) !important;
   color: #64748b;
-  margin-bottom: 1.5rem !important;
+  /* margin-bottom: 1.5rem !important; */
   max-width: 600px !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  line-height: 1.6 !important;
+  /* line-height: 1.6 !important; */
 }
 
 .locationChip {
-  margin-top: 1rem !important;
+  /* margin-top: 1rem !important; */
   background: linear-gradient(45deg, #f0f9ff, #e0f2fe) !important;
   border: 1px solid rgba(59, 130, 246, 0.2) !important;
   color: #1e40af !important;

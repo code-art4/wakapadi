@@ -1,7 +1,7 @@
 /* Core Container */
 .heroContainer {
   position: relative;
-  min-height: 100vh;
+  min-height: 50vh;
   overflow-x: hidden;
 }
 
@@ -9,7 +9,7 @@
 .heroBanner {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), 
               url('/hero-travel.png') center/cover no-repeat;
-  min-height: 80vh;
+  min-height: 50vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -143,8 +143,11 @@
 
 
 @media (max-width: 768px) {
+  .heroContainer {
+    min-height: 60vh;
+  }
   .heroBanner {
-    min-height: 70vh;
+    min-height: 50vh;
     padding: 1.5rem;
   }
 

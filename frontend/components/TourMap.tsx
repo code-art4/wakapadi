@@ -25,11 +25,12 @@ const TourMap: React.FC<TourMapProps> = ({ latitude, longitude, title, address, 
   const position: [number, number] = [latitude, longitude];
 
   return (
+    // <div style={{background:"red"}}>
     <MapContainer
       center={position}
       zoom={13}
       scrollWheelZoom={false}
-      className={className} // Apply CSS module class
+      className={className} 
       aria-label="Map showing tour location"
     >
       <TileLayer
@@ -43,6 +44,7 @@ const TourMap: React.FC<TourMapProps> = ({ latitude, longitude, title, address, 
         </Popup>
       </Marker>
     </MapContainer>
+    // </div>
   );
 };
 

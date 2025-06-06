@@ -138,7 +138,7 @@ export default function HeroSection({
               className={styles.searchButton}
               fullWidth={isMobile}
             >
-              {isMobile ? t('nearby') : t('findNearby')}
+              {isMobile ? t('whoisNearby') : t('whoisNearby')}
             </Button>
           </div>
         </div>

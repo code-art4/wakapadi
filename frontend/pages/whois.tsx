@@ -8,7 +8,7 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Switch,
+  // Switch,
   List,
   ListItem,
   Divider,
@@ -137,14 +137,14 @@ export default function WhoisPage() {
     }
   };
 
-  const togglePresence = async () => {
-    try {
-      await api.patch('/whois', { visible: !visible });
-      setVisible(!visible);
-    } catch (err) {
-      console.error('Toggle visibility failed:', err);
-    }
-  };
+  // const togglePresence = async () => {
+  //   try {
+  //     await api.patch('/whois', { visible: !visible });
+  //     setVisible(!visible);
+  //   } catch (err) {
+  //     console.error('Toggle visibility failed:', err);
+  //   }
+  // };
 
   const getUserStatus = (lastSeen?: string) => {
     if (!lastSeen) return 'offline';
@@ -260,9 +260,9 @@ export default function WhoisPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                <Typography variant="h1" className={styles.headerTitle}>
+                {/* <Typography variant="h1" className={styles.headerTitle}>
                   #{t('whoisNearby')}
-                </Typography>
+                </Typography> */}
                 <Typography
                   variant="subtitle1"
                   className={styles.headerSubtitle}
@@ -303,8 +303,9 @@ export default function WhoisPage() {
             )}
 
             {isLoggedIn ? (
-              <Box className={styles.visibilityToggle}>
-                <Box display="flex" alignItems="center" width="100%">
+              <>
+              {/* <Box className={styles.visibilityToggle}> */}
+                {/* <Box display="flex" alignItems="center" width="100%">
                   <Typography variant="body1" mr={2}>
                     {t('visibility')}:
                   </Typography>
@@ -325,13 +326,14 @@ export default function WhoisPage() {
                   {visible
                     ? t('visibilityDescription')
                     : t('hiddenDescription')}
-                </Typography>
-              </Box>
+                </Typography> */}
+              {/* </Box> */}
+              </>
             ) : (
               <Box mb={3} textAlign="center">
-                <Typography variant="body1" className={styles.subtitle}>
+                {/* <Typography variant="body1" className={styles.subtitle}>
                   {t('connectPrompt')}
-                </Typography>
+                </Typography> */}
                 <Button
                   variant="contained"
                   color="primary"

@@ -17,6 +17,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       process.env.FRONTEND_URL!,
+      'https://www.wakapadi.io',
       'https://wakapadi.vercel.app',
       'http://localhost:3001',
       'http://localhost:3000',

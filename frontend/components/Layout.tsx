@@ -170,13 +170,13 @@ export default function Layout({
                       >
                         {t('login')}
                       </Button>
-                      <Button
+                      {/* <Button
                         href="/register"
                         className={styles.registerButton}
                         variant="contained"
                       >
                         {t('register')}
-                      </Button>
+                      </Button> */}
                     </>
                   )}
                 </Box>
@@ -341,7 +341,7 @@ export default function Layout({
                     className={styles.drawerItemText}
                   />
                 </ListItem>
-                <ListItem
+                {/* <ListItem
                   component={NextLink}
                   href="/register"
                   onClick={() => setDrawerOpen(false)}
@@ -351,7 +351,7 @@ export default function Layout({
                     primary={t('register')}
                     className={styles.drawerItemText}
                   />
-                </ListItem>
+                </ListItem> */}
               </>
             )}
           </Box>
