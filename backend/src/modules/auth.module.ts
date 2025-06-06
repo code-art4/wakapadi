@@ -6,7 +6,7 @@ import { User, UserSchema } from '../schemas/user.schema';
 import { AuthController } from '../controllers/auth.controller';
 import { GoogleStrategy } from '../strategies/google.strategy';
 import { ConfigModule } from '@nestjs/config';
-import { EmailService } from '../services/email.service';
+import { MailService } from 'src/services/mail.service';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { EmailService } from '../services/email.service';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy, EmailService],
+  providers: [AuthService, GoogleStrategy, MailService],
   exports: [AuthService],
 })
 export class AuthModule {}

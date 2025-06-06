@@ -13,7 +13,6 @@ import { AuthModule } from './modules/auth.module';
 import { WhoisMessageModule } from './modules/whois-message.module';
 import { PresenceModule } from './modules/PresenceModule';
 import { ConfigModule } from '@nestjs/config';
-import { EmailModule } from './modules/email.module';
 import { CityModule } from './modules/city.module';
 import { QdrantService } from './services/qdrant.service';
 import { EmbeddingService } from './services/embedding.service';
@@ -25,7 +24,6 @@ import { FeedbackModule } from './modules/feedback.module';
 import { TrainingModule } from './modules/training.module';
 import { LLMService } from './services/llm.service';
 import { ContactModule } from './modules/contact.module';
-import { GeolocationService } from './services/geolocation.service';
 import { GeolocationModule } from './modules/geolocation..module';
 
 @Module({
@@ -44,7 +42,6 @@ import { GeolocationModule } from './modules/geolocation..module';
     SeedModule,
     UserModule,
     CityModule,
-    EmailModule,
     PresenceModule,
     TrainingModule,
     WhoisModule,
@@ -61,7 +58,6 @@ import { GeolocationModule } from './modules/geolocation..module';
     ResponseService,
     ConversationService,
     LLMService,
-    // GeolocationService,
   ],
 })
 export class AppModule {}

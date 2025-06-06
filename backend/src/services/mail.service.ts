@@ -14,14 +14,28 @@ export class MailService {
     });
   }
 
-  async sendEmail(to: string, subject: string, text: string) {
-    const domain = process.env.MAILGUN_DOMAIN; // e.g., mg.yourdomain.com
-
-    return this.mg.messages.create(domain, {
-      from: `Your App <noreply@${domain}>`,
-      to,
-      subject,
-      text,
+  async sendPasswordResetEmail(to: string, token: string) {
+    const url = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const mailgun = new Mailgun(FormData);
+    const mg = mailgun.client({
+      username: 'api',
+      key: process.env.MAILGUN_API_KEY!,
+      url: 'https://api.eu.mailgun.net',
     });
+    try {
+      const data = await mg.messages.create('mg.wakapadi.io', {
+        from: 'Wakapadi <postmaster@mg.wakapadi.io>',
+        to: [`Samuel Egbajie <${to}>`],
+        subject: 'Password Reset',
+        text: `
+        <p>Click below to reset your password:</p>
+        <a href="${url}">${url}</a>
+      `,
+      });
+
+      console.log(data); // logs response data
+    } catch (error) {
+      console.log(error); //logs any error
+    }
   }
 }

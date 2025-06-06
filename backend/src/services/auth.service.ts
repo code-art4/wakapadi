@@ -7,7 +7,7 @@ import { Model, Document } from 'mongoose';
 import { User } from '../schemas/user.schema';
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
-import { EmailService } from './email.service';
+import { MailService } from './mail.service';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -21,7 +21,7 @@ type UserDocument = User & Document & { _id: string };
 export class AuthService {
   constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   private readonly configService: ConfigService, // ⬅️ Index [1]
-  private emailService: EmailService,
+  private mailService: MailService,
 
 
   ) {}
@@ -152,7 +152,8 @@ async verifyGoogleToken(idToken: string) {
       { expiresIn: '15m' },
     );
 
-    await this.emailService.sendPasswordResetEmail(email, token);
+    await this.mailService.sendPasswordResetEmail(email, token);
+    // console.log("token", token)
     return { message: 'Reset instructions sent if email exists' };
   }
 
