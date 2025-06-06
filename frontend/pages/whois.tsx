@@ -60,7 +60,7 @@ export default function WhoisPage() {
   const [hasMounted, setHasMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [visible, setVisible] = useState(true);
+  // const [visible, setVisible] = useState(true);
   const [city, setCity] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);

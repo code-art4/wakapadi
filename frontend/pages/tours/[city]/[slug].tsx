@@ -30,7 +30,7 @@ import {
   Star as StarIcon,
   Warning as WarningIcon,
   Share as ShareIcon,
-  Bookmark as BookmarkIcon,
+  // Bookmark as BookmarkIcon,
   CalendarToday as CalendarIcon,
   ArrowBack as ArrowBackIcon,
   AccessTime as DurationIcon,
@@ -82,7 +82,7 @@ export default function SingleTourPage() {
   const [tour, setTour] = useState<TourData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
+  // const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (city && slug) {
