@@ -54,8 +54,12 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .errorContainer {
@@ -133,7 +137,7 @@
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
   }
-  
+
   .tourContainer {
     padding: 1.5rem;
   }
@@ -164,13 +168,13 @@
   .tourGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .sectionTitle::after {
     width: 60px;
     height: 3px;
     margin-top: 0;
   }
-  
+
   .noResults {
     padding: 2rem 0;
   }
