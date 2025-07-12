@@ -6,6 +6,10 @@ import {
   Pagination,
   Skeleton,
   Container,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
 } from '@mui/material';
 import Head from 'next/head';
 import Layout from '../components/Layout';
@@ -17,8 +21,13 @@ import HeroSection from '../components/home/HeroSection';
 import TourCard from '../components/home/TourCard';
 import { useRouter } from 'next/router';
 import debounce from 'lodash.debounce';
-import styles from '../styles/components/Header.module.css';
+import styles from '../styles/HomePage.module.css';
 import Footer from '../components/Footer';
+import LanguageIcon from '@mui/icons-material/Language';
+import GroupsIcon from '@mui/icons-material/Groups';
+import { type } from './tours/index';
+import NearMeIcon from '@mui/icons-material/NearMe';
+import SearchIcon from '@mui/icons-material/Search';
 
 const PER_PAGE = 12;
 
@@ -156,6 +165,34 @@ export default function HomePage() {
     detectAndScrapeCity();
   }, [fetchTours]);
 
+  const cards = [
+    {
+      icon: (
+        <LanguageIcon
+          sx={{ color: 'green', width: '2.5rem', height: '2.5rem' }}
+        />
+      ),
+      header: 'Local Experts',
+      text: 'Meet passionate locals who know their cities inside out and love sharing hidden gems and authentic stories.',
+    },
+    {
+      icon: (
+        <GroupsIcon
+          sx={{ color: 'green', width: '2.5rem', height: '2.5rem' }}
+        />
+      ),
+      header: 'Cultural Connection',
+      text: 'Perfect for tourists, travelers, immigrants, and new settlers looking to connect with their new community.',
+    },
+    {
+      icon: (
+        <img src='/sale_fill.svg' alt='tours' className={styles.toursSvg} />
+      ),
+      header: 'Free Walking Tours',
+      text: 'Discover amazing free walking tours and pay-what-you-feel experiences that fit any budget.',
+    },
+  ];
+
   return (
     <>
       <Head>
@@ -166,9 +203,136 @@ export default function HomePage() {
         <meta property='og:title' content={t('homePageTitle')} />
         <meta property='og:description' content={t('homePageDescription')} />
       </Head>
+
       <main className={styles.main}>
         <Header />
       </main>
+
+      <div className={styles.hero}>
+        <div className={styles.headerContent}>
+          <div className={styles.headerText}>
+            <h1>
+              Travel smarter, meet new <br /> people, and explore like a local.
+            </h1>
+            <p>
+              Connect with passionate guides and experience authentic cultural
+              adventures in cities worldwide.
+            </p>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <span className={styles.searchIcon}>
+              <SearchIcon />
+            </span>
+            <input
+              type='search'
+              placeholder='Search by City'
+              value={suggestion}
+              onChange={(e) => handleSearchInput(e.target.value)}
+              className={styles.searchInput}
+            />
+
+            <Button>Search</Button>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <NearMeIcon />
+            <Button
+              variant='contained'
+              className={styles.button}
+              onClick={() => router.push('/guides')}
+            >
+              #Whois Nearby
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <Box className={styles.tours}>
+        <h3>Available Tours</h3>
+
+        <Box>
+          <div className={styles.tourGrid} role='list'>
+            {loading
+              ? Array.from({ length: PER_PAGE }).map((_, i) => (
+                  <div
+                    key={`skeleton-${i}`}
+                    className={styles.gridItem}
+                    role='listitem'
+                  >
+                    <Skeleton
+                      variant='rectangular'
+                      className={styles.skeletonCard}
+                      height={380}
+                    />
+                  </div>
+                ))
+              : paginatedTours.map((tour) => (
+                  <div
+                    key={tour.id}
+                    className={styles.gridItem}
+                    role='listitem'
+                  >
+                    hi
+                    {/* <TourCard
+                      tour={tour}
+                      highlight={search}
+                      aria-label={`Tour to ${tour.location}`}
+                    /> */}
+                  </div>
+                ))}
+          </div>
+        </Box>
+      </Box>
+
+      <Box className={styles.why}>
+        <Box className={styles['why-container']}>
+          <h3>Why Choose Wakapadi?</h3>
+          <p>
+            Connect with local guides and helpers for authentic cultural
+            experiences that go beyond typical tourist attractions.
+          </p>
+
+          <Box className={styles['card-container']}>
+            {cards?.map((card, index) => (
+              <Card
+                sx={{ maxWidth: 375, marginBottom: '2rem' }}
+                className={styles.card}
+                key={index}
+              >
+                <CardContent className={styles.cardContent}>
+                  {card.icon}
+                  <Typography gutterBottom variant='h5' component='div'>
+                    {card.header}
+                  </Typography>
+                  <Typography
+                    variant='body2'
+                    sx={{
+                      color: 'text.secondary',
+                      fontSize: '1rem',
+                      marginTop: '.6rem',
+                    }}
+                  >
+                    {card.text}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+            <Box></Box>
+            <Box></Box>
+          </Box>
+        </Box>
+      </Box>
+
+      <Box className={styles.explore}>
+        <h3>Ready to Explore?</h3>
+        <p>
+          Join thousands of travelers who have discovered authentic local
+          experiences through Wakapadi.
+        </p>
+        <Button>Start your adventure</Button>
+      </Box>
+
       <Footer />
       {/* <Head>
         <title>{t('homePageTitle')}</title>
