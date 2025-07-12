@@ -208,8 +208,20 @@
 .main {
   width: 85%;
   margin: auto;
-  margin-top: 1rem;
+  margin-top: 0;
   font-size: 1.1rem;
+}
+
+@media only screen and (max-width: 1024px) {
+  .main {
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .main {
+    width: 100%;
+  }
 }
 
 .why {
@@ -276,12 +288,11 @@
 
 .hero {
   width: 100%;
-  height: 75vh;
+  height: 85vh;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 1rem;
   background: url('/hero-bg.png') no-repeat;
   background-size: cover;
   background-position: left center;
@@ -291,7 +302,14 @@
 .headerContent {
   position: absolute;
   left: 7%;
-  bottom: 25%;
+  bottom: 18%;
+}
+
+@media only screen and (max-width: 500px) {
+  .headerContent {
+    width: 100%;
+    bottom: 10%;
+  }
 }
 
 .headerContent h1 {
@@ -301,6 +319,11 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+.headerContent h1 span {
+  display: block;
 }
 
 .headerContent p {
@@ -314,7 +337,12 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.headerContent .inputGroup .input {
   position: relative;
+  width: 100%;
+  border-radius: 3rem;
 }
 
 .headerContent .inputGroup .searchIcon {
@@ -330,14 +358,14 @@
 .headerContent .inputGroup input {
   width: 30rem;
   padding: 0.8rem 1.4rem;
-  border-radius: 3rem;
+  border-radius: inherit;
   border: none;
   outline: none;
   font-size: 1.2rem;
 }
 
 .headerContent .inputGroup button {
-  padding: 0.8rem 1.5rem;
+  padding: 0.8rem 1.8rem;
   border-radius: 2rem;
   border: none;
   background: #1976d2;
@@ -392,31 +420,74 @@
   color: #b0bec5;
 }
 
-.headerContent .buttonGroup {
-  display: flex;
-  align-items: center;
-  margin-top: 1.5rem;
-  color: rgba(25, 118, 210, 0.1);
-  border: 1px solid rgba(25, 118, 210, 0.5);
-  font-family: 'Roboto', sans-serif;
-  width: max-content;
-  border-radius: 3rem;
-  padding-left: 1rem;
-}
-
-.headerContent .buttonGroup svg {
+.headerContent .buttonGroup button svg {
   margin: 0.5rem;
   color: rgba(25, 118, 210, 1);
 }
 
 .headerContent .buttonGroup button {
-  padding: 0.8rem 1.5rem 0.8rem 0;
+  padding: 0.5rem 1.5rem;
   box-shadow: none;
   width: max-content;
   color: rgba(25, 118, 210, 1);
-  transition: background-color 0.3s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  border: 1px solid rgba(25, 118, 210, 0.5);
+  font-family: 'Roboto', sans-serif;
+  border-radius: 3rem;
   font-weight: 500;
   font-size: 1rem;
   cursor: pointer;
   background: none;
+}
+
+.headerContent .buttonGroup button:focus,
+.headerContent .buttonGroup button:hover,
+.headerContent .buttonGroup button:active {
+  background-color: inherit;
+}
+
+@media only screen and (max-width: 425px) {
+  html {
+    font-size: 14px;
+  }
+
+  .hero {
+    height: 75vh;
+  }
+
+  .headerContent {
+    width: 80%;
+  }
+
+  .headerContent h1 {
+    font-size: 2.3rem;
+  }
+
+  .headerContent h1 span {
+    display: inline;
+  }
+
+  .headerContent p {
+    width: inherit;
+    text-wrap-mode: wrap;
+  }
+
+  .headerContent .inputGroup {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .headerContent .inputGroup button {
+    width: 100%;
+  }
+
+  .headerContent .inputGroup .searchIcon {
+    left: 1.5rem;
+  }
+
+  .headerContent .inputGroup input::placeholder {
+    padding-left: 1.8rem;
+  }
 }

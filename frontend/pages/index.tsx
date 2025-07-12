@@ -204,15 +204,15 @@ export default function HomePage() {
         <meta property='og:description' content={t('homePageDescription')} />
       </Head>
 
-      <main className={styles.main}>
-        <Header />
-      </main>
-
       <div className={styles.hero}>
+        <main className={styles.main}>
+          <Header />
+        </main>
         <div className={styles.headerContent}>
           <div className={styles.headerText}>
             <h1>
-              Travel smarter, meet new <br /> people, and explore like a local.
+              <span>Travel smarter, meet new </span>
+              <span>people, and explore like a local.</span>
             </h1>
             <p>
               Connect with passionate guides and experience authentic cultural
@@ -221,27 +221,25 @@ export default function HomePage() {
           </div>
 
           <div className={styles.inputGroup}>
-            <span className={styles.searchIcon}>
-              <SearchIcon />
-            </span>
-            <input
-              type='search'
-              placeholder='Search by City'
-              value={suggestion}
-              onChange={(e) => handleSearchInput(e.target.value)}
-              className={styles.searchInput}
-            />
+            <div className={styles.input}>
+              <span className={styles.searchIcon}>
+                <SearchIcon />
+              </span>
+              <input
+                type='search'
+                placeholder='Search by City'
+                value={suggestion}
+                onChange={(e) => handleSearchInput(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
 
             <Button>Search</Button>
           </div>
 
           <div className={styles.buttonGroup}>
-            <NearMeIcon />
-            <Button
-              variant='contained'
-              className={styles.button}
-              onClick={() => router.push('/guides')}
-            >
+            <Button>
+              <NearMeIcon />
               #Whois Nearby
             </Button>
           </div>
