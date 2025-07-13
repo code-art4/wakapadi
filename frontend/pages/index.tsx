@@ -40,6 +40,8 @@ export type Tour = {
   externalPageUrl?: string;
   image?: string;
   altText?: string;
+  startDate: string;
+  endDate: string;
 };
 
 export default function HomePage() {
@@ -193,6 +195,8 @@ export default function HomePage() {
     },
   ];
 
+  console.log(paginatedTours);
+
   return (
     <>
       <Head>
@@ -265,21 +269,122 @@ export default function HomePage() {
                     />
                   </div>
                 ))
-              : paginatedTours.map((tour) => (
+              : [
+                  {
+                    image: '/hero-bg.png',
+                    id: 6879,
+                    location: { city: 'New York', country: 'USA' },
+                    altText: 'New York City',
+                    title: 'Explore the Big Apple',
+                    recurringSchedule: 'Every Saturday',
+                    externalPageUrl: 'https://example.com/tour/new-york',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+
+                  {
+                    image: '/hero-bg.png',
+                    id: 6880,
+                    location: { city: 'Paris', country: 'France' },
+                    altText: 'Paris City',
+                    title: 'Discover the City of Lights',
+                    recurringSchedule: 'Every Sunday',
+                    externalPageUrl: 'https://example.com/tour/paris',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+
+                  {
+                    image: '/hero-bg.png',
+                    id: 6881,
+                    location: { city: 'Berlin', country: 'Germany' },
+                    altText: 'Tokyo City',
+                    title: 'Experience the Heart of Japan',
+                    recurringSchedule: 'Every Friday',
+                    externalPageUrl: 'https://example.com/tour/tokyo',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+                  {
+                    image: '/hero-bg.png',
+                    id: 6881,
+                    location: { city: 'Berlin', country: 'Germany' },
+                    altText: 'Tokyo City',
+                    title: 'Experience the Heart of Japan',
+                    recurringSchedule: 'Every Friday',
+                    externalPageUrl: 'https://example.com/tour/tokyo',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+                  {
+                    image: '/hero-bg.png',
+                    id: 6881,
+                    location: { city: 'Berlin', country: 'Germany' },
+                    altText: 'Tokyo City',
+                    title: 'Experience the Heart of Japan',
+                    recurringSchedule: 'Every Friday',
+                    externalPageUrl: 'https://example.com/tour/tokyo',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+                  {
+                    image: '/hero-bg.png',
+                    id: 6881,
+                    location: { city: 'Berlin', country: 'Germany' },
+                    altText: 'Tokyo City',
+                    title: 'Experience the Heart of Japan',
+                    recurringSchedule: 'Every Friday',
+                    externalPageUrl: 'https://example.com/tour/tokyo',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+
+                  {
+                    image: '/hero-bg.png',
+                    id: 6879,
+                    location: { city: 'Tokyo', country: 'Japan' },
+                    altText: 'New York City',
+                    title: 'Explore the Big Apple',
+                    recurringSchedule: 'Every Saturday',
+                    externalPageUrl: 'https://example.com/tour/new-york',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+
+                  {
+                    image: '/hero-bg.png',
+                    id: 6882,
+                    location: { city: 'London', country: 'UK' },
+                    altText: 'London City',
+                    title: 'Discover the Capital of England',
+                    recurringSchedule: 'Every Sunday',
+                    externalPageUrl: 'https://example.com/tour/london',
+                    startDate: '2025-07-10T00:00:00Z',
+                    endDate: '2025-07-12T23:59:59Z',
+                  },
+                ].map((tour) => (
                   <div
                     key={tour.id}
                     className={styles.gridItem}
                     role='listitem'
                   >
-                    hi
-                    {/* <TourCard
+                    <TourCard
                       tour={tour}
                       highlight={search}
                       aria-label={`Tour to ${tour.location}`}
-                    /> */}
+                    />
                   </div>
                 ))}
           </div>
+
+          <Pagination
+            count={2}
+            color='primary'
+            shape='rounded'
+            className={styles.pagination}
+            showFirstButton
+            showLastButton
+          />
         </Box>
       </Box>
 
@@ -300,7 +405,7 @@ export default function HomePage() {
               >
                 <CardContent className={styles.cardContent}>
                   {card.icon}
-                  <Typography gutterBottom variant='h5' component='div'>
+                  <Typography gutterBottom variant='h5' component='h5'>
                     {card.header}
                   </Typography>
                   <Typography

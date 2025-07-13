@@ -31,8 +31,9 @@
 
 .tourGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  row-gap: 4rem;
   width: 100%;
 }
 
@@ -229,7 +230,7 @@
 }
 
 .why-container {
-  width: 85%;
+  width: 90%;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -268,6 +269,12 @@
   justify-content: space-between;
 }
 
+.cardContent h5 {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
 .cardContent svg {
   margin-bottom: 1.1rem;
 }
@@ -278,12 +285,12 @@
 
 .tours {
   width: 85%;
-  margin: 2rem auto;
+  margin: 4rem auto;
 }
 
 .tours h3 {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .hero {
@@ -295,6 +302,7 @@
   flex-direction: column;
   background: url('/hero-bg.png') no-repeat;
   background-size: cover;
+  background-blend-mode: darken;
   background-position: left center;
   position: relative;
 }
@@ -305,10 +313,77 @@
   bottom: 18%;
 }
 
+.pagination {
+  margin: auto;
+  width: max-content;
+  margin-top: 2rem;
+  background: #fff;
+  padding: 0.4rem 1rem;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.08);
+}
+
+@media only screen and (max-width: 800px) {
+  .card-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 @media only screen and (max-width: 500px) {
   .headerContent {
     width: 100%;
     bottom: 10%;
+  }
+
+  .tours {
+    width: 90%;
+    margin: 2rem auto;
+  }
+
+  .tours h3,
+  .explore h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    font-weight: 500;
+    line-height: 3.2rem;
+  }
+
+  .explore {
+    padding: 2rem 1.6rem;
+  }
+
+  .explore p {
+    width: 100%;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .why {
+    margin: 5rem 0;
+  }
+
+  .why p {
+    width: 80%;
+  }
+
+  .why h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    font-weight: 500;
+  }
+  .card {
+    padding: 0;
+  }
+
+  .card-container {
+    gap: 0;
+  }
+
+  .card-container {
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -423,6 +498,7 @@
 .headerContent .buttonGroup button svg {
   margin: 0.5rem;
   color: rgba(25, 118, 210, 1);
+  font-weight: 'Roboto' sans-serif;
 }
 
 .headerContent .buttonGroup button {

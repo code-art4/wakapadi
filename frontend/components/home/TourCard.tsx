@@ -1,35 +1,48 @@
-import { Card, CardContent, Typography, Button, Box, Skeleton } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Box,
+  Skeleton,
+} from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { Tour } from '../../pages';
 import styles from './TourCard.module.css';
 import Image from 'next/image';
 import { useState } from 'react';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import { formattedTime } from '../../utils/formatTime';
 
-const highlightText = (text: string = '', highlight: string = '') => {
-  if (!highlight || !text) return text;
-  
-  const regex = new RegExp(`(${highlight})`, 'gi');
-  const parts = text.split(regex);
-  
-  return parts.map((part, i) => 
-    regex.test(part) ? (
-      <mark key={i} className={styles.highlight}>
-        {part}
-      </mark>
-    ) : (
-      part
-    )
-  );
-};
-function extractPath(url:string):string {
+// const highlightText = (text: string = '', highlight: string = '') => {
+//   if (!highlight || !text) return text;
+
+//   const regex = new RegExp(`(${highlight})`, 'gi');
+//   const parts = text.split(regex);
+
+//   return parts.map((part, i) =>
+//     regex.test(part) ? (
+//       <mark key={i} className={styles.highlight}>
+//         {part}
+//       </mark>
+//     ) : (
+//       part
+//     )
+//   );
+// };
+function extractPath(url: string): string {
   const parsed = new URL(url);
   return `/tours${parsed.pathname}`;
 }
 
-
-
-export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlight?: string }) {
+export default function TourCard({
+  tour,
+  highlight = '',
+}: {
+  tour: Tour;
+  highlight?: string;
+}) {
   const { t } = useTranslation('common');
   const [imageLoading, setImageLoading] = useState(true);
 
@@ -39,9 +52,9 @@ export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlig
         {tour.image ? (
           <div className={styles.imageContainer}>
             {imageLoading && (
-              <Skeleton 
-                variant="rectangular" 
-                className={styles.imageSkeleton} 
+              <Skeleton
+                variant='rectangular'
+                className={styles.imageSkeleton}
               />
             )}
             <Image
@@ -51,7 +64,7 @@ export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlig
               className={styles.cardImage}
               onLoadingComplete={() => setImageLoading(false)}
               style={{ objectFit: 'cover' }}
-              sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+              // sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
               priority={false}
             />
           </div>
@@ -62,44 +75,44 @@ export default function TourCard({ tour, highlight = '' }: { tour: Tour; highlig
         )}
 
         <CardContent className={styles.cardContent}>
-          <Typography 
-            variant="h3" 
+          <Typography className={styles.cardLocation} variant='body2'>
+            {tour.location?.city + ', ' + tour.location?.country}
+            {/* {highlightText(tour.location, highlight)} */}
+          </Typography>
+
+          <Typography
+            variant='h5'
             className={styles.cardTitle}
-            component="h3"
+            component='h5' // Use 'strong' to emphasize the title
           >
-            {highlightText(tour.title, highlight)}
+            {tour.title}
+            {/* {highlightText(tour.title, highlight)} */}
           </Typography>
-          
-          <Typography 
-            className={styles.cardLocation}
-            variant="body2"
-          >
-            {highlightText(tour.location, highlight)}
+
+          <Typography variant='body2' className={styles.cardTimeline}>
+            <WatchLaterIcon width='1rem' height='1rem' />
+            <span className={styles.cardTimelineText}>
+              {formattedTime(tour.startDate)}
+            </span>
+            <span className={styles.cardTimelineText}>
+              {formattedTime(tour.endDate)}
+            </span>
           </Typography>
-          
-          {tour.recurringSchedule && (
-            <Typography 
-              className={styles.cardSchedule}
-              variant="body2"
-            >
-              <span className={styles.scheduleLabel}>{t('when')}:</span> {tour.recurringSchedule}
-            </Typography>
-          )}
-          
-          <Box className={styles.buttonContainer}>
+
+          {/* <Box className={styles.buttonContainer}>
             {tour.externalPageUrl && (
               <Button
-                variant="outlined"
+                variant='outlined'
                 href={extractPath(tour.externalPageUrl)}
-                target="_blank"
-                rel="noopener noreferrer"
+                target='_blank'
+                rel='noopener noreferrer'
                 className={styles.cardButton}
                 aria-label={`More info about ${tour.title}`}
               >
                 {t('moreInfo')}
               </Button>
             )}
-          </Box>
+          </Box> */}
         </CardContent>
       </Card>
     </article>
