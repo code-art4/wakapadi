@@ -206,6 +206,7 @@ export default function HomePage() {
         <meta name='robots' content='index, follow' />
         <meta property='og:title' content={t('homePageTitle')} />
         <meta property='og:description' content={t('homePageDescription')} />
+        <link rel='icon' type='image/png' href='/favicon.png' />
       </Head>
 
       <div className={styles.hero}>
