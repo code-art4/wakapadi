@@ -125,6 +125,34 @@
   text-decoration: none;
 }
 
+@media only screen and (max-width: 1200px) {
+  .main .container {
+    width: 90%;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .main .container {
+    width: 95%;
+  }
+
+  .section {
+    flex-direction: column;
+  }
+
+  .section.reverse {
+    flex-direction: column-reverse;
+  }
+
+  .image {
+    width: 100%;
+    max-width: none;
+    height: 27rem;
+  }
+}
+
 @media only screen and (max-width: 500px) {
   .explore h3 {
     text-align: center;
@@ -142,5 +170,30 @@
     width: 100%;
     text-align: center;
     font-size: 1.1rem;
+  }
+
+  .main .container {
+    width: 95%;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .section {
+    flex-direction: column;
+  }
+
+  .section.reverse {
+    flex-direction: column-reverse;
+  }
+
+  .imageBlock {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image {
+    height: 15rem;
   }
 }

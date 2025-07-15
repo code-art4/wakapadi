@@ -83,8 +83,8 @@ export default function HomePage() {
   }, [t]);
 
   useEffect(() => {
-    const timer = setTimeout(fetchTours, 300);
-    return () => clearTimeout(timer);
+    // const timer = setTimeout(fetchTours, 300);
+    // return () => clearTimeout(timer);
   }, [fetchTours]);
 
   useEffect(() => {

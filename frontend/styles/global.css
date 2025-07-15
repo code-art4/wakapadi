@@ -1,16 +1,25 @@
+/* using the import for the fonts to follow the DRY principle */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 /* Base Styles & Typography */
 :root {
-  --primary-color: #4a90e2;
+  --primary-color: #1976d2;
   --secondary-color: #50e3c2;
-  --text-color-dark: #333;
-  --text-color-light: #555;
-  --bg-color-light: #f8f9fa;
+  --text-color-dark: #222222;
+  --text-color-light: #22222299;
+  --bg-color-light: #f7fafc;
   --card-bg-color: #ffffff;
   --border-color: #e0e0e0;
-  --shadow-light: 0px 4px 15px rgba(0, 0, 0, 0.05);
+  --shadow-light: 0px 0px 30px 0px #0000000d;
   --border-radius: 12px;
+  --font-inter: 'Inter', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-inter);
 }
 
 /* Optional: Add smooth scrolling */
@@ -20,29 +29,35 @@ html {
 
 /* Set default font */
 body {
-  /* font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; */
-  color: #333;
-  line-height: 1.6;
-}
-
-body {
   background-color: var(--bg-color-light);
-  overflow-x: hidden;
   color: var(--text-color-dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+  font-size: 16px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 h3 {
   font-size: 2.5rem;
+  font-weight: 500;
   margin-bottom: 0.5rem;
 }
 
 p {
   font-size: 1.1rem;
+}
+
+@media only screen and (max-width: 500px) {
+  h1 {
+    font-size: 2.3rem;
+  }
+
+  h3 {
+    font-size: 2.5rem;
+  }
 }

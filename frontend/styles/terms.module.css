@@ -8,6 +8,8 @@
 .container li {
   font-size: 1.2rem;
   line-height: 1.6;
+  padding-left: 0;
+  padding-right: 0
 }
 
 .container .sectionTitle {
