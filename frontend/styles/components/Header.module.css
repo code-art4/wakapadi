@@ -1,4 +1,4 @@
-.header-nav {
+.header-nav-homepage {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -6,7 +6,15 @@
   margin: 0.5rem 0 1rem 0;
 }
 
-.header-nav img {
+.header-nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 0.5rem 2rem; */
+}
+
+.header-nav-homepage img {
   width: 10rem;
   height: 5rem;
   object-fit: contain;
@@ -17,8 +25,8 @@
   grid-gap: 4rem;
 }
 
-.header-nav a,
-.header-nav .header-authentication-link a {
+.header-nav-homepage a,
+.header-nav-homepage .header-authentication-link-homepage a {
   font-weight: 500;
   line-height: 1.4rem;
   color: rgba(255, 255, 255, 1);
@@ -26,23 +34,41 @@
   letter-spacing: -0.5%;
   text-decoration: none;
   transition: color 0.5s;
+  box-shadow: none;
 }
 
-.header-nav a:focus-visible {
+.header-nav a,
+.header-nav .header-authentication-link a {
+  font-weight: 500;
+  line-height: 1.4rem;
+  color: rgba(34, 34, 34, 0.6);
+  transition: color 0.5s ease-in-out;
+  letter-spacing: -0.5%;
+  box-shadow: none;
+  text-decoration: none;
+  transition: color 0.5s;
+}
+
+.header-nav a:hover,
+.header-nav .header-authentication-link a:hover {
+  color: rgba(34, 34, 34, 1);
+}
+
+.header-nav-homepage a:focus-visible {
   outline: 0;
 }
 
-.header-nav .header-authentication-link svg {
+.header-nav-homepage .header-authentication-link-homepage svg {
   color: rgba(255, 255, 255, 1);
   background: rgba(255, 255, 255, 0.2);
 }
 
-.header-nav a:active,
-.header-nav a:hover {
+.header-nav-homepage a:active,
+.header-nav-homepage a:hover {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.header-nav svg {
+.header-nav-homepage svg {
   padding: 0.7rem;
   cursor: pointer;
   border-radius: 100%;
@@ -51,7 +77,28 @@
   height: 2.9rem;
 }
 
-.header-nav button {
+.header-authentication-link button {
+  color: rgba(34, 34, 34, 1);
+  padding: 0.8rem 1.6rem;
+  border-radius: 3rem;
+  text-transform: none !important;
+  background: rgba(240, 240, 240, 1);
+  font-size: inherit;
+}
+
+.header-authentication-link svg {
+  color: rgba(34, 34, 34, 1);
+  cursor: pointer;
+    background: #f0f0f0;
+    border-radius: 100%;
+    width: 2.9rem;
+    height: 2.9rem;
+    padding: .7rem;
+  background: rgba(240, 240, 240, 1);
+  /* font-size: inherit; */
+}
+
+.header-authentication-link-homepage button {
   color: rgba(255, 255, 255, 1);
   background: rgba(255, 255, 255, 0.2);
   padding: 0.8rem 1.6rem;
@@ -60,7 +107,7 @@
   font-size: inherit;
 }
 
-.header-nav .header-authentication-link {
+.header-nav-homepage .header-authentication-link-homepage {
   display: flex;
   align-items: center;
   grid-gap: 1.5rem;
@@ -70,12 +117,25 @@
   display: none;
 }
 
+.header-authentication-link {
+  display: flex;
+  align-items: center;
+  grid-gap: 2rem;
+}
+
+.header-authentication-link-homepage button {
+  padding: 0.8rem 1.6rem;
+  border-radius: 3rem;
+  text-transform: none !important;
+  font-size: inherit;
+}
+
 @media only screen and (max-width: 1200px) {
   .header-link-container {
     grid-gap: 2rem;
   }
 
-  .header-nav .header-authentication-link {
+  .header-nav-homepage .header-authentication-link {
     grid-gap: 1rem;
   }
 }
@@ -85,7 +145,7 @@
     width: 100%;
   }
 
-  .header-nav {
+  .header-nav-homepage {
     backdrop-filter: blur(10px);
     background: rgba(19, 19, 19, 0.3);
     margin-top: 0;
@@ -109,7 +169,7 @@
   }
 
   .header-link-container,
-  .header-nav .header-authentication-link {
+  .header-nav-homepage .header-authentication-link {
     display: none;
   }
 }
@@ -119,17 +179,17 @@
     width: 90%;
   }
 
-  .header-nav {
+  .header-nav-homepage {
     padding: 0.7rem 1.2rem;
   }
 
-  .header-nav img {
+  .header-nav-homepage img {
     width: 8rem;
     height: 3rem;
   }
 
   .header-link-container,
-  .header-nav .header-authentication-link {
+  .header-nav-homepage .header-authentication-link {
     display: none;
   }
 
@@ -138,7 +198,7 @@
     gap: 0.6rem;
   }
 
-  .header-nav svg {
+  .header-nav-homepage svg {
     background: none;
     width: 3rem;
     height: 3rem;

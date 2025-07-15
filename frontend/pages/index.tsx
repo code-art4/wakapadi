@@ -210,7 +210,7 @@ export default function HomePage() {
 
       <div className={styles.hero}>
         <main className={styles.main}>
-          <Header />
+          <Header homepage={true} />
         </main>
         <div className={styles.headerContent}>
           <div className={styles.headerText}>

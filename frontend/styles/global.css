@@ -27,6 +27,7 @@ body {
 
 body {
   background-color: var(--bg-color-light);
+  overflow-x: hidden;
   color: var(--text-color-dark);
 }
 
@@ -34,7 +35,6 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow-x: hidden;
   font-family: 'Inter', sans-serif;
 }
 
