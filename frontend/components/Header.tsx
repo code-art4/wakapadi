@@ -53,7 +53,11 @@ const Header = (props: HeaderProps) => {
         <Button>Get started</Button>
         <LanguageIcon width='30px' height='30px' />
       </Box>
-      <Box className={styles['mobile-header-authentication-link']}>
+      <Box
+        className={`${styles['mobile-header-authentication-link']} ${
+          homepage ? styles[''] : styles['not-homepage']
+        }`}
+      >
         <LanguageIcon width='30px' height='30px' />
         <MenuIcon width='30px' height='30px' onClick={() => dispatch('OPEN')} />
       </Box>
@@ -71,7 +75,13 @@ const Header = (props: HeaderProps) => {
           />
         </Box>
 
-        <Box className={styles['mobile-header-link-container-links']}>
+        <Box
+          className={
+            homepage
+              ? styles['mobile-header-link-container-links']
+              : `${styles['mobile-header-link-container-links']} ${styles['mobile-header-link-container-links-not-homepage']}`
+          }
+        >
           <Link href='#' className={styles['header-link']}>
             Who is Nearby
           </Link>

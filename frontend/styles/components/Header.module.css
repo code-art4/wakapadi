@@ -203,6 +203,10 @@
   color: var(--text-color-dark);
 }
 
+.header-nav .mobile-header-link-container-links-not-homepage a {
+  color: #fff;
+}
+
 @media only screen and (max-width: 1200px) {
   .header-link-container {
     grid-gap: 2rem;
@@ -238,6 +242,10 @@
     gap: 1rem;
   }
 
+  .mobile-header-authentication-link.not-homepage {
+    gap: 2rem;
+  }
+
   .mobile-header-authentication-link svg {
     background: none;
     width: 4rem;
@@ -245,8 +253,19 @@
     color: #fff;
   }
 
+  .mobile-header-authentication-link.not-homepage svg {
+    background: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--text-color-dark);
+  }
+
   .header-link-container,
   .header-nav-homepage .header-authentication-link {
+    display: none;
+  }
+
+  .header-authentication-link {
     display: none;
   }
 }
@@ -270,15 +289,22 @@
     display: none;
   }
 
-  .mobile-header-authentication-link {
+  .mobile-header-authentication-link,
+  .mobile-header-authentication-link.not-homepage {
     display: flex;
     gap: 0.6rem;
   }
 
-  .header-nav-homepage svg {
+  .header-nav-homepage svg,
+  .mobile-header-authentication-link svg {
     background: none;
     width: 3rem;
     height: 3rem;
+  }
+
+  .mobile-header-authentication-link.not-homepage svg {
+    width: 2.2rem;
+    height: 2.2rem;
   }
 
   .break {
