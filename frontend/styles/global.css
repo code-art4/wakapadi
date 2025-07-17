@@ -19,7 +19,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: var(--font-inter);
+  font-family: var(--font-inter) !important;
 }
 
 /* Optional: Add smooth scrolling */
@@ -49,7 +49,7 @@ h3 {
 }
 
 p {
-  font-size: 1.1rem;
+  font-size: 1.2rem !important;
 }
 
 @media only screen and (max-width: 500px) {

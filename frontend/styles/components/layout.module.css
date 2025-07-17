@@ -14,11 +14,12 @@
   color: #fff;
 }
 
-.header {
+.main .header {
   background: linear-gradient(to right, #007cf0, #00dfd8);
   color: white;
   font-size: 2.6rem;
   font-weight: 600;
+  letter-spacing: 0.03rem;
   width: 100%;
   text-align: center;
   padding: 3rem 0;
@@ -35,8 +36,15 @@
   color: #ffffff;
 }
 
+.explore h2 {
+  font-size: 2.6rem;
+  font-weight: 600;
+}
+
 .explore p {
-  font-size: 1.02rem;
+  font-size: 1.1rem !important;
+  margin-top: 1.5rem;
+  opacity: 0.9;
 }
 
 .explore button {

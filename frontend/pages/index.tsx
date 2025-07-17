@@ -214,7 +214,9 @@ export default function HomePage() {
           <Header homepage={true} />
         </main>
         <div className={styles.headerContent}>
-          <div className={styles.headerText}>
+          <div
+          // className={styles.headerText}
+          >
             <h1>
               <span>Travel smarter, meet new </span>
               <span>people, and explore like a local.</span>

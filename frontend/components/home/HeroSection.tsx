@@ -3,12 +3,12 @@ import {
   TextField,
   Button,
   IconButton,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   NearMe as NearMeIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -24,11 +24,11 @@ interface HeroSectionProps {
   suggestion?: string; // ✅ Added
 }
 
-export default function HeroSection({ 
-  locations = [], 
-  onSearch, 
-  initialValue = '', 
-  suggestion // ✅ Accept the prop
+export default function HeroSection({
+  locations = [],
+  onSearch,
+  initialValue = '',
+  suggestion, // ✅ Accept the prop
 }: HeroSectionProps) {
   const { t } = useTranslation('common');
   const [input, setInput] = useState(initialValue);
@@ -50,7 +50,7 @@ export default function HeroSection({
     const debounced = debounce((value: string) => {
       onSearch?.(value);
     }, 400);
-    
+
     debounced(input);
     return () => debounced.cancel();
   }, [input, onSearch]);
@@ -88,10 +88,10 @@ export default function HeroSection({
       </div>
 
       {/* Search Container */}
-      <div 
-        style={{ zIndex: '1200' }}
+      <div
+        // style={{ zIndex: '1200' }}
         className={`${styles.searchContainer} ${isFixed ? styles.fixed : ''}`}
-        aria-live="polite"
+        aria-live='polite'
       >
         <div className={styles.searchContent}>
           <div className={styles.searchInput}>
@@ -107,13 +107,13 @@ export default function HeroSection({
                 <TextField
                   {...params}
                   placeholder={t('searchPlaceholder')}
-                  variant="standard"
+                  variant='standard'
                   fullWidth
                   InputProps={{
                     ...params.InputProps,
                     disableUnderline: true,
                     className: styles.inputField,
-                    'aria-label': 'Search tours'
+                    'aria-label': 'Search tours',
                   }}
                 />
               )}
@@ -130,9 +130,13 @@ export default function HeroSection({
             )}
           </div>
 
-          <div className={`${styles.searchButtons} ${mobileMenuOpen || !isMobile ? styles.visible : ''}`}>
+          <div
+            className={`${styles.searchButtons} ${
+              mobileMenuOpen || !isMobile ? styles.visible : ''
+            }`}
+          >
             <Button
-              variant="outlined"
+              variant='outlined'
               startIcon={<NearMeIcon />}
               onClick={() => router.push('/whois')}
               className={styles.searchButton}

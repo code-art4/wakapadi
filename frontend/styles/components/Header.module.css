@@ -89,11 +89,11 @@
 .header-authentication-link svg {
   color: rgba(34, 34, 34, 1);
   cursor: pointer;
-    background: #f0f0f0;
-    border-radius: 100%;
-    width: 2.9rem;
-    height: 2.9rem;
-    padding: .7rem;
+  background: #f0f0f0;
+  border-radius: 100%;
+  width: 2.9rem;
+  height: 2.9rem;
+  padding: 0.7rem;
   background: rgba(240, 240, 240, 1);
   /* font-size: inherit; */
 }
@@ -130,6 +130,79 @@
   font-size: inherit;
 }
 
+.mobile-header-link-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--text-color-dark);
+  padding: 2rem;
+  transition: top 0.3s ease-in-out;
+  z-index: 1000;
+  top: -100vh;
+}
+
+.mobile-header-link-container.active {
+  top: 0;
+}
+
+.mobile-header-link-container-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.mobile-header-link-container-top-nav
+  .mobile-header-link-container-top-nav-close {
+  cursor: pointer;
+  width: 3rem;
+  height: 3rem;
+  color: #fff;
+}
+
+.mobile-header-link-container-links {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  margin: 3rem auto;
+  flex-direction: column;
+  grid-gap: 2rem;
+  font-weight: 500;
+}
+
+.mobile-header-link-container-language {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 0.5rem;
+  color: #fff;
+  width: 100%;
+}
+
+.mobile-header-link-container-links select {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  cursor: pointer;
+}
+
+.mobile-header-link-container-links button {
+  background-color: #ffffff;
+  padding: 0.8rem 1.6rem;
+  border-radius: 3rem;
+  text-transform: none !important;
+  width: 100%;
+  font-size: 1.1rem;
+  color: var(--text-color-dark);
+}
+
 @media only screen and (max-width: 1200px) {
   .header-link-container {
     grid-gap: 2rem;
@@ -154,6 +227,10 @@
 
   .header-link-container {
     grid-gap: 2rem;
+  }
+
+  .header-nav-homepage .header-authentication-link-homepage {
+    display: none;
   }
 
   .mobile-header-authentication-link {

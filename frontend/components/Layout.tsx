@@ -1,4 +1,4 @@
-import { Box, Button, Container } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
 import Head from 'next/head';
 import Header from './Header';
 import Footer from './Footer';
@@ -19,19 +19,23 @@ export default function Layout({ children, title, description }: LayoutProps) {
         <Container className={styles.container}>
           <Header homepage={false} />
         </Container>
-        <h1 className={styles.header}>{title}</h1>
+
+        {/* header */}
+        <Typography variant='h1' className={styles.header}>
+          {title}
+        </Typography>
 
         {/* content */}
-        <main className={styles.main}>
+        <Box component='section' sx={{ p: 2 }} className={styles.main}>
           <Container className={styles.container}>{children}</Container>
-        </main>
+        </Box>
 
         <Box className={styles.explore}>
-          <h3>Ready to Explore?</h3>
-          <p>
+          <Typography variant='h2'>Ready to Explore?</Typography>
+          <Typography variant='body1'>
             Join thousands of travelers who have discovered authentic local
             experiences through Wakapadi.
-          </p>
+          </Typography>
           <Button>Start your adventure</Button>
         </Box>
 

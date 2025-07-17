@@ -693,7 +693,7 @@ export default function SingleTourPage() {
                       p: 1,
                       borderRadius: 1,
                       boxShadow: 1,
-                      zIndex: 1,
+                      // zIndex: 1,
                     }}
                   >
                     <Button
