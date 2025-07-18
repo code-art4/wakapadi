@@ -5,7 +5,12 @@ import Footer from './Footer';
 import { LayoutProps } from './../types/components/layout';
 import styles from '../styles/components/layout.module.css';
 
-export default function Layout({ children, title, description }: LayoutProps) {
+export default function Layout({
+  children,
+  title,
+  description,
+  homepage,
+}: LayoutProps) {
   return (
     <>
       <Head>
@@ -21,13 +26,23 @@ export default function Layout({ children, title, description }: LayoutProps) {
         </Container>
 
         {/* header */}
-        <Typography variant='h1' className={styles.header}>
-          {title}
-        </Typography>
+        {!homepage ? (
+          <Typography variant='h1' className={styles.header}>
+            {title}
+          </Typography>
+        ) : null}
 
         {/* content */}
-        <Box component='section' sx={{ p: 2 }} className={styles.main}>
-          <Container className={styles.container}>{children}</Container>
+        <Box
+          component='section'
+          sx={{ p: homepage ? 0 : 2 }}
+          className={styles.main}
+        >
+          {homepage ? (
+            children
+          ) : (
+            <Container className={styles.container}>{children}</Container>
+          )}
         </Box>
 
         <Box className={styles.explore}>
