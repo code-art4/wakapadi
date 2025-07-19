@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -17,24 +18,21 @@ import LanguageIcon from '@mui/icons-material/Language';
 import GroupsIcon from '@mui/icons-material/Groups';
 import NearMeIcon from '@mui/icons-material/NearMe';
 import SearchIcon from '@mui/icons-material/Search';
-import Header from '../components/Header';
 import TourCard from '../components/home/TourCard';
 import { api } from '../lib/api/index';
 import styles from '../styles/HomePage.module.css';
-import Footer from '../components/Footer';
 import Layout from '../components/Layout';
 
 const PER_PAGE = 12;
 
 export type Tour = {
-  id: string;
+  image: string;
+  id: number;
+  location: { city: string; country: string };
+  altText: string;
   title: string;
-  location: string;
-  recurringSchedule?: string;
-  sourceUrl?: string;
-  externalPageUrl?: string;
-  image?: string;
-  altText?: string;
+  recurringSchedule: string;
+  externalPageUrl: string;
   startDate: string;
   endDate: string;
 };
@@ -46,9 +44,9 @@ export default function HomePage() {
   const [suggestion, setSuggestion] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
-  const topRef = useRef<HTMLDivElement>(null);
+  // const topRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { q } = router.query;
 
@@ -57,7 +55,7 @@ export default function HomePage() {
     return search
       ? tours.filter(
           (t) =>
-            t.location.toLowerCase().includes(search.toLowerCase()) ||
+            t.location.city.toLowerCase().includes(search.toLowerCase()) ||
             t.title.toLowerCase().includes(search.toLowerCase())
         )
       : tours;
@@ -66,12 +64,12 @@ export default function HomePage() {
   const fetchTours = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      // setError(null);
       const res = await api.get('/tours');
       setTours(res.data);
     } catch (err) {
       console.error('Error fetching tours:', err);
-      setError(t('fetchError'));
+      // setError(t('fetchError'));
     } finally {
       setLoading(false);
     }
@@ -167,6 +165,7 @@ export default function HomePage() {
     },
     {
       icon: (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src='/sale_fill.svg' alt='tours' className={styles.toursSvg} />
       ),
       header: 'Free Walking Tours',
@@ -401,8 +400,6 @@ export default function HomePage() {
                   </CardContent>
                 </Card>
               ))}
-              <Box></Box>
-              <Box></Box>
             </Box>
           </Box>
         </Box>

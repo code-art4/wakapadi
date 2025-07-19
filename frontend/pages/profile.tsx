@@ -35,7 +35,7 @@ interface User {
   avatarUrl?: string;
   travelPrefs?: string[];
   languages?: string[];
-  bio?:StringNullableChain;
+  bio?: StringNullableChain;
   socials?: {
     instagram?: string;
     twitter?: string;
@@ -133,6 +133,7 @@ export default function ProfilePage() {
     return () => {
       socket?.disconnect();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSave = async () => {
@@ -160,8 +161,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <Layout title="My Profile">
-      <Container maxWidth="md" className={styles.container}>
+    <Layout title='My Profile'>
+      <Container maxWidth='md' className={styles.container}>
         {/* Profile Header */}
         <header className={styles.header}>
           <h1 className={styles.title}>My Profile</h1>
@@ -181,8 +182,8 @@ export default function ProfilePage() {
 
         {/* Main Content */}
         {loading ? (
-          <div className={styles.loading} role="status" aria-live="polite">
-            <CircularProgress aria-label="Loading profile data" />
+          <div className={styles.loading} role='status' aria-live='polite'>
+            <CircularProgress aria-label='Loading profile data' />
             <p>Loading your profile...</p>
           </div>
         ) : user ? (
@@ -190,21 +191,21 @@ export default function ProfilePage() {
             {/* Preferences Section */}
             <section
               className={styles.section}
-              aria-labelledby="preferences-heading"
+              aria-labelledby='preferences-heading'
             >
-              <h2 id="preferences-heading" className={styles.sectionTitle}>
+              <h2 id='preferences-heading' className={styles.sectionTitle}>
                 Preferences
               </h2>
 
               <div className={styles.formGroup}>
-                <label htmlFor="travel-interests" className={styles.formLabel}>
+                <label htmlFor='travel-interests' className={styles.formLabel}>
                   Travel Interests
                 </label>
                 <Select
                   multiple
                   value={travelPrefs}
                   onChange={(e) => setTravelPrefs(e.target.value as string[])}
-                  input={<OutlinedInput id="travel-interests" />}
+                  input={<OutlinedInput id='travel-interests' />}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((value) => (
@@ -222,7 +223,7 @@ export default function ProfilePage() {
                     </Box>
                   )}
                   fullWidth
-                  aria-describedby="travel-interests-help"
+                  aria-describedby='travel-interests-help'
                 >
                   {travelOptions.map((option) => (
                     <MenuItem key={option} value={option}>
@@ -230,20 +231,20 @@ export default function ProfilePage() {
                     </MenuItem>
                   ))}
                 </Select>
-                <p id="travel-interests-help" className={styles.helperText}>
+                <p id='travel-interests-help' className={styles.helperText}>
                   Select your preferred travel activities.
                 </p>
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="languages" className={styles.formLabel}>
+                <label htmlFor='languages' className={styles.formLabel}>
                   Languages
                 </label>
                 <Select
                   multiple
                   value={languages}
                   onChange={(e) => setLanguages(e.target.value as string[])}
-                  input={<OutlinedInput id="languages" />}
+                  input={<OutlinedInput id='languages' />}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((value) => (
@@ -261,7 +262,7 @@ export default function ProfilePage() {
                     </Box>
                   )}
                   fullWidth
-                  aria-describedby="languages-help"
+                  aria-describedby='languages-help'
                 >
                   {languageOptions.map((lang) => (
                     <MenuItem key={lang} value={lang}>
@@ -269,7 +270,7 @@ export default function ProfilePage() {
                     </MenuItem>
                   ))}
                 </Select>
-                <p id="languages-help" className={styles.helperText}>
+                <p id='languages-help' className={styles.helperText}>
                   Indicate the languages you speak.
                 </p>
               </div>
@@ -278,44 +279,44 @@ export default function ProfilePage() {
             {/* Social Media Section */}
             <section
               className={styles.section}
-              aria-labelledby="social-media-heading"
+              aria-labelledby='social-media-heading'
             >
-              <h2 id="social-media-heading" className={styles.sectionTitle}>
+              <h2 id='social-media-heading' className={styles.sectionTitle}>
                 Social Media
               </h2>
               <TextField
-                label="Instagram"
+                label='Instagram'
                 value={instagram}
                 onChange={(e) => setInstagram(e.target.value)}
                 fullWidth
-                margin="normal"
+                margin='normal'
                 InputProps={{
                   startAdornment: <Typography mr={1}>@</Typography>,
                 }}
-                aria-label="Instagram username"
-                placeholder="yourinstagramhandle"
+                aria-label='Instagram username'
+                placeholder='yourinstagramhandle'
               />
               <TextField
-                label="Twitter"
+                label='Twitter'
                 value={twitter}
                 onChange={(e) => setTwitter(e.target.value)}
                 fullWidth
-                margin="normal"
+                margin='normal'
                 InputProps={{
                   startAdornment: <Typography mr={1}>@</Typography>,
                 }}
-                aria-label="Twitter username"
-                placeholder="yourtwitterhandle"
+                aria-label='Twitter username'
+                placeholder='yourtwitterhandle'
               />
             </section>
 
             {/* Save Button */}
             <Button
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               onClick={handleSave}
               className={styles.saveButton}
-              aria-label="Save all changes to profile"
+              aria-label='Save all changes to profile'
             >
               Save Changes
             </Button>
@@ -323,9 +324,9 @@ export default function ProfilePage() {
             {/* Conversations Section */}
             <section
               className={styles.section}
-              aria-labelledby="recent-chats-heading"
+              aria-labelledby='recent-chats-heading'
             >
-              <h2 id="recent-chats-heading" className={styles.sectionTitle}>
+              <h2 id='recent-chats-heading' className={styles.sectionTitle}>
                 Recent Chats
               </h2>
               <List className={styles.conversationList}>
@@ -349,16 +350,16 @@ export default function ProfilePage() {
                         secondary={
                           <>
                             <Typography
-                              component="span"
-                              variant="body2"
-                              color="text.primary"
+                              component='span'
+                              variant='body2'
+                              color='text.primary'
                             >
                               {conv.message.message}
                             </Typography>
                             <Typography
-                              variant="caption"
-                              display="block"
-                              color="text.secondary"
+                              variant='caption'
+                              display='block'
+                              color='text.secondary'
                             >
                               {moment(conv.message.createdAt).fromNow()}
                             </Typography>
@@ -366,7 +367,7 @@ export default function ProfilePage() {
                         }
                       />
                       <IconButton
-                        edge="end"
+                        edge='end'
                         aria-label={`Go to chat with ${conv.otherUser.username}`}
                       >
                         <ChatIcon />
@@ -383,8 +384,8 @@ export default function ProfilePage() {
             </section>
           </main>
         ) : (
-          <div className={styles.errorMessage} role="alert">
-            <Typography color="error">
+          <div className={styles.errorMessage} role='alert'>
+            <Typography color='error'>
               Failed to load profile. Please try again later.
             </Typography>
           </div>
@@ -399,9 +400,9 @@ export default function ProfilePage() {
         >
           <Alert
             onClose={closeNotification}
-            severity="success"
+            severity='success'
             sx={{ width: '100%' }}
-            variant="filled"
+            variant='filled'
           >
             {notifications.success}
           </Alert>
@@ -414,9 +415,9 @@ export default function ProfilePage() {
         >
           <Alert
             onClose={closeNotification}
-            severity="error"
+            severity='error'
             sx={{ width: '100%' }}
-            variant="filled"
+            variant='filled'
           >
             {notifications.error}
           </Alert>

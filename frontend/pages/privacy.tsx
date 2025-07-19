@@ -1,4 +1,4 @@
-import { Typography, Container, Paper, List, ListItem } from '@mui/material';
+import { Typography, Container, List, ListItem } from '@mui/material';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import { useTranslation } from 'next-i18next';

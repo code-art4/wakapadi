@@ -1,12 +1,5 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Box,
-  Skeleton,
-} from '@mui/material';
-import { useTranslation } from 'next-i18next';
+import { Card, CardContent, Typography, Skeleton } from '@mui/material';
+// import { useTranslation } from 'next-i18next';
 import { Tour } from '../../pages';
 import styles from './TourCard.module.css';
 import Image from 'next/image';
@@ -31,19 +24,19 @@ import { formattedTime } from '../../utils/formatTime';
 //     )
 //   );
 // };
-function extractPath(url: string): string {
-  const parsed = new URL(url);
-  return `/tours${parsed.pathname}`;
-}
+// function extractPath(url: string): string {
+//   const parsed = new URL(url);
+//   return `/tours${parsed.pathname}`;
+// }
 
 export default function TourCard({
   tour,
-  highlight = '',
-}: {
+}: // highlight = '',
+{
   tour: Tour;
   highlight?: string;
 }) {
-  const { t } = useTranslation('common');
+  // const { t } = useTranslation('common');
   const [imageLoading, setImageLoading] = useState(true);
 
   return (

@@ -62,7 +62,8 @@ const ChatBubble = ({
       }`}
     >
       {!fromSelf && avatar && (
-        <img src={avatar} className={styles.avatar} alt="Bot avatar" />
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={avatar} className={styles.avatar} alt='Bot avatar' />
       )}
       <div
         className={`${styles.messageBubble} ${
@@ -82,15 +83,15 @@ const ChatBubble = ({
         </div>
         {followUp && !fromSelf && (
           <Box sx={{ mt: 1 }}>
-            <Typography variant="caption">Was this helpful?</Typography>
+            <Typography variant='caption'>Was this helpful?</Typography>
             <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
               {onFeedback && (
-                <Button size="small" onClick={() => onFeedback(true)}>
+                <Button size='small' onClick={() => onFeedback(true)}>
                   👍 Yes
                 </Button>
               )}
               {onFeedback && (
-                <Button size="small" onClick={() => onFeedback(false)}>
+                <Button size='small' onClick={() => onFeedback(false)}>
                   👎 No
                 </Button>
               )}
@@ -267,28 +268,28 @@ export default function ChatBotPage() {
   };
 
   return (
-    <Layout title="Tour Assistant Bot">
+    <Layout title='Tour Assistant Bot'>
       <Container className={styles.chatContainer}>
         <Box className={styles.chatHeader}>
-          <Typography variant="h6" className={styles.chatTitle}>
+          <Typography variant='h6' className={styles.chatTitle}>
             Chat with Tour Assistant
           </Typography>
-          <Box display="flex" alignItems="center">
+          <Box display='flex' alignItems='center'>
             <Box
               width={10}
               height={10}
               bgcolor={socketConnected ? 'success.main' : 'error.main'}
-              borderRadius="50%"
+              borderRadius='50%'
               mr={1}
             />
-            <Typography variant="body2" className={styles.chatSubtitle}>
+            <Typography variant='body2' className={styles.chatSubtitle}>
               {socketConnected ? 'Online' : 'Offline'}
             </Typography>
           </Box>
         </Box>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity='error' sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
@@ -334,7 +335,7 @@ export default function ChatBotPage() {
               <ChatBubble
                 message={<span className={styles.typingDots}>...</span>}
                 fromSelf={false}
-                avatar="/bot_avatar.png"
+                avatar='/bot_avatar.png'
                 createdAt={new Date().toISOString()}
               />
             </Box>
@@ -348,8 +349,8 @@ export default function ChatBotPage() {
             {suggestedFollowUps.map((suggestion, i) => (
               <Button
                 key={i}
-                variant="outlined"
-                size="small"
+                variant='outlined'
+                size='small'
                 onClick={() => {
                   setText(suggestion);
                   handleSend();
@@ -375,8 +376,8 @@ export default function ChatBotPage() {
           >
             <Picker
               onEmojiSelect={handleEmojiSelect}
-              theme="light"
-              previewPosition="none"
+              theme='light'
+              previewPosition='none'
             />
           </Popover>
 
@@ -394,7 +395,7 @@ export default function ChatBotPage() {
           />
 
           <Button
-            variant="contained"
+            variant='contained'
             onClick={handleSend}
             disabled={!text.trim() || !socketConnected || isBotTyping}
             className={styles.sendButton}

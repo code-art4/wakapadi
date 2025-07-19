@@ -8,53 +8,57 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 
 const footerLinks = [
-  [
-    'Explore',
-    {
-      title: '#Whois Nearby',
-      link: 'whois',
-    },
-    {
-      title: 'Available Tours',
-      link: 'available-tours',
-    },
-    {
-      title: 'Featured Tours',
-      link: 'featured-tour',
-    },
-  ],
-
-  [
-    'Company',
-    {
-      title: 'About Us',
-      link: 'about',
-    },
-    {
-      title: 'Blog',
-      link: 'blog',
-    },
-    {
-      title: 'Contact Us',
-      link: 'contact',
-    },
-  ],
-
-  [
-    'Legal',
-    {
-      title: 'Privacy Policy',
-      link: 'privacy',
-    },
-    {
-      title: 'Terms of Use',
-      link: 'terms',
-    },
-    {
-      title: 'Cookie Policy',
-      link: 'cookie',
-    },
-  ],
+  {
+    title: 'Explore',
+    navigations: [
+      {
+        title: '#Whois Nearby',
+        href: '/whois',
+      },
+      {
+        title: 'Available Tours',
+        href: '/available-tours',
+      },
+      {
+        title: 'Featured Tours',
+        href: '/featured-tour',
+      },
+    ],
+  },
+  {
+    title: 'Company',
+    navigations: [
+      {
+        title: 'About Us',
+        href: '/about',
+      },
+      {
+        title: 'Blog',
+        href: '/blog',
+      },
+      {
+        title: 'Contact Us',
+        href: '/contact',
+      },
+    ],
+  },
+  {
+    title: 'Legal',
+    navigations: [
+      {
+        title: 'Privacy Policy',
+        href: '/privacy',
+      },
+      {
+        title: 'Terms of Use',
+        href: '/terms',
+      },
+      {
+        title: 'Cookie Policy',
+        href: '/cookie',
+      },
+    ],
+  },
 ];
 
 function Footer() {
@@ -67,8 +71,8 @@ function Footer() {
             <p>Explore, connect, and discover local free walking tours</p>
           </Box>
           <Box className={styles['footer-main-container-link']}>
-            {footerLinks.map((section, index) => {
-              const [sectionTitle, ...links] = section;
+            {footerLinks.map((footerLink, index) => {
+              const sectionTitle = footerLink.title;
               return (
                 <List
                   key={index}
@@ -83,14 +87,10 @@ function Footer() {
                     primary={sectionTitle}
                     className={styles['footer-main-container-link-title']}
                   />
-                  {links.map((linkObj, linkIndex) => (
+                  {footerLink.navigations.map((link, linkIndex) => (
                     <ListItem key={linkIndex} disableGutters>
-                      <Link
-                        href={linkObj.link}
-                        underline='hover'
-                        color='inherit'
-                      >
-                        {linkObj.title}
+                      <Link href={link?.href} color='inherit'>
+                        {link?.title}
                       </Link>
                     </ListItem>
                   ))}

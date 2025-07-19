@@ -18,7 +18,7 @@ import { motion } from 'framer-motion';
 import styles from './HeroSection.module.css';
 
 interface HeroSectionProps {
-  locations?: string[];
+  locations?: { city: string; country: string }[];
   onSearch?: (term: string) => void;
   initialValue?: string;
   suggestion?: string; // ✅ Added
@@ -100,7 +100,7 @@ export default function HeroSection({
               freeSolo
               fullWidth
               options={locations}
-              getOptionLabel={(option) => option}
+              // getOptionLabel={(option) => option}
               inputValue={input}
               onInputChange={(_, value) => setInput(value)}
               renderInput={(params) => (

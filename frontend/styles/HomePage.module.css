@@ -539,10 +539,6 @@
 }
 
 @media only screen and (max-width: 425px) {
-  html {
-    font-size: 14px;
-  }
-
   .hero {
     height: 75vh;
   }

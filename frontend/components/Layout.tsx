@@ -9,7 +9,7 @@ export default function Layout({
   children,
   title,
   description,
-  homepage,
+  homepage = false,
 }: LayoutProps) {
   return (
     <>
@@ -22,7 +22,7 @@ export default function Layout({
 
       <main className={styles.main}>
         <Container className={styles.container}>
-          <Header homepage={false} />
+          <Header homepage={homepage} />
         </Container>
 
         {/* header */}
