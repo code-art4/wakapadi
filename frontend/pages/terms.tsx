@@ -1,4 +1,4 @@
-import { Typography, Container, List, ListItem } from '@mui/material';
+import { Typography, List, ListItem } from '@mui/material';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import { useTranslation } from 'next-i18next';
@@ -24,7 +24,7 @@ export default function TermsOfUse() {
         <meta name='robots' content='noindex, nofollow' />
       </Head>
 
-      <Container className={styles.container}>
+      <div className={styles.container}>
         <motion.div initial='hidden' animate='visible' variants={fadeInUp}>
           <motion.div variants={fadeInUp} custom={2}>
             <Typography className={styles.bodyText}>
@@ -79,7 +79,7 @@ export default function TermsOfUse() {
             </Typography>
           </motion.div>
         </motion.div>
-      </Container>
+      </div>
     </Layout>
   );
 }

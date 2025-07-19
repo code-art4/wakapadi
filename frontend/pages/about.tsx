@@ -1,4 +1,3 @@
-import { Container } from '@mui/material';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -19,7 +18,7 @@ export default function AboutPage() {
       </Head>
 
       <Layout title='About us'>
-        <Container className={styles.container}>
+        <div className={styles.container}>
           <section className={styles.section}>
             <div className={styles.textBlock}>
               <h5 className={styles.smallHeading}>WHO WE ARE</h5>
@@ -96,7 +95,7 @@ export default function AboutPage() {
               />
             </div>
           </section>
-        </Container>
+        </div>
       </Layout>
     </>
   );

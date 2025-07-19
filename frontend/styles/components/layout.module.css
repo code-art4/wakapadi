@@ -1,12 +1,24 @@
+.main {
+  position: relative;
+}
+
 .main .container {
   width: 85%;
   margin-top: 2rem;
-  max-width: none;
+  max-width: none !important;
   padding: 0;
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
   gap: 4rem;
+}
+
+.container.homepage {
+  margin-top: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
 }
 
 .container .title {
@@ -26,74 +38,29 @@
   margin-top: 1.5rem;
 }
 
-.explore {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 4rem 0 7rem 0;
-  background: linear-gradient(to right, #2179b8, #488a42);
-  color: #ffffff;
-}
-
-.explore h2 {
-  font-size: 2.6rem;
-  font-weight: 600;
-}
-
-.explore p {
-  font-size: 1.1rem !important;
-  margin-top: 1.5rem;
-  opacity: 0.9;
-}
-
-.explore button {
-  background-color: #ffffff15;
-  margin-top: 1.5rem;
-  border-radius: 10rem;
-  padding: 0.7rem 2rem;
-  color: #fff;
-  text-transform: none;
-  font-weight: 500;
-  font-size: 1.01rem;
-}
-
 @media only screen and (max-width: 1200px) {
   .main .container {
     width: 90%;
     margin-bottom: 2rem;
     margin-top: 2rem;
   }
+
+  .container.homepage {
+    width: 100%;
+    margin: 0 auto;
+  }
 }
 
 @media only screen and (max-width: 768px) {
   .main .container {
-    width: 95%;
+    width: 100%;
+    margin-top: 0.5rem;
   }
 }
 
 @media only screen and (max-width: 500px) {
   .main .container {
-    width: 95%;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .explore h3 {
-    text-align: center;
-    margin-bottom: 1rem;
-    font-size: 2.5rem;
-    font-weight: 500;
-    line-height: 3.2rem;
-  }
-
-  .explore {
-    padding: 2rem 1.6rem;
-  }
-
-  .explore p {
     width: 100%;
-    text-align: center;
-    font-size: 1.1rem;
+    margin: 0;
   }
 }

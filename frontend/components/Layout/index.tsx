@@ -1,9 +1,10 @@
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
+import Explore from './Explore';
 import Head from 'next/head';
 import Header from './Header';
-import Footer from './Footer';
-import { LayoutProps } from './../types/components/layout';
-import styles from '../styles/components/layout.module.css';
+import Footer from './../Footer';
+import { LayoutProps } from './../../types/components/layout';
+import styles from '../../styles/components/layout.module.css';
 
 export default function Layout({
   children,
@@ -21,7 +22,9 @@ export default function Layout({
       </Head>
 
       <main className={styles.main}>
-        <Container className={styles.container}>
+        <Container
+          className={`${styles.container} ${homepage ? styles.homepage : ''}`}
+        >
           <Header homepage={homepage} />
         </Container>
 
@@ -45,14 +48,7 @@ export default function Layout({
           )}
         </Box>
 
-        <Box className={styles.explore}>
-          <Typography variant='h2'>Ready to Explore?</Typography>
-          <Typography variant='body1'>
-            Join thousands of travelers who have discovered authentic local
-            experiences through Wakapadi.
-          </Typography>
-          <Button>Start your adventure</Button>
-        </Box>
+        <Explore />
 
         <Footer />
       </main>

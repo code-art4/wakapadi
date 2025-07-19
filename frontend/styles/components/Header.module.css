@@ -1,9 +1,10 @@
 .header-nav-homepage {
-  width: 100%;
+  width: 85%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0.5rem 0 1rem 0;
+  margin: auto;
+  margin-top: 1rem;
 }
 
 .header-nav {
@@ -140,7 +141,7 @@
   padding: 2rem;
   transition: top 0.3s ease-in-out;
   z-index: 1000;
-  top: -100vh;
+  top: -120vh;
 }
 
 .mobile-header-link-container.active {
@@ -222,11 +223,17 @@
     width: 100%;
   }
 
+  .header-nav {
+    margin-top: 1rem;
+    padding: 0 1rem;
+  }
+
   .header-nav-homepage {
     backdrop-filter: blur(10px);
     background: rgba(19, 19, 19, 0.3);
     margin-top: 0;
     padding: 0.5rem 2rem;
+    width: 100%;
   }
 
   .header-link-container {
@@ -277,6 +284,8 @@
 
   .header-nav-homepage {
     padding: 0.7rem 1.2rem;
+    margin: 0;
+    width: 100%;
   }
 
   .header-nav-homepage img {

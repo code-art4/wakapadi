@@ -230,7 +230,7 @@ export default function HomePage() {
         </div>
 
         <Box className={styles.tours}>
-          <h3>Available Tours</h3>
+          <h2>Available Tours</h2>
 
           <Box>
             <div className={styles.tourGrid} role='list'>
@@ -369,7 +369,7 @@ export default function HomePage() {
 
         <Box className={styles.why}>
           <Box className={styles['why-container']}>
-            <h3>Why Choose Wakapadi?</h3>
+            <h2>Why Choose Wakapadi?</h2>
             <p>
               Connect with local guides and helpers for authentic cultural
               experiences that go beyond typical tourist attractions.

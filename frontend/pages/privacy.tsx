@@ -1,4 +1,4 @@
-import { Typography, Container, List, ListItem } from '@mui/material';
+import { Typography, List, ListItem } from '@mui/material';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import { useTranslation } from 'next-i18next';
@@ -24,7 +24,7 @@ export default function PrivacyPolicy() {
         <meta name='robots' content='noindex, nofollow' />
       </Head>
 
-      <Container className={styles.container}>
+      <div className={styles.container}>
         <motion.div variants={fadeInUp} custom={2}>
           <Typography className={styles.bodyText}>
             At Wakapadi, your privacy is a top priority. We collect only
@@ -65,7 +65,7 @@ export default function PrivacyPolicy() {
             </ListItem>
           </List>
         </motion.div>
-      </Container>
+      </div>
     </Layout>
   );
 }
