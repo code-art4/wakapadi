@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useTranslation } from 'next-i18next';
@@ -29,18 +30,18 @@ import funNames from '../lib/data/funNames.json';
 
 const getRandomFunName = () =>
   funNames[Math.floor(Math.random() * funNames.length)];
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.4,
-      ease: [0.25, 0.1, 0.25, 1],
-    },
-  }),
-};
+// const fadeInUp = {
+//   hidden: { opacity: 0, y: 20 },
+//   visible: (i = 1) => ({
+//     opacity: 1,
+//     y: 0,
+//     transition: {
+//       delay: i * 0.1,
+//       duration: 0.4,
+//       ease: [0.25, 0.1, 0.25, 1],
+//     },
+//   }),
+// };
 
 const statusColors = {
   active: '#10b981',
@@ -253,7 +254,8 @@ export default function WhoisPage() {
 
       <Container maxWidth='md' className={styles.container}>
         {/* <motion.div initial="hidden" animate="visible" variants={fadeInUp}>  */}
-        <motion.div initial='hidden' variants={fadeInUp}>
+        <motion.div initial='hidden'>
+          {/* variants={fadeInUp}> */}
           <div className={styles.content}>
             <header className={styles.header}>
               <motion.div
@@ -360,7 +362,7 @@ export default function WhoisPage() {
                   {users.map((user, index) => (
                     <motion.div
                       key={`${user._id}-${index}`}
-                      variants={fadeInUp}
+                      // variants={fadeInUp}
                       custom={index + 1}
                     >
                       <ListItem className={styles.userItem}>

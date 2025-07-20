@@ -1,45 +1,40 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import Head from 'next/head';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useRouter } from 'next/router';
+import debounce from 'lodash.debounce';
 import {
   Box,
   Button,
   Typography,
   Pagination,
   Skeleton,
-  Container,
   Card,
-  CardActions,
   CardContent,
-  CardMedia,
 } from '@mui/material';
-import Head from 'next/head';
-import Layout from '../components/Layout';
-import Header from '../components/Header';
-import { api } from '../lib/api/index';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import HeroSection from '../components/home/HeroSection';
-import TourCard from '../components/home/TourCard';
-import { useRouter } from 'next/router';
-import debounce from 'lodash.debounce';
-import styles from '../styles/HomePage.module.css';
-import Footer from '../components/Footer';
 import LanguageIcon from '@mui/icons-material/Language';
 import GroupsIcon from '@mui/icons-material/Groups';
-import { type } from './tours/index';
 import NearMeIcon from '@mui/icons-material/NearMe';
 import SearchIcon from '@mui/icons-material/Search';
+import TourCard from '../components/home/TourCard';
+import { api } from '../lib/api/index';
+import styles from '../styles/HomePage.module.css';
+import Layout from '../components/Layout';
 
 const PER_PAGE = 12;
 
 export type Tour = {
-  id: string;
+  image: string;
+  id: number;
+  location: { city: string; country: string };
+  altText: string;
   title: string;
-  location: string;
-  recurringSchedule?: string;
-  sourceUrl?: string;
-  externalPageUrl?: string;
-  image?: string;
-  altText?: string;
+  recurringSchedule: string;
+  externalPageUrl: string;
+  startDate: string;
+  endDate: string;
 };
 
 export default function HomePage() {
@@ -49,9 +44,9 @@ export default function HomePage() {
   const [suggestion, setSuggestion] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
-  const topRef = useRef<HTMLDivElement>(null);
+  // const topRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { q } = router.query;
 
@@ -60,7 +55,7 @@ export default function HomePage() {
     return search
       ? tours.filter(
           (t) =>
-            t.location.toLowerCase().includes(search.toLowerCase()) ||
+            t.location.city.toLowerCase().includes(search.toLowerCase()) ||
             t.title.toLowerCase().includes(search.toLowerCase())
         )
       : tours;
@@ -69,20 +64,20 @@ export default function HomePage() {
   const fetchTours = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      // setError(null);
       const res = await api.get('/tours');
       setTours(res.data);
     } catch (err) {
       console.error('Error fetching tours:', err);
-      setError(t('fetchError'));
+      // setError(t('fetchError'));
     } finally {
       setLoading(false);
     }
   }, [t]);
 
   useEffect(() => {
-    const timer = setTimeout(fetchTours, 300);
-    return () => clearTimeout(timer);
+    // const timer = setTimeout(fetchTours, 300);
+    // return () => clearTimeout(timer);
   }, [fetchTours]);
 
   useEffect(() => {
@@ -120,22 +115,6 @@ export default function HomePage() {
   const paginatedTours = useMemo(() => {
     return filteredTours.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   }, [filteredTours, page]);
-
-  const handlePageChange = useCallback(
-    (_: React.ChangeEvent<unknown>, value: number) => {
-      setPage(value);
-      window.scrollTo({
-        top: topRef.current?.offsetTop || 0,
-        behavior: 'smooth',
-      });
-    },
-    []
-  );
-
-  const locations = useMemo(
-    () => [...new Set(tours.map((t) => t.location))],
-    [tours]
-  );
 
   useEffect(() => {
     const detectAndScrapeCity = async () => {
@@ -186,12 +165,15 @@ export default function HomePage() {
     },
     {
       icon: (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src='/sale_fill.svg' alt='tours' className={styles.toursSvg} />
       ),
       header: 'Free Walking Tours',
       text: 'Discover amazing free walking tours and pay-what-you-feel experiences that fit any budget.',
     },
   ];
+
+  console.log(paginatedTours);
 
   return (
     <>
@@ -202,253 +184,226 @@ export default function HomePage() {
         <meta name='robots' content='index, follow' />
         <meta property='og:title' content={t('homePageTitle')} />
         <meta property='og:description' content={t('homePageDescription')} />
+        <link rel='icon' type='image/png' href='/favicon.png' />
       </Head>
 
-      <div className={styles.hero}>
-        <main className={styles.main}>
-          <Header />
-        </main>
-        <div className={styles.headerContent}>
-          <div className={styles.headerText}>
-            <h1>
-              <span>Travel smarter, meet new </span>
-              <span>people, and explore like a local.</span>
-            </h1>
-            <p>
-              Connect with passionate guides and experience authentic cultural
-              adventures in cities worldwide.
-            </p>
-          </div>
-
-          <div className={styles.inputGroup}>
-            <div className={styles.input}>
-              <span className={styles.searchIcon}>
-                <SearchIcon />
-              </span>
-              <input
-                type='search'
-                placeholder='Search by City'
-                value={suggestion}
-                onChange={(e) => handleSearchInput(e.target.value)}
-                className={styles.searchInput}
-              />
+      <Layout homepage={true}>
+        <div className={styles.hero}>
+          <div className={styles.headerContent}>
+            <div
+            // className={styles.headerText}
+            >
+              <h1>
+                <span>Travel smarter, meet new </span>
+                <span>people, and explore like a local.</span>
+              </h1>
+              <p>
+                Connect with passionate guides and experience authentic cultural
+                adventures in cities worldwide.
+              </p>
             </div>
 
-            <Button>Search</Button>
-          </div>
-
-          <div className={styles.buttonGroup}>
-            <Button>
-              <NearMeIcon />
-              #Whois Nearby
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <Box className={styles.tours}>
-        <h3>Available Tours</h3>
-
-        <Box>
-          <div className={styles.tourGrid} role='list'>
-            {loading
-              ? Array.from({ length: PER_PAGE }).map((_, i) => (
-                  <div
-                    key={`skeleton-${i}`}
-                    className={styles.gridItem}
-                    role='listitem'
-                  >
-                    <Skeleton
-                      variant='rectangular'
-                      className={styles.skeletonCard}
-                      height={380}
-                    />
-                  </div>
-                ))
-              : paginatedTours.map((tour) => (
-                  <div
-                    key={tour.id}
-                    className={styles.gridItem}
-                    role='listitem'
-                  >
-                    hi
-                    {/* <TourCard
-                      tour={tour}
-                      highlight={search}
-                      aria-label={`Tour to ${tour.location}`}
-                    /> */}
-                  </div>
-                ))}
-          </div>
-        </Box>
-      </Box>
-
-      <Box className={styles.why}>
-        <Box className={styles['why-container']}>
-          <h3>Why Choose Wakapadi?</h3>
-          <p>
-            Connect with local guides and helpers for authentic cultural
-            experiences that go beyond typical tourist attractions.
-          </p>
-
-          <Box className={styles['card-container']}>
-            {cards?.map((card, index) => (
-              <Card
-                sx={{ maxWidth: 375, marginBottom: '2rem' }}
-                className={styles.card}
-                key={index}
-              >
-                <CardContent className={styles.cardContent}>
-                  {card.icon}
-                  <Typography gutterBottom variant='h5' component='div'>
-                    {card.header}
-                  </Typography>
-                  <Typography
-                    variant='body2'
-                    sx={{
-                      color: 'text.secondary',
-                      fontSize: '1rem',
-                      marginTop: '.6rem',
-                    }}
-                  >
-                    {card.text}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-            <Box></Box>
-            <Box></Box>
-          </Box>
-        </Box>
-      </Box>
-
-      <Box className={styles.explore}>
-        <h3>Ready to Explore?</h3>
-        <p>
-          Join thousands of travelers who have discovered authentic local
-          experiences through Wakapadi.
-        </p>
-        <Button>Start your adventure</Button>
-      </Box>
-
-      <Footer />
-      {/* <Head>
-        <title>{t('homePageTitle')}</title>
-        <meta name='description' content={t('homePageDescription')} />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <meta name='robots' content='index, follow' />
-        <meta property='og:title' content={t('homePageTitle')} />
-        <meta property='og:description' content={t('homePageDescription')} />
-      </Head>
-
-      <Layout title={t('homePageTitle')}>
-        <div ref={topRef} className={styles.anchor} aria-hidden='true' />
-        <HeroSection
-          locations={locations}
-          onSearch={handleSearchInput}
-          initialValue={typeof q === 'string' ? q : ''}
-          suggestion={suggestion}
-        />
-
-        <Container
-          maxWidth='lg'
-          className={styles.tourContainer}
-          component='section'
-          aria-labelledby='tours-section-title'
-        >
-          <Typography
-            variant='h2'
-            className={styles.sectionTitle}
-            component='h2'
-            id='tours-section-title'
-          >
-            {t('availableTours')}
-          </Typography>
-
-          {error ? (
-            <Box className={styles.errorContainer} role='alert'>
-              <Typography color='error'>{error}</Typography>
-              <Button
-                variant='outlined'
-                onClick={() => window.location.reload()}
-                className={styles.retryButton}
-              >
-                {t('retry')}
-              </Button>
-            </Box>
-          ) : (
-            <>
-              <div className={styles.tourGrid} role='list'>
-                {loading
-                  ? Array.from({ length: PER_PAGE }).map((_, i) => (
-                      <div
-                        key={`skeleton-${i}`}
-                        className={styles.gridItem}
-                        role='listitem'
-                      >
-                        <Skeleton
-                          variant='rectangular'
-                          className={styles.skeletonCard}
-                          height={380}
-                        />
-                      </div>
-                    ))
-                  : paginatedTours.map((tour) => (
-                      <div
-                        key={tour.id}
-                        className={styles.gridItem}
-                        role='listitem'
-                      >
-                        <TourCard
-                          tour={tour}
-                          highlight={search}
-                          aria-label={`Tour to ${tour.location}`}
-                        />
-                      </div>
-                    ))}
+            <div className={styles.inputGroup}>
+              <div className={styles.input}>
+                <span className={styles.searchIcon}>
+                  <SearchIcon />
+                </span>
+                <input
+                  type='search'
+                  placeholder='Search by City'
+                  value={suggestion}
+                  onChange={(e) => handleSearchInput(e.target.value)}
+                  className={styles.searchInput}
+                />
               </div>
 
-              {!loading && totalPages > 1 && (
-                <Box className={styles.paginationContainer}>
-                  <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={handlePageChange}
-                    color='primary'
-                    shape='rounded'
-                    siblingCount={1}
-                    boundaryCount={1}
-                    showFirstButton
-                    showLastButton
-                    aria-label={t('paginationNavigation')}
-                    classes={{
-                      root: styles.paginationRoot,
-                      ul: styles.paginationList,
-                    }}
-                  />
-                </Box>
-              )}
-            </>
-          )}
+              <Button>Search</Button>
+            </div>
 
-          {!loading && !error && filteredTours.length === 0 && (
-            <Box className={styles.noResults} role='alert'>
-              <Typography variant='h5' className={styles.noResultsText}>
-                {t('noToursFound')}
-              </Typography>
-              {search && (
-                <Button
-                  variant='text'
-                  onClick={() => setSearch('')}
-                  className={styles.clearSearchButton}
+            <div className={styles.buttonGroup}>
+              <Button>
+                <NearMeIcon />
+                #Whois Nearby
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <Box className={styles.tours}>
+          <h2>Available Tours</h2>
+
+          <Box>
+            <div className={styles.tourGrid} role='list'>
+              {loading
+                ? Array.from({ length: PER_PAGE }).map((_, i) => (
+                    <div
+                      key={`skeleton-${i}`}
+                      className={styles.gridItem}
+                      role='listitem'
+                    >
+                      <Skeleton
+                        variant='rectangular'
+                        className={styles.skeletonCard}
+                        height={380}
+                      />
+                    </div>
+                  ))
+                : [
+                    {
+                      image: '/hero-bg.png',
+                      id: 6879,
+                      location: { city: 'New York', country: 'USA' },
+                      altText: 'New York City',
+                      title: 'Explore the Big Apple',
+                      recurringSchedule: 'Every Saturday',
+                      externalPageUrl: 'https://example.com/tour/new-york',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+
+                    {
+                      image: '/hero-bg.png',
+                      id: 6880,
+                      location: { city: 'Paris', country: 'France' },
+                      altText: 'Paris City',
+                      title: 'Discover the City of Lights',
+                      recurringSchedule: 'Every Sunday',
+                      externalPageUrl: 'https://example.com/tour/paris',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+
+                    {
+                      image: '/hero-bg.png',
+                      id: 6881,
+                      location: { city: 'Berlin', country: 'Germany' },
+                      altText: 'Tokyo City',
+                      title: 'Experience the Heart of Japan',
+                      recurringSchedule: 'Every Friday',
+                      externalPageUrl: 'https://example.com/tour/tokyo',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+                    {
+                      image: '/hero-bg.png',
+                      id: 6881,
+                      location: { city: 'Berlin', country: 'Germany' },
+                      altText: 'Tokyo City',
+                      title: 'Experience the Heart of Japan',
+                      recurringSchedule: 'Every Friday',
+                      externalPageUrl: 'https://example.com/tour/tokyo',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+                    {
+                      image: '/hero-bg.png',
+                      id: 6881,
+                      location: { city: 'Berlin', country: 'Germany' },
+                      altText: 'Tokyo City',
+                      title: 'Experience the Heart of Japan',
+                      recurringSchedule: 'Every Friday',
+                      externalPageUrl: 'https://example.com/tour/tokyo',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+                    {
+                      image: '/hero-bg.png',
+                      id: 6881,
+                      location: { city: 'Berlin', country: 'Germany' },
+                      altText: 'Tokyo City',
+                      title: 'Experience the Heart of Japan',
+                      recurringSchedule: 'Every Friday',
+                      externalPageUrl: 'https://example.com/tour/tokyo',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+
+                    {
+                      image: '/hero-bg.png',
+                      id: 6879,
+                      location: { city: 'Tokyo', country: 'Japan' },
+                      altText: 'New York City',
+                      title: 'Explore the Big Apple',
+                      recurringSchedule: 'Every Saturday',
+                      externalPageUrl: 'https://example.com/tour/new-york',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+
+                    {
+                      image: '/hero-bg.png',
+                      id: 6882,
+                      location: { city: 'London', country: 'UK' },
+                      altText: 'London City',
+                      title: 'Discover the Capital of England',
+                      recurringSchedule: 'Every Sunday',
+                      externalPageUrl: 'https://example.com/tour/london',
+                      startDate: '2025-07-10T00:00:00Z',
+                      endDate: '2025-07-12T23:59:59Z',
+                    },
+                  ].map((tour) => (
+                    <div
+                      key={tour.id}
+                      className={styles.gridItem}
+                      role='listitem'
+                    >
+                      <TourCard
+                        tour={tour}
+                        highlight={search}
+                        aria-label={`Tour to ${tour.location}`}
+                      />
+                    </div>
+                  ))}
+            </div>
+
+            <Pagination
+              count={2}
+              color='primary'
+              shape='rounded'
+              className={styles.pagination}
+              showFirstButton
+              showLastButton
+            />
+          </Box>
+        </Box>
+
+        <Box className={styles.why}>
+          <Box className={styles['why-container']}>
+            <h2>Why Choose Wakapadi?</h2>
+            <p>
+              Connect with local guides and helpers for authentic cultural
+              experiences that go beyond typical tourist attractions.
+            </p>
+
+            <Box className={styles['card-container']}>
+              {cards?.map((card, index) => (
+                <Card
+                  sx={{ maxWidth: 375, marginBottom: '2rem' }}
+                  className={styles.card}
+                  key={index}
                 >
-                  {t('clearSearch')}
-                </Button>
-              )}
+                  <CardContent className={styles.cardContent}>
+                    {card.icon}
+                    <Typography gutterBottom variant='h5' component='h5'>
+                      {card.header}
+                    </Typography>
+                    <Typography
+                      variant='body2'
+                      sx={{
+                        color: 'text.secondary',
+                        fontSize: '1rem',
+                        marginTop: '.6rem',
+                      }}
+                    >
+                      {card.text}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
             </Box>
-          )}
-        </Container>
-      </Layout> */}
+          </Box>
+        </Box>
+      </Layout>
     </>
   );
 }

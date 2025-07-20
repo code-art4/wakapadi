@@ -7,8 +7,8 @@
 
 /* Hero Banner with Background Image */
 .heroBanner {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), 
-              url('/hero-travel.png') center/cover no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
+    url('/hero-travel.png') center/cover no-repeat;
   min-height: 50vh;
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@
   width: calc(100% - 2rem);
   max-width: 1200px;
   /* position: relative; */
-  z-index: 1022 !important;
+  /* z-index: 1022 !important; */
   transition: all 0.3s ease;
 }
 
@@ -56,11 +56,9 @@
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
-  z-index: 1022 !important;
+  /* z-index: 1022 !important; */
   animation: slideDown 0.3s ease;
 }
-
-
 
 .inputField {
   padding: 0.75rem 0;
@@ -141,7 +139,6 @@
 
 /* Mobile Responsiveness */
 
-
 @media (max-width: 768px) {
   .heroContainer {
     min-height: 60vh;
@@ -191,7 +188,6 @@
     width: 100%;
   }
 }
-
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {

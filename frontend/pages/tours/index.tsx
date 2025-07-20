@@ -21,14 +21,15 @@ import HeroSection from '../../components/home/HeroSection';
 const PER_PAGE = 12;
 
 export type Tour = {
-  id: string;
+  image: string;
+  id: number;
+  location: { city: string; country: string };
+  altText: string;
   title: string;
-  location: string;
-  recurringSchedule?: string;
-  sourceUrl?: string;
-  externalPageUrl?: string;
-  image?: string;
-  altText?: string;
+  recurringSchedule: string;
+  externalPageUrl: string;
+  startDate: string;
+  endDate: string;
 };
 
 export default function HomePage() {
@@ -49,7 +50,7 @@ export default function HomePage() {
     return search
       ? tours.filter(
           (t) =>
-            t.location.toLowerCase().includes(search.toLowerCase()) ||
+            t.location.city.toLowerCase().includes(search.toLowerCase()) ||
             t.title.toLowerCase().includes(search.toLowerCase())
         )
       : tours;
@@ -104,6 +105,7 @@ export default function HomePage() {
     if (page > totalPages && totalPages > 0) {
       setPage(totalPages);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredTours, page]);
 
   const paginatedTours = useMemo(() => {
@@ -158,14 +160,14 @@ export default function HomePage() {
     <>
       <Head>
         <title>{t('homePageTitle')}</title>
-        <meta name="description" content={t('homePageDescription')} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={t('homePageTitle')} />
-        <meta property="og:description" content={t('homePageDescription')} />
+        <meta name='description' content={t('homePageDescription')} />
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <meta name='robots' content='index, follow' />
+        <meta property='og:title' content={t('homePageTitle')} />
+        <meta property='og:description' content={t('homePageDescription')} />
       </Head>
       <Layout title={t('homePageTitle')}>
-        <div ref={topRef} className={styles.anchor} aria-hidden="true" />
+        <div ref={topRef} className={styles.anchor} aria-hidden='true' />
         <HeroSection
           locations={locations}
           onSearch={handleSearchInput}
@@ -174,25 +176,25 @@ export default function HomePage() {
         />
 
         <Container
-          maxWidth="lg"
+          maxWidth='lg'
           className={styles.tourContainer}
-          component="section"
-          aria-labelledby="tours-section-title"
+          component='section'
+          aria-labelledby='tours-section-title'
         >
           <Typography
-            variant="h2"
+            variant='h2'
             className={styles.sectionTitle}
-            component="h2"
-            id="tours-section-title"
+            component='h2'
+            id='tours-section-title'
           >
             {t('availableTours')}
           </Typography>
 
           {error ? (
-            <Box className={styles.errorContainer} role="alert">
-              <Typography color="error">{error}</Typography>
+            <Box className={styles.errorContainer} role='alert'>
+              <Typography color='error'>{error}</Typography>
               <Button
-                variant="outlined"
+                variant='outlined'
                 onClick={() => window.location.reload()}
                 className={styles.retryButton}
               >
@@ -201,16 +203,16 @@ export default function HomePage() {
             </Box>
           ) : (
             <>
-              <div className={styles.tourGrid} role="list">
+              <div className={styles.tourGrid} role='list'>
                 {loading
                   ? Array.from({ length: PER_PAGE }).map((_, i) => (
                       <div
                         key={`skeleton-${i}`}
                         className={styles.gridItem}
-                        role="listitem"
+                        role='listitem'
                       >
                         <Skeleton
-                          variant="rectangular"
+                          variant='rectangular'
                           className={styles.skeletonCard}
                           height={380}
                         />
@@ -220,7 +222,7 @@ export default function HomePage() {
                       <div
                         key={tour.id}
                         className={styles.gridItem}
-                        role="listitem"
+                        role='listitem'
                       >
                         <TourCard
                           tour={tour}
@@ -237,8 +239,8 @@ export default function HomePage() {
                     count={totalPages}
                     page={page}
                     onChange={handlePageChange}
-                    color="primary"
-                    shape="rounded"
+                    color='primary'
+                    shape='rounded'
                     siblingCount={1}
                     boundaryCount={1}
                     showFirstButton
@@ -255,13 +257,13 @@ export default function HomePage() {
           )}
 
           {!loading && !error && filteredTours.length === 0 && (
-            <Box className={styles.noResults} role="alert">
-              <Typography variant="h5" className={styles.noResultsText}>
+            <Box className={styles.noResults} role='alert'>
+              <Typography variant='h5' className={styles.noResultsText}>
                 {t('noToursFound')}
               </Typography>
               {search && (
                 <Button
-                  variant="text"
+                  variant='text'
                   onClick={() => setSearch('')}
                   className={styles.clearSearchButton}
                 >

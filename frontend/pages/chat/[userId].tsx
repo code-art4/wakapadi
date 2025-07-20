@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import {
@@ -488,7 +489,7 @@ export default function ChatPage() {
     <Layout title={`Chat with ${toName}`}>
       <Head>
         <title>{`Chat with ${toName} | Wakapadi`}</title>
-        <meta name="description" content={`Chat with ${toName} on Wakapadi`} />
+        <meta name='description' content={`Chat with ${toName} on Wakapadi`} />
       </Head>
 
       <Container className={styles.chatContainer}>
@@ -496,24 +497,24 @@ export default function ChatPage() {
         <Box className={styles.chatHeader}>
           <Avatar className={styles.chatAvatar} src={toAvatar} alt={toName} />
           <Box className={styles.chatHeaderInfo}>
-            <Typography variant="h6" className={styles.chatTitle}>
+            <Typography variant='h6' className={styles.chatTitle}>
               Chat with {toName}
             </Typography>
-            <Typography variant="body2" className={styles.chatSubtitle}>
+            <Typography variant='body2' className={styles.chatSubtitle}>
               {socketConnected ? 'Online' : 'Offline'}
             </Typography>
           </Box>
         </Box>
 
         {/* Safety Alert */}
-        <Alert severity="warning" className={styles.safetyAlert}>
+        <Alert severity='warning' className={styles.safetyAlert}>
           Always meet in public and secure locations. Never share personal
           information.
         </Alert>
 
         {/* Connection Error */}
         {connectionError && (
-          <Alert severity="error" className={styles.errorAlert}>
+          <Alert severity='error' className={styles.errorAlert}>
             {connectionError}
           </Alert>
         )}
@@ -523,7 +524,7 @@ export default function ChatPage() {
           {loading ? (
             <Box className={styles.loadingContainer}>
               <CircularProgress />
-              <Typography variant="body2" className={styles.loadingText}>
+              <Typography variant='body2' className={styles.loadingText}>
                 Loading messages...
               </Typography>
             </Box>
@@ -564,7 +565,7 @@ export default function ChatPage() {
               ))}
               {typingUsers.size > 0 && (
                 <Box className={styles.typingIndicator}>
-                  <Typography variant="caption">
+                  <Typography variant='caption'>
                     {toName} is typing...
                   </Typography>
                 </Box>
@@ -594,7 +595,7 @@ export default function ChatPage() {
           <IconButton
             className={styles.emojiButton}
             onClick={handleEmojiClick}
-            aria-label="Add emoji"
+            aria-label='Add emoji'
           >
             <InsertEmoticonIcon />
           </IconButton>
@@ -608,7 +609,7 @@ export default function ChatPage() {
           </Popover>
           <TextField
             fullWidth
-            placeholder="Type a message..."
+            placeholder='Type a message...'
             value={text}
             onChange={handleTyping}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
@@ -618,7 +619,7 @@ export default function ChatPage() {
             className={styles.messageInput}
           />
           <Button
-            variant="contained"
+            variant='contained'
             onClick={handleSend}
             disabled={
               !text.trim() || !socketConnected || loading || !otherUserId

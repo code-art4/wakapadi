@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // pages/tours/[city]/[slug].tsx
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -46,8 +47,8 @@ const DynamicTourMap = dynamic(() => import('../../../components/TourMap'), {
   ssr: false,
   loading: () => (
     <Skeleton
-      variant="rectangular"
-      width="100%"
+      variant='rectangular'
+      width='100%'
       height={400}
       sx={{ borderRadius: 2 }}
     />
@@ -189,27 +190,27 @@ export default function SingleTourPage() {
     <Layout title={seoTitle} description={seoDescription}>
       <Head>
         {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
+        <meta property='og:type' content='website' />
         <meta
-          property="og:url"
+          property='og:url'
           content={typeof window !== 'undefined' ? window.location.href : ''}
         />
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
+        <meta property='og:title' content={seoTitle} />
+        <meta property='og:description' content={seoDescription} />
         {filteredImages.length > 0 && (
-          <meta property="og:image" content={filteredImages[0]} />
+          <meta property='og:image' content={filteredImages[0]} />
         )}
 
         {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
+        <meta property='twitter:card' content='summary_large_image' />
         <meta
-          property="twitter:url"
+          property='twitter:url'
           content={typeof window !== 'undefined' ? window.location.href : ''}
         />
-        <meta property="twitter:title" content={seoTitle} />
-        <meta property="twitter:description" content={seoDescription} />
+        <meta property='twitter:title' content={seoTitle} />
+        <meta property='twitter:description' content={seoDescription} />
         {filteredImages.length > 0 && (
-          <meta property="twitter:image" content={filteredImages[0]} />
+          <meta property='twitter:image' content={filteredImages[0]} />
         )}
       </Head>
 
@@ -226,7 +227,7 @@ export default function SingleTourPage() {
             startIcon={<ArrowBackIcon />}
             onClick={() => router.back()}
             sx={{ color: 'text.secondary' }}
-            aria-label="Go back to tour results"
+            aria-label='Go back to tour results'
             href={`/tours?q=${city}`}
           >
             Back to results
@@ -236,25 +237,25 @@ export default function SingleTourPage() {
         {loading ? (
           <Box>
             <Skeleton
-              variant="text"
+              variant='text'
               sx={{ fontSize: '3rem', mb: 2 }}
-              width="80%"
+              width='80%'
             />
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
-              <Skeleton variant="rectangular" width={150} height={20} />
-              <Skeleton variant="rectangular" width={80} height={20} />
+              <Skeleton variant='rectangular' width={150} height={20} />
+              <Skeleton variant='rectangular' width={80} height={20} />
               <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-                <Skeleton variant="circular" width={40} height={40} />
-                <Skeleton variant="circular" width={40} height={40} />
+                <Skeleton variant='circular' width={40} height={40} />
+                <Skeleton variant='circular' width={40} height={40} />
               </Box>
             </Box>
             <Skeleton
-              variant="rectangular"
-              width="100%"
+              variant='rectangular'
+              width='100%'
               height={400}
               sx={{ borderRadius: 2, mb: 4 }}
             />
-            <Skeleton variant="text" sx={{ fontSize: '1.5rem' }} height={100} />
+            <Skeleton variant='text' sx={{ fontSize: '1.5rem' }} height={100} />
             <Divider sx={{ my: 4 }} />
             <Box
               sx={{
@@ -266,34 +267,34 @@ export default function SingleTourPage() {
             >
               <Box>
                 <Skeleton
-                  variant="text"
+                  variant='text'
                   sx={{ fontSize: '2rem', mb: 2 }}
-                  width="60%"
+                  width='60%'
                 />
                 <List disablePadding>
                   {[1, 2, 3, 4].map((i) => (
                     <ListItem key={i} disableGutters sx={{ py: 0.5 }}>
                       <ListItemIcon sx={{ minWidth: 32 }}>
-                        <Skeleton variant="circular" width={24} height={24} />
+                        <Skeleton variant='circular' width={24} height={24} />
                       </ListItemIcon>
-                      <ListItemText primary={<Skeleton variant="text" />} />
+                      <ListItemText primary={<Skeleton variant='text' />} />
                     </ListItem>
                   ))}
                 </List>
               </Box>
               <Box>
                 <Skeleton
-                  variant="text"
+                  variant='text'
                   sx={{ fontSize: '2rem', mb: 2 }}
-                  width="60%"
+                  width='60%'
                 />
                 <List disablePadding>
                   {[1, 2, 3].map((i) => (
                     <ListItem key={i} disableGutters sx={{ py: 0.5 }}>
                       <ListItemIcon sx={{ minWidth: 32 }}>
-                        <Skeleton variant="circular" width={24} height={24} />
+                        <Skeleton variant='circular' width={24} height={24} />
                       </ListItemIcon>
-                      <ListItemText primary={<Skeleton variant="text" />} />
+                      <ListItemText primary={<Skeleton variant='text' />} />
                     </ListItem>
                   ))}
                 </List>
@@ -302,16 +303,16 @@ export default function SingleTourPage() {
             <Divider sx={{ my: 4 }} />
             {/* Skeleton for the map */}
             <Skeleton
-              variant="rectangular"
-              width="100%"
+              variant='rectangular'
+              width='100%'
               height={400}
               sx={{ borderRadius: 2, mb: 4 }}
             />
             <Divider sx={{ my: 4 }} />
             <Skeleton
-              variant="text"
+              variant='text'
               sx={{ fontSize: '2rem', mb: 2 }}
-              width="40%"
+              width='40%'
             />
             <Box
               sx={{
@@ -323,30 +324,30 @@ export default function SingleTourPage() {
                 boxShadow: 1,
               }}
             >
-              <Skeleton variant="circular" width={80} height={80} />
+              <Skeleton variant='circular' width={80} height={80} />
               <Box>
                 <Skeleton
-                  variant="text"
+                  variant='text'
                   sx={{ fontSize: '1.5rem' }}
                   width={150}
                 />
-                <Skeleton variant="text" width={200} />
+                <Skeleton variant='text' width={200} />
                 <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                  <Skeleton variant="rectangular" width={100} height={36} />
-                  <Skeleton variant="rectangular" width={120} height={36} />
+                  <Skeleton variant='rectangular' width={100} height={36} />
+                  <Skeleton variant='rectangular' width={120} height={36} />
                 </Box>
               </Box>
             </Box>
             <Box sx={{ p: 4, borderRadius: 2, textAlign: 'center', mt: 4 }}>
               <Skeleton
-                variant="text"
+                variant='text'
                 sx={{ fontSize: '2rem', mb: 2 }}
-                width="70%"
+                width='70%'
               />
-              <Skeleton variant="text" sx={{ mb: 3 }} width="50%" />
+              <Skeleton variant='text' sx={{ mb: 3 }} width='50%' />
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-                <Skeleton variant="rectangular" width={150} height={48} />
-                <Skeleton variant="rectangular" width={180} height={48} />
+                <Skeleton variant='rectangular' width={150} height={48} />
+                <Skeleton variant='rectangular' width={180} height={48} />
               </Box>
             </Box>
           </Box>
@@ -362,33 +363,33 @@ export default function SingleTourPage() {
               mx: 'auto',
               my: 4,
             }}
-            role="alert"
+            role='alert'
           >
             <WarningIcon
-              color="error"
+              color='error'
               sx={{ fontSize: 40, mb: 2 }}
-              aria-hidden="true"
+              aria-hidden='true'
             />
-            <Typography variant="h5" color="error" gutterBottom>
+            <Typography variant='h5' color='error' gutterBottom>
               Failed to load tour: {t('failed')}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
+            <Typography variant='body1' sx={{ mb: 2 }}>
               {error}
             </Typography>
             <Button
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               onClick={() => window.location.reload()}
               sx={{ mr: 2 }}
-              aria-label="Try again to load tour"
+              aria-label='Try again to load tour'
             >
               Try Again
             </Button>
             <Button
-              variant="outlined"
-              color="primary"
+              variant='outlined'
+              color='primary'
               onClick={() => router.push('/')}
-              aria-label="Go back to home page"
+              aria-label='Go back to home page'
             >
               Back to Home
             </Button>
@@ -397,8 +398,8 @@ export default function SingleTourPage() {
           <>
             <Box sx={{ mb: 4 }}>
               <Typography
-                variant="h3"
-                component="h1" // Semantic HTML for main heading
+                variant='h3'
+                component='h1' // Semantic HTML for main heading
                 gutterBottom
                 sx={{
                   fontWeight: 700,
@@ -424,12 +425,12 @@ export default function SingleTourPage() {
                       value={parseFloat(tour.tourRating)}
                       precision={0.1}
                       readOnly
-                      icon={<StarIcon fontSize="inherit" />}
-                      emptyIcon={<StarIcon fontSize="inherit" />}
+                      icon={<StarIcon fontSize='inherit' />}
+                      emptyIcon={<StarIcon fontSize='inherit' />}
                       sx={{ color: 'secondary.main', mr: 1 }}
                       aria-label={`Tour rating: ${tour.tourRating} out of 10`}
                     />
-                    <Typography variant="subtitle1" color="text.secondary">
+                    <Typography variant='subtitle1' color='text.secondary'>
                       {tour.tourRating}/10
                     </Typography>
                   </Box>
@@ -438,9 +439,9 @@ export default function SingleTourPage() {
                 {tour.tourType && (
                   <Chip
                     label={tour.tourType}
-                    variant="outlined"
-                    color="secondary"
-                    size="small"
+                    variant='outlined'
+                    color='secondary'
+                    size='small'
                     aria-label={`Tour type: ${tour.tourType}`}
                   />
                 )}
@@ -448,8 +449,8 @@ export default function SingleTourPage() {
                 <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
                   <IconButton
                     onClick={handleShareTour}
-                    color="primary"
-                    aria-label="Share this tour"
+                    color='primary'
+                    aria-label='Share this tour'
                   >
                     <ShareIcon />
                   </IconButton>
@@ -488,7 +489,7 @@ export default function SingleTourPage() {
                 />
                 {filteredImages.length > 1 && (
                   <Box
-                    className="image-overlay"
+                    className='image-overlay'
                     sx={{
                       position: 'absolute',
                       bottom: 0,
@@ -501,7 +502,7 @@ export default function SingleTourPage() {
                       transition: 'opacity 0.3s ease',
                     }}
                   >
-                    <Typography variant="body2" color="white" sx={{ mb: 1 }}>
+                    <Typography variant='body2' color='white' sx={{ mb: 1 }}>
                       {filteredImages.length - 1} more photos available
                     </Typography>
                     {/* <Button
@@ -518,7 +519,7 @@ export default function SingleTourPage() {
             )}
 
             <Typography
-              variant="body1"
+              variant='body1'
               paragraph
               sx={{
                 whiteSpace: 'pre-line',
@@ -553,8 +554,8 @@ export default function SingleTourPage() {
                     },
                   }}
                 >
-                  <InfoIcon aria-hidden="true" />
-                  <Typography variant="h5" component="h2">
+                  <InfoIcon aria-hidden='true' />
+                  <Typography variant='h5' component='h2'>
                     Tour Details
                   </Typography>
                 </Box>
@@ -586,8 +587,8 @@ export default function SingleTourPage() {
                     },
                   }}
                 >
-                  <LocationOnIcon aria-hidden="true" />
-                  <Typography variant="h5" component="h2">
+                  <LocationOnIcon aria-hidden='true' />
+                  <Typography variant='h5' component='h2'>
                     Highlights & Activities
                   </Typography>
                 </Box>
@@ -597,9 +598,9 @@ export default function SingleTourPage() {
                     <ListItem key={idx} disableGutters sx={{ py: 0.5 }}>
                       <ListItemIcon sx={{ minWidth: 32 }}>
                         <LocationOnIcon
-                          color="secondary"
-                          fontSize="small"
-                          aria-hidden="true"
+                          color='secondary'
+                          fontSize='small'
+                          aria-hidden='true'
                         />
                       </ListItemIcon>
                       <ListItemText
@@ -634,8 +635,8 @@ export default function SingleTourPage() {
                       },
                     }}
                   >
-                    <WarningIcon aria-hidden="true" />
-                    <Typography variant="h5" component="h2">
+                    <WarningIcon aria-hidden='true' />
+                    <Typography variant='h5' component='h2'>
                       Important Notes
                     </Typography>
                   </Box>
@@ -645,9 +646,9 @@ export default function SingleTourPage() {
                       <ListItem key={idx} disableGutters sx={{ py: 0.5 }}>
                         <ListItemIcon sx={{ minWidth: 32 }}>
                           <WarningIcon
-                            color="warning"
-                            fontSize="small"
-                            aria-hidden="true"
+                            color='warning'
+                            fontSize='small'
+                            aria-hidden='true'
                           />
                         </ListItemIcon>
                         <ListItemText
@@ -693,18 +694,18 @@ export default function SingleTourPage() {
                       p: 1,
                       borderRadius: 1,
                       boxShadow: 1,
-                      zIndex: 1,
+                      // zIndex: 1,
                     }}
                   >
                     <Button
-                      variant="contained"
-                      size="small"
+                      variant='contained'
+                      size='small'
                       startIcon={<MapIcon />}
                       // Use a proper Google Maps URL with coordinates
                       href={`https://www.google.com/maps/search/?api=1&query=${tourLat},${tourLon}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Open tour location in Google Maps"
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      aria-label='Open tour location in Google Maps'
                     >
                       Open in Maps
                     </Button>
@@ -730,23 +731,23 @@ export default function SingleTourPage() {
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
                       <LocationOnIcon
-                        color="info"
+                        color='info'
                         sx={{ mr: 1 }}
-                        aria-hidden="true"
+                        aria-hidden='true'
                       />
-                      <Typography variant="body1" color="info.dark">
+                      <Typography variant='body1' color='info.dark'>
                         Address: {tour.address}
                       </Typography>
                     </Box>
                     <Button
-                      variant="contained"
-                      size="small"
+                      variant='contained'
+                      size='small'
                       startIcon={<MapIcon />}
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                         tour.address
                       )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target='_blank'
+                      rel='noopener noreferrer'
                       aria-label={`Find ${tour.address} on Google Maps`}
                     >
                       View on Map
@@ -770,8 +771,8 @@ export default function SingleTourPage() {
                   },
                 }}
               >
-                <InfoIcon aria-hidden="true" />
-                <Typography variant="h5" component="h2">
+                <InfoIcon aria-hidden='true' />
+                <Typography variant='h5' component='h2'>
                   Tour Provider
                 </Typography>
               </Box>
@@ -799,24 +800,24 @@ export default function SingleTourPage() {
                   alt={`Avatar for ${tour.provider.name}`}
                 />
                 <Box>
-                  <Typography variant="h6" gutterBottom component="h3">
+                  <Typography variant='h6' gutterBottom component='h3'>
                     {tour.provider.name}
                   </Typography>
                   <Typography
-                    variant="body2"
-                    color="text.secondary"
+                    variant='body2'
+                    color='text.secondary'
                     sx={{ mb: 2 }}
                   >
                     Verified tour provider
                   </Typography>
                   <Button
-                    variant="contained"
-                    size="small"
+                    variant='contained'
+                    size='small'
                     href={tour.provider.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    target='_blank'
+                    rel='noopener noreferrer'
                     sx={{ mr: 2 }}
-                    endIcon={<OpenInNewIcon fontSize="small" />}
+                    endIcon={<OpenInNewIcon fontSize='small' />}
                     aria-label={`Visit website for ${tour.provider.name}`}
                   >
                     Visit Website
@@ -844,30 +845,30 @@ export default function SingleTourPage() {
               }}
             >
               <Typography
-                variant="h5"
+                variant='h5'
                 gutterBottom
                 sx={{ fontWeight: 600 }}
-                component="h2"
+                component='h2'
               >
                 Ready to Experience This Tour?
               </Typography>
-              <Typography variant="body1" sx={{ mb: 3 }}>
+              <Typography variant='body1' sx={{ mb: 3 }}>
                 Book now or contact the provider for more information
               </Typography>
               <Button
-                component="a"
-                variant="contained"
-                size="large"
+                component='a'
+                variant='contained'
+                size='large'
                 href={tour.tourUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                target='_blank'
+                rel='noopener noreferrer'
                 sx={{
                   px: 4,
                   py: 1.5,
                   fontSize: '1.1rem',
                   fontWeight: 600,
                 }}
-                aria-label="Book this tour now"
+                aria-label='Book this tour now'
               >
                 Book Now
               </Button>
