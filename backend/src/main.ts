@@ -5,6 +5,7 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   (globalThis as any).ReadableStream = ReadableStream;
 }
 
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
