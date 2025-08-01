@@ -15,12 +15,13 @@ const nextConfig = {
   i18n: {
     locales: ['en', 'fr', 'es', 'de'], // Ensure these match your actual setup
     defaultLocale: 'en',
+    localeDetection: true, // Enable automatic locale detection
   },
   images: {
     domains: [
       'www.freetour.com'
     ]
-  ,
+    ,
     // This is the critical part
     remotePatterns: [
       {

@@ -28,7 +28,7 @@ const PER_PAGE = 12;
 export type Tour = {
   image: string;
   id: number;
-  location: { city: string; country: string };
+  location: string;
   altText: string;
   title: string;
   recurringSchedule: string;
@@ -55,7 +55,7 @@ export default function HomePage() {
     return search
       ? tours.filter(
           (t) =>
-            t.location.city.toLowerCase().includes(search.toLowerCase()) ||
+            t.location.toLowerCase().includes(search.toLowerCase()) ||
             t.title.toLowerCase().includes(search.toLowerCase())
         )
       : tours;
@@ -67,8 +67,7 @@ export default function HomePage() {
       // setError(null);
       const res = await api.get('/tours');
       setTours(res.data);
-    } catch (err) {
-      console.error('Error fetching tours:', err);
+    } catch {
       // setError(t('fetchError'));
     } finally {
       setLoading(false);
@@ -76,8 +75,8 @@ export default function HomePage() {
   }, [t]);
 
   useEffect(() => {
-    // const timer = setTimeout(fetchTours, 300);
-    // return () => clearTimeout(timer);
+    const timer = setTimeout(fetchTours, 300);
+    return () => clearTimeout(timer);
   }, [fetchTours]);
 
   useEffect(() => {
@@ -248,100 +247,7 @@ export default function HomePage() {
                       />
                     </div>
                   ))
-                : [
-                    {
-                      image: '/hero-bg.png',
-                      id: 6879,
-                      location: { city: 'New York', country: 'USA' },
-                      altText: 'New York City',
-                      title: 'Explore the Big Apple',
-                      recurringSchedule: 'Every Saturday',
-                      externalPageUrl: 'https://example.com/tour/new-york',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6880,
-                      location: { city: 'Paris', country: 'France' },
-                      altText: 'Paris City',
-                      title: 'Discover the City of Lights',
-                      recurringSchedule: 'Every Sunday',
-                      externalPageUrl: 'https://example.com/tour/paris',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6879,
-                      location: { city: 'Tokyo', country: 'Japan' },
-                      altText: 'New York City',
-                      title: 'Explore the Big Apple',
-                      recurringSchedule: 'Every Saturday',
-                      externalPageUrl: 'https://example.com/tour/new-york',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6882,
-                      location: { city: 'London', country: 'UK' },
-                      altText: 'London City',
-                      title: 'Discover the Capital of England',
-                      recurringSchedule: 'Every Sunday',
-                      externalPageUrl: 'https://example.com/tour/london',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                  ].map((tour) => (
+                : paginatedTours?.map((tour) => (
                     <div
                       key={tour.id}
                       className={styles.gridItem}

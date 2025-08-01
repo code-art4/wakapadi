@@ -39,10 +39,12 @@ const Header = (props: HeaderProps) => {
   if (homepage) {
     return (
       <nav className={styles['header-nav-homepage']}>
-        <Image src={Logo} alt='Wakapadi Logo' />
+        <Link href='/'>
+          <Image src={Logo} alt='Wakapadi Logo' />
+        </Link>
         <Box className={styles['header-link-container']}>
           <Link href='#'>Who is Nearby</Link>
-          <Link href='#'>About</Link>
+          <Link href='/about'>About</Link>
           <Link href='#'>Contact</Link>
         </Box>
         <Box className={styles['header-authentication-link-homepage']}>

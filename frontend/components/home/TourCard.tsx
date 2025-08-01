@@ -37,29 +37,40 @@ export default function TourCard({
   highlight?: string;
 }) {
   // const { t } = useTranslation('common');
-  const [imageLoading, setImageLoading] = useState(true);
+  console.log(tour.image);
 
   return (
     <article className={styles.cardWrapper}>
       <Card className={styles.card} elevation={2}>
         {tour.image ? (
           <div className={styles.imageContainer}>
-            {imageLoading && (
-              <Skeleton
-                variant='rectangular'
-                className={styles.imageSkeleton}
-              />
-            )}
             <Image
+              unoptimized
               src={tour.image}
               alt={tour.altText || tour.title}
               fill
               className={styles.cardImage}
-              onLoadingComplete={() => setImageLoading(false)}
+              // onLoadingComplete={() => setImageLoading(false)}
+              style={{ objectFit: 'cover' }}
+              sizes='(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw'
+              priority={false}
+            />
+            {/* {imageLoading && (
+              <Skeleton
+                variant='rectangular'
+                className={styles.imageSkeleton}
+              />
+            // )} */}
+            {/* <Image
+              src={tour.image}
+              alt={tour.altText || tour.title}
+              fill
+              className={styles.cardImage}
+              // onLoadingComplete={() => setImageLoading(false)}
               style={{ objectFit: 'cover' }}
               // sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
               priority={false}
-            />
+            /> */}
           </div>
         ) : (
           <div className={styles.imagePlaceholder}>
@@ -69,7 +80,7 @@ export default function TourCard({
 
         <CardContent className={styles.cardContent}>
           <Typography className={styles.cardLocation} variant='body2'>
-            {tour.location?.city + ', ' + tour.location?.country}
+            {tour.location}
             {/* {highlightText(tour.location, highlight)} */}
           </Typography>
 
