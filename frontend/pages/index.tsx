@@ -5,30 +5,22 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import debounce from 'lodash.debounce';
-import {
-  Box,
-  Button,
-  Typography,
-  Pagination,
-  Skeleton,
-  Card,
-  CardContent,
-} from '@mui/material';
+import { Box, Button, Typography, Card, CardContent } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import GroupsIcon from '@mui/icons-material/Groups';
 import NearMeIcon from '@mui/icons-material/NearMe';
 import SearchIcon from '@mui/icons-material/Search';
-import TourCard from '../components/home/TourCard';
 import { api } from '../lib/api/index';
 import styles from '../styles/HomePage.module.css';
 import Layout from '../components/Layout';
+import Tours from '../components/home/Tours';
 
 const PER_PAGE = 12;
 
 export type Tour = {
   image: string;
   id: number;
-  location: { city: string; country: string };
+  location: string;
   altText: string;
   title: string;
   recurringSchedule: string;
@@ -44,9 +36,8 @@ export default function HomePage() {
   const [suggestion, setSuggestion] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
+  const [hideIcon, setHideIcon] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
-  // const topRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { q } = router.query;
 
@@ -55,7 +46,7 @@ export default function HomePage() {
     return search
       ? tours.filter(
           (t) =>
-            t.location.city.toLowerCase().includes(search.toLowerCase()) ||
+            t.location.toLowerCase().includes(search.toLowerCase()) ||
             t.title.toLowerCase().includes(search.toLowerCase())
         )
       : tours;
@@ -67,8 +58,7 @@ export default function HomePage() {
       // setError(null);
       const res = await api.get('/tours');
       setTours(res.data);
-    } catch (err) {
-      console.error('Error fetching tours:', err);
+    } catch {
       // setError(t('fetchError'));
     } finally {
       setLoading(false);
@@ -76,8 +66,8 @@ export default function HomePage() {
   }, [t]);
 
   useEffect(() => {
-    // const timer = setTimeout(fetchTours, 300);
-    // return () => clearTimeout(timer);
+    const timer = setTimeout(fetchTours, 300);
+    return () => clearTimeout(timer);
   }, [fetchTours]);
 
   useEffect(() => {
@@ -173,8 +163,6 @@ export default function HomePage() {
     },
   ];
 
-  console.log(paginatedTours);
-
   return (
     <>
       <Head>
@@ -206,13 +194,15 @@ export default function HomePage() {
             <div className={styles.inputGroup}>
               <div className={styles.input}>
                 <span className={styles.searchIcon}>
-                  <SearchIcon />
+                  {!hideIcon && !suggestion ? <SearchIcon /> : null}
                 </span>
                 <input
                   type='search'
                   placeholder='Search by City'
                   value={suggestion}
                   onChange={(e) => handleSearchInput(e.target.value)}
+                  onFocus={() => setHideIcon(true)}
+                  onBlur={() => setHideIcon(false)}
                   className={styles.searchInput}
                 />
               </div>
@@ -229,143 +219,11 @@ export default function HomePage() {
           </div>
         </div>
 
-        <Box className={styles.tours}>
-          <h2>Available Tours</h2>
-
-          <Box>
-            <div className={styles.tourGrid} role='list'>
-              {loading
-                ? Array.from({ length: PER_PAGE }).map((_, i) => (
-                    <div
-                      key={`skeleton-${i}`}
-                      className={styles.gridItem}
-                      role='listitem'
-                    >
-                      <Skeleton
-                        variant='rectangular'
-                        className={styles.skeletonCard}
-                        height={380}
-                      />
-                    </div>
-                  ))
-                : [
-                    {
-                      image: '/hero-bg.png',
-                      id: 6879,
-                      location: { city: 'New York', country: 'USA' },
-                      altText: 'New York City',
-                      title: 'Explore the Big Apple',
-                      recurringSchedule: 'Every Saturday',
-                      externalPageUrl: 'https://example.com/tour/new-york',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6880,
-                      location: { city: 'Paris', country: 'France' },
-                      altText: 'Paris City',
-                      title: 'Discover the City of Lights',
-                      recurringSchedule: 'Every Sunday',
-                      externalPageUrl: 'https://example.com/tour/paris',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                    {
-                      image: '/hero-bg.png',
-                      id: 6881,
-                      location: { city: 'Berlin', country: 'Germany' },
-                      altText: 'Tokyo City',
-                      title: 'Experience the Heart of Japan',
-                      recurringSchedule: 'Every Friday',
-                      externalPageUrl: 'https://example.com/tour/tokyo',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6879,
-                      location: { city: 'Tokyo', country: 'Japan' },
-                      altText: 'New York City',
-                      title: 'Explore the Big Apple',
-                      recurringSchedule: 'Every Saturday',
-                      externalPageUrl: 'https://example.com/tour/new-york',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-
-                    {
-                      image: '/hero-bg.png',
-                      id: 6882,
-                      location: { city: 'London', country: 'UK' },
-                      altText: 'London City',
-                      title: 'Discover the Capital of England',
-                      recurringSchedule: 'Every Sunday',
-                      externalPageUrl: 'https://example.com/tour/london',
-                      startDate: '2025-07-10T00:00:00Z',
-                      endDate: '2025-07-12T23:59:59Z',
-                    },
-                  ].map((tour) => (
-                    <div
-                      key={tour.id}
-                      className={styles.gridItem}
-                      role='listitem'
-                    >
-                      <TourCard
-                        tour={tour}
-                        highlight={search}
-                        aria-label={`Tour to ${tour.location}`}
-                      />
-                    </div>
-                  ))}
-            </div>
-
-            <Pagination
-              count={2}
-              color='primary'
-              shape='rounded'
-              className={styles.pagination}
-              showFirstButton
-              showLastButton
-            />
-          </Box>
-        </Box>
+        <Tours
+          loading={loading}
+          search={search}
+          paginatedTours={paginatedTours}
+        />
 
         <Box className={styles.why}>
           <Box className={styles['why-container']}>
