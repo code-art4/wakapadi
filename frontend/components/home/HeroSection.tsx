@@ -18,7 +18,7 @@ import { motion } from 'framer-motion';
 import styles from './HeroSection.module.css';
 
 interface HeroSectionProps {
-  locations?: { city: string; country: string }[];
+  locations?: string[];
   onSearch?: (term: string) => void;
   initialValue?: string;
   suggestion?: string; // ✅ Added

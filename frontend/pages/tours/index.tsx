@@ -17,20 +17,9 @@ import { useRouter } from 'next/router';
 import debounce from 'lodash.debounce';
 import styles from '../../styles/HomePage.module.css';
 import HeroSection from '../../components/home/HeroSection';
+import { Tour } from '..';
 
 const PER_PAGE = 12;
-
-export type Tour = {
-  image: string;
-  id: number;
-  location: { city: string; country: string };
-  altText: string;
-  title: string;
-  recurringSchedule: string;
-  externalPageUrl: string;
-  startDate: string;
-  endDate: string;
-};
 
 export default function HomePage() {
   const { t } = useTranslation('common');
@@ -50,7 +39,7 @@ export default function HomePage() {
     return search
       ? tours.filter(
           (t) =>
-            t.location.city.toLowerCase().includes(search.toLowerCase()) ||
+            t.location.toLowerCase().includes(search.toLowerCase()) ||
             t.title.toLowerCase().includes(search.toLowerCase())
         )
       : tours;
