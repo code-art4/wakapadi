@@ -2,14 +2,6 @@
   scroll-margin-top: 100px;
 }
 
-.tourContainer {
-  width: 100%;
-  max-width: 1200px;
-  padding: 2rem 1rem;
-  margin: 0 auto;
-  position: relative;
-}
-
 .sectionTitle {
   font-weight: 700;
   text-align: center;
@@ -27,14 +19,6 @@
   background: #3f51b5;
   margin: 1rem auto 0;
   border-radius: 2px;
-}
-
-.tourGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  row-gap: 4rem;
-  width: 100%;
 }
 
 .gridItem {
@@ -132,23 +116,7 @@
   background-color: #f0f0f0;
 }
 
-/* Responsive styles */
-@media (max-width: 900px) {
-  .tourGrid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
-  }
-
-  .tourContainer {
-    padding: 1.5rem;
-  }
-}
-
 @media (max-width: 768px) {
-  .tourContainer {
-    padding: 1.5rem 0.75rem;
-  }
-
   .sectionTitle {
     margin-bottom: 2rem;
   }
@@ -166,10 +134,6 @@
 }
 
 @media (max-width: 600px) {
-  .tourGrid {
-    grid-template-columns: 1fr;
-  }
-
   .sectionTitle::after {
     width: 60px;
     height: 3px;
@@ -284,20 +248,6 @@
 
 .cardContent svg {
   margin-bottom: 1.1rem;
-}
-
-.toursSvg {
-  margin-bottom: 1rem;
-}
-
-.tours {
-  width: 85%;
-  margin: 4rem auto;
-}
-
-.tours h2 {
-  text-align: center;
-  margin-bottom: 3rem;
 }
 
 .hero {
@@ -483,12 +433,6 @@
     bottom: 10%;
   }
 
-  .tours {
-    width: 90%;
-    margin: 2rem auto;
-  }
-
-  .tours h2,
   .explore h2 {
     text-align: center;
     margin-bottom: 1rem;

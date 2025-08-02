@@ -1,12 +1,12 @@
-import { Card, CardContent, Typography, Skeleton } from '@mui/material';
-// import { useTranslation } from 'next-i18next';
+import { Card, CardContent, Typography } from '@mui/material';
 import { Tour } from '../../pages';
 import styles from './TourCard.module.css';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import { formattedTime } from '../../utils/formatTime';
+import { useRouter } from 'next/router';
 
 // const highlightText = (text: string = '', highlight: string = '') => {
 //   if (!highlight || !text) return text;
@@ -29,19 +29,18 @@ import { formattedTime } from '../../utils/formatTime';
 //   return `/tours${parsed.pathname}`;
 // }
 
-export default function TourCard({
-  tour,
-}: // highlight = '',
-{
-  tour: Tour;
-  highlight?: string;
-}) {
-  // const { t } = useTranslation('common');
-  console.log(tour.image);
+export default function TourCard({ tour }: { tour: Tour; highlight?: string }) {
+  const tourTime = useMemo(() => formattedTime(tour.recurringSchedule), []);
+  const router = useRouter();
 
   return (
     <article className={styles.cardWrapper}>
-      <Card className={styles.card} elevation={2}>
+      <Card
+        className={styles.card}
+        elevation={2}
+        onClick={() => router.push(tour.externalPageUrl)}
+        sx={{ cursor: 'pointer' }}
+      >
         {tour.image ? (
           <div className={styles.imageContainer}>
             <Image
@@ -50,27 +49,10 @@ export default function TourCard({
               alt={tour.altText || tour.title}
               fill
               className={styles.cardImage}
-              // onLoadingComplete={() => setImageLoading(false)}
               style={{ objectFit: 'cover' }}
               sizes='(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw'
               priority={false}
             />
-            {/* {imageLoading && (
-              <Skeleton
-                variant='rectangular'
-                className={styles.imageSkeleton}
-              />
-            // )} */}
-            {/* <Image
-              src={tour.image}
-              alt={tour.altText || tour.title}
-              fill
-              className={styles.cardImage}
-              // onLoadingComplete={() => setImageLoading(false)}
-              style={{ objectFit: 'cover' }}
-              // sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
-              priority={false}
-            /> */}
           </div>
         ) : (
           <div className={styles.imagePlaceholder}>
@@ -81,42 +63,23 @@ export default function TourCard({
         <CardContent className={styles.cardContent}>
           <Typography className={styles.cardLocation} variant='body2'>
             {tour.location}
-            {/* {highlightText(tour.location, highlight)} */}
           </Typography>
 
-          <Typography
-            variant='h5'
-            className={styles.cardTitle}
-            component='h5' // Use 'strong' to emphasize the title
-          >
+          <Typography variant='h5' className={styles.cardTitle} component='h5'>
             {tour.title}
-            {/* {highlightText(tour.title, highlight)} */}
           </Typography>
 
           <Typography variant='body2' className={styles.cardTimeline}>
             <WatchLaterIcon width='1rem' height='1rem' />
             <span className={styles.cardTimelineText}>
-              {formattedTime(tour.startDate)}
+              {tourTime.startDate}
             </span>
-            <span className={styles.cardTimelineText}>
-              {formattedTime(tour.endDate)}
-            </span>
+            {tourTime.endDate ? (
+              <span className={styles.cardTimelineText}>
+                {tourTime.endDate}
+              </span>
+            ) : null}
           </Typography>
-
-          {/* <Box className={styles.buttonContainer}>
-            {tour.externalPageUrl && (
-              <Button
-                variant='outlined'
-                href={extractPath(tour.externalPageUrl)}
-                target='_blank'
-                rel='noopener noreferrer'
-                className={styles.cardButton}
-                aria-label={`More info about ${tour.title}`}
-              >
-                {t('moreInfo')}
-              </Button>
-            )}
-          </Box> */}
         </CardContent>
       </Card>
     </article>

@@ -1,12 +1,13 @@
-export function formattedTime(utcString: string) {
-    const date = new Date(utcString);
+export function formattedTime(schedule: string) {
+    if (!schedule) return { start: "", end: "" };
 
-    let hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+    // Take the first line, remove "+1 More" info
+    const cleanSchedule = schedule.split("\n")[0];
+    const times = cleanSchedule.split(",").map(t => t.trim());
 
-    hours = hours % 12 || 12; // Convert to 12-hour format
-    const paddedMinutes = minutes.toString().padStart(2, '0');
-
-    return `${hours}:${paddedMinutes} ${ampm}`;
-}  
+    // Return the first two times as start and end
+    return {
+        startDate: times[0] || "",
+        endDate: times[1] || "",
+    };
+}

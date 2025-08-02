@@ -5,23 +5,15 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import debounce from 'lodash.debounce';
-import {
-  Box,
-  Button,
-  Typography,
-  Pagination,
-  Skeleton,
-  Card,
-  CardContent,
-} from '@mui/material';
+import { Box, Button, Typography, Card, CardContent } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import GroupsIcon from '@mui/icons-material/Groups';
 import NearMeIcon from '@mui/icons-material/NearMe';
 import SearchIcon from '@mui/icons-material/Search';
-import TourCard from '../components/home/TourCard';
 import { api } from '../lib/api/index';
 import styles from '../styles/HomePage.module.css';
 import Layout from '../components/Layout';
+import Tours from '../components/home/Tours';
 
 const PER_PAGE = 12;
 
@@ -44,9 +36,8 @@ export default function HomePage() {
   const [suggestion, setSuggestion] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
+  const [hideIcon, setHideIcon] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
-  // const topRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { q } = router.query;
 
@@ -172,7 +163,7 @@ export default function HomePage() {
     },
   ];
 
-  console.log(paginatedTours);
+  console.log(!!suggestion);
 
   return (
     <>
@@ -205,13 +196,15 @@ export default function HomePage() {
             <div className={styles.inputGroup}>
               <div className={styles.input}>
                 <span className={styles.searchIcon}>
-                  <SearchIcon />
+                  {!hideIcon && !suggestion ? <SearchIcon /> : null}
                 </span>
                 <input
                   type='search'
                   placeholder='Search by City'
                   value={suggestion}
                   onChange={(e) => handleSearchInput(e.target.value)}
+                  onFocus={() => setHideIcon(true)}
+                  onBlur={() => setHideIcon(false)}
                   className={styles.searchInput}
                 />
               </div>
@@ -228,50 +221,11 @@ export default function HomePage() {
           </div>
         </div>
 
-        <Box className={styles.tours}>
-          <h2>Available Tours</h2>
-
-          <Box>
-            <div className={styles.tourGrid} role='list'>
-              {loading
-                ? Array.from({ length: PER_PAGE }).map((_, i) => (
-                    <div
-                      key={`skeleton-${i}`}
-                      className={styles.gridItem}
-                      role='listitem'
-                    >
-                      <Skeleton
-                        variant='rectangular'
-                        className={styles.skeletonCard}
-                        height={380}
-                      />
-                    </div>
-                  ))
-                : paginatedTours?.map((tour) => (
-                    <div
-                      key={tour.id}
-                      className={styles.gridItem}
-                      role='listitem'
-                    >
-                      <TourCard
-                        tour={tour}
-                        highlight={search}
-                        aria-label={`Tour to ${tour.location}`}
-                      />
-                    </div>
-                  ))}
-            </div>
-
-            <Pagination
-              count={2}
-              color='primary'
-              shape='rounded'
-              className={styles.pagination}
-              showFirstButton
-              showLastButton
-            />
-          </Box>
-        </Box>
+        <Tours
+          loading={loading}
+          search={search}
+          paginatedTours={paginatedTours}
+        />
 
         <Box className={styles.why}>
           <Box className={styles['why-container']}>
