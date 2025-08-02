@@ -257,7 +257,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background: url('/hero-bg.png') no-repeat;
+  background: url('/hero-bg-sm.png') no-repeat;
   background-size: cover;
   background-blend-mode: darken;
   background-position: left center;

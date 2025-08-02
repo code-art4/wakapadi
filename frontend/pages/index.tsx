@@ -163,8 +163,6 @@ export default function HomePage() {
     },
   ];
 
-  console.log(!!suggestion);
-
   return (
     <>
       <Head>
