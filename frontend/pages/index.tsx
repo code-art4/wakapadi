@@ -149,8 +149,8 @@ export default function HomePage() {
           sx={{ color: 'green', width: '2.5rem', height: '2.5rem' }}
         />
       ),
-      header: 'Local Experts',
-      text: 'Meet passionate locals who know their cities inside out and love sharing hidden gems and authentic stories.',
+      header: t('whyCard1Title'),
+      text: t('whyCard1Content'),
     },
     {
       icon: (
@@ -158,16 +158,16 @@ export default function HomePage() {
           sx={{ color: 'green', width: '2.5rem', height: '2.5rem' }}
         />
       ),
-      header: 'Cultural Connection',
-      text: 'Perfect for tourists, travelers, immigrants, and new settlers looking to connect with their new community.',
+      header: t('whyCard2Title'),
+      text: t('whyCard2Content'),
     },
     {
       icon: (
         // eslint-disable-next-line @next/next/no-img-element
         <img src='/sale_fill.svg' alt='tours' className={styles.toursSvg} />
       ),
-      header: 'Free Walking Tours',
-      text: 'Discover amazing free walking tours and pay-what-you-feel experiences that fit any budget.',
+      header: t('whyCard3Title'),
+      text: t('whyCard3Content'),
     },
   ];
 
@@ -205,13 +205,10 @@ export default function HomePage() {
             // className={styles.headerText}
             >
               <h1>
-                <span>Travel smarter, meet new </span>
-                <span>people, and explore like a local.</span>
+                <span>{t('homeTitleSub1')} </span>
+                <span>{t('homeTitleSub2')}</span>
               </h1>
-              <p>
-                Connect with passionate guides and experience authentic cultural
-                adventures in cities worldwide.
-              </p>
+              <p>{t('homeSubtitle')}</p>
             </div>
 
             <div className={styles.inputGroup}>
@@ -253,7 +250,7 @@ export default function HomePage() {
             <div className={styles.buttonGroup}>
               <Button onClick={() => router.push('/whois')}>
                 <NearMeIcon />
-                #Whois Nearby
+                {t('whoisNearby')}
               </Button>
             </div>
           </div>
@@ -270,11 +267,8 @@ export default function HomePage() {
 
         <Box className={styles.why}>
           <Box className={styles['why-container']}>
-            <h2>Why Choose Wakapadi?</h2>
-            <p>
-              Connect with local guides and helpers for authentic cultural
-              experiences that go beyond typical tourist attractions.
-            </p>
+            <h2>{t('whyTitle')}</h2>
+            <p>{t('whysubTitle')}</p>
 
             <Box className={styles['card-container']}>
               {cards?.map((card, index) => (

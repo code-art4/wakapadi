@@ -42,7 +42,7 @@ const Tours = ({
         ))
       ) : paginatedTours.length > 0 ? (
         <>
-          <h2>Available Tours</h2>
+          <h2>{t('availableTours')}</h2>
           <div className={styles.tourGrid} role='list'>
             {paginatedTours?.map((tour: Tour) => (
               <div key={tour._id} className={styles.gridItem} role='listitem'>

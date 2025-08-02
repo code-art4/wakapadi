@@ -7,63 +7,65 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import { useRouter } from 'next/router';
-
-const footerLinks = [
-  {
-    title: 'Explore',
-    navigations: [
-      {
-        title: '#Whois Nearby',
-        href: '/whois',
-      },
-      {
-        title: 'Available Tours',
-        href: '/tours',
-      },
-      {
-        title: 'Featured Tours',
-        href: '/tours',
-      },
-    ],
-  },
-  {
-    title: 'Company',
-    navigations: [
-      {
-        title: 'About Us',
-        href: '/about',
-      },
-      {
-        title: 'Blog',
-        href: '/404',
-      },
-      {
-        title: 'Contact Us',
-        href: '/contact-us',
-      },
-    ],
-  },
-  {
-    title: 'Legal',
-    navigations: [
-      {
-        title: 'Privacy Policy',
-        href: '/privacy',
-      },
-      {
-        title: 'Terms of Use',
-        href: '/terms',
-      },
-      {
-        title: 'Cookie Policy',
-        href: '/cookies',
-      },
-    ],
-  },
-];
+import { useTranslation } from 'next-i18next';
 
 function Footer() {
   const router = useRouter();
+  const { t } = useTranslation('common');
+
+  const footerLinks = [
+    {
+      title: 'Explore',
+      navigations: [
+        {
+          title: t('whoisNearby'),
+          href: '/whois',
+        },
+        {
+          title: t('availableTours'),
+          href: '/tours',
+        },
+        {
+          title: t('featuredTours'),
+          href: '/tours',
+        },
+      ],
+    },
+    {
+      title: 'Company',
+      navigations: [
+        {
+          title: t('aboutUs'),
+          href: '/about',
+        },
+        {
+          title: t('blog'),
+          href: '/404',
+        },
+        {
+          title: t('contactUs'),
+          href: '/contact-us',
+        },
+      ],
+    },
+    {
+      title: 'Legal',
+      navigations: [
+        {
+          title: t('privacyPolicy'),
+          href: '/privacy',
+        },
+        {
+          title: t('termsOfUse'),
+          href: '/terms',
+        },
+        {
+          title: t('cookiePolicy'),
+          href: '/cookies',
+        },
+      ],
+    },
+  ];
 
   return (
     <footer className={styles.footer}>
@@ -71,7 +73,7 @@ function Footer() {
         <Box className={styles['footer-main-container']}>
           <Box>
             <Image src={Logo} alt='Wakapadi Logo' />
-            <p>Explore, connect, and discover local free walking tours</p>
+            <p>{t('footerTagline')}</p>
           </Box>
           <Box className={styles['footer-main-container-link']}>
             {footerLinks.map((footerLink, index) => {
@@ -103,7 +105,7 @@ function Footer() {
           </Box>
         </Box>
         <Box className={styles['footer-main-copyright']}>
-          <p>© 2025 Wakapadi. All rights reserved.</p>
+          <p>{t('allRightsReserved')}</p>
 
           <Box className={styles['footer-main-buttons']}>
             <Button onClick={() => router.push('/')}>
