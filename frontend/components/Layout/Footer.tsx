@@ -17,11 +17,11 @@ const footerLinks = [
       },
       {
         title: 'Available Tours',
-        href: '/available-tours',
+        href: '/tours',
       },
       {
         title: 'Featured Tours',
-        href: '/featured-tour',
+        href: '/tours',
       },
     ],
   },
@@ -34,11 +34,11 @@ const footerLinks = [
       },
       {
         title: 'Blog',
-        href: '/blog',
+        href: '/404',
       },
       {
         title: 'Contact Us',
-        href: '/contact',
+        href: '/contact-us',
       },
     ],
   },
@@ -55,7 +55,7 @@ const footerLinks = [
       },
       {
         title: 'Cookie Policy',
-        href: '/cookie',
+        href: '/cookies',
       },
     ],
   },

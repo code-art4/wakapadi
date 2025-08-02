@@ -1,11 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import {
+  Box,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  Autocomplete,
+  TextField,
+} from '@mui/material';
 import Head from 'next/head';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import debounce from 'lodash.debounce';
-import { Box, Button, Typography, Card, CardContent } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import GroupsIcon from '@mui/icons-material/Groups';
 import NearMeIcon from '@mui/icons-material/NearMe';
@@ -19,7 +27,7 @@ const PER_PAGE = 12;
 
 export type Tour = {
   image: string;
-  id: number;
+  _id: string;
   location: string;
   altText: string;
   title: string;
@@ -36,8 +44,8 @@ export default function HomePage() {
   const [suggestion, setSuggestion] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [hideIcon, setHideIcon] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
+  const topRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { q } = router.query;
 
@@ -163,10 +171,25 @@ export default function HomePage() {
     },
   ];
 
+  const locations = useMemo(
+    () => [...new Set(tours.map((t) => t.location))],
+    [tours]
+  );
+
+  const handlePageChange = useCallback(
+    (_: React.ChangeEvent<unknown>, value: number) => {
+      setPage(value);
+      window.scrollTo({
+        top: topRef.current?.offsetTop || 0,
+        behavior: 'smooth',
+      });
+    },
+    []
+  );
+
   return (
     <>
       <Head>
-        <title>{t('homePageTitle')}</title>
         <meta name='description' content={t('homePageDescription')} />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta name='robots' content='index, follow' />
@@ -175,7 +198,7 @@ export default function HomePage() {
         <link rel='icon' type='image/png' href='/favicon.png' />
       </Head>
 
-      <Layout homepage={true}>
+      <Layout homepage={true} title={t('homePageTitle')}>
         <div className={styles.hero}>
           <div className={styles.headerContent}>
             <div
@@ -193,17 +216,34 @@ export default function HomePage() {
 
             <div className={styles.inputGroup}>
               <div className={styles.input}>
-                <span className={styles.searchIcon}>
-                  {!hideIcon && !suggestion ? <SearchIcon /> : null}
-                </span>
-                <input
-                  type='search'
-                  placeholder='Search by City'
-                  value={suggestion}
-                  onChange={(e) => handleSearchInput(e.target.value)}
-                  onFocus={() => setHideIcon(true)}
-                  onBlur={() => setHideIcon(false)}
-                  className={styles.searchInput}
+                <Autocomplete
+                  freeSolo
+                  fullWidth
+                  options={locations}
+                  getOptionLabel={(option) => option}
+                  inputValue={search}
+                  onInputChange={(_, value) => handleSearchInput(value)}
+                  disableClearable
+                  renderInput={(params) => (
+                    <>
+                      <span className={styles.searchIcon}>
+                        {!suggestion ? <SearchIcon /> : null}
+                      </span>
+                      <TextField
+                        {...params}
+                        placeholder={t('searchPlaceholder')}
+                        variant='standard'
+                        fullWidth
+                        InputProps={{
+                          ...params.InputProps,
+                          disableUnderline: true,
+                          className: styles.inputField,
+                          'aria-label': 'Search tours',
+                        }}
+                      />
+                    </>
+                  )}
+                  noOptionsText={t('noResults')}
                 />
               </div>
 
@@ -223,6 +263,9 @@ export default function HomePage() {
           loading={loading}
           search={search}
           paginatedTours={paginatedTours}
+          totalPages={totalPages}
+          page={page}
+          handlePageChange={handlePageChange}
         />
 
         <Box className={styles.why}>
