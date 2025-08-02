@@ -30,6 +30,7 @@ import { useRouter } from 'next/router';
 // }
 
 export default function TourCard({ tour }: { tour: Tour; highlight?: string }) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const tourTime = useMemo(() => formattedTime(tour.recurringSchedule), []);
   const router = useRouter();
 
