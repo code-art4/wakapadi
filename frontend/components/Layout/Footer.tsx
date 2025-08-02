@@ -6,6 +6,7 @@ import Image from 'next/image';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
+import { useRouter } from 'next/router';
 
 const footerLinks = [
   {
@@ -62,6 +63,8 @@ const footerLinks = [
 ];
 
 function Footer() {
+  const router = useRouter();
+
   return (
     <footer className={styles.footer}>
       <Box className={styles['footer-container']}>
@@ -103,13 +106,13 @@ function Footer() {
           <p>© 2025 Wakapadi. All rights reserved.</p>
 
           <Box className={styles['footer-main-buttons']}>
-            <Button>
+            <Button onClick={() => router.push('/')}>
               <FacebookIcon />
             </Button>
-            <Button>
+            <Button onClick={() => router.push('/')}>
               <TwitterIcon />
             </Button>
-            <Button>
+            <Button onClick={() => router.push('/')}>
               <InstagramIcon />
             </Button>
           </Box>

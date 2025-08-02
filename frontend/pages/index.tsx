@@ -251,7 +251,7 @@ export default function HomePage() {
             </div>
 
             <div className={styles.buttonGroup}>
-              <Button>
+              <Button onClick={() => router.push('/whois')}>
                 <NearMeIcon />
                 #Whois Nearby
               </Button>

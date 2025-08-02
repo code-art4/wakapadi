@@ -78,12 +78,14 @@ const Header = (props: HeaderProps) => {
         homepage ? styles['header-nav-homepage'] : styles['header-nav']
       }
     >
-      <Image src={homepage ? HeroPageLogo : Logo} alt='Wakapadi Logo' />
+      <Link href='/'>
+        <Image src={homepage ? HeroPageLogo : Logo} alt='Wakapadi Logo' />
+      </Link>
       {/* 1st nav */}
       <Box className={styles['header-link-container']}>
-        <Link href='#'>Who is Nearby</Link>
-        <Link href='#'>About</Link>
-        <Link href='#'>Contact</Link>
+        <Link href='/whois'>Who is Nearby</Link>
+        <Link href='/about'>About</Link>
+        <Link href='/contact-us'>Contact</Link>
       </Box>
       {/* 2nd nav */}
       <Box
@@ -93,8 +95,8 @@ const Header = (props: HeaderProps) => {
             : styles['header-authentication-link']
         }
       >
-        <Link href='#'>Log in</Link>
-        <Button>Get started</Button>
+        <Link href='/login'>Log in</Link>
+        <Button onClick={() => router.push('/register')}>Get started</Button>
         <LanguageIcon width='30px' height='30px' />
       </Box>
       <Box
