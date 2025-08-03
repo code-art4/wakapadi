@@ -39,15 +39,15 @@ export default function HomePage() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 599px)");
+    const mediaQuery = window.matchMedia('(max-width: 599px)');
 
     const handleChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mediaQuery.addEventListener("change", handleChange);
+    mediaQuery.addEventListener('change', handleChange);
 
     // Initial check
     setIsMobile(mediaQuery.matches);
 
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   const PER_PAGE = isMobile ? 6 : 12;
@@ -123,9 +123,10 @@ export default function HomePage() {
     }
   }, [filteredTours, page]);
 
-  const paginatedTours = useMemo(() => {
-    return filteredTours.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  }, [filteredTours, page]) || [];
+  const paginatedTours: Tour[] =
+    useMemo(() => {
+      return filteredTours.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+    }, [filteredTours, page]) || [];
 
   useEffect(() => {
     const detectAndScrapeCity = async () => {
@@ -185,10 +186,10 @@ export default function HomePage() {
   ];
 
   const locations = useMemo(
-    () => Array.isArray(tours) ? [...new Set(tours?.map((t) => t?.location))] : [],
+    () =>
+      Array.isArray(tours) ? [...new Set(tours?.map((t) => t?.location))] : [],
     [tours]
-  );  
-  
+  );
 
   const handlePageChange = useCallback(
     (_: React.ChangeEvent<unknown>, value: number) => {
