@@ -40,7 +40,7 @@ const Tours = ({
             />
           </div>
         ))
-      ) : paginatedTours.length > 0 ? (
+      ) : paginatedTours?.length > 0 ? (
         <>
           <h2>{t('availableTours')}</h2>
           <div className={styles.tourGrid} role='list'>

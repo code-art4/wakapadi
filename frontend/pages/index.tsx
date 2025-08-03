@@ -125,7 +125,7 @@ export default function HomePage() {
 
   const paginatedTours = useMemo(() => {
     return filteredTours.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  }, [filteredTours, page]);
+  }, [filteredTours, page]) || [];
 
   useEffect(() => {
     const detectAndScrapeCity = async () => {
@@ -185,7 +185,7 @@ export default function HomePage() {
   ];
 
   const locations = useMemo(
-    () => Array.isArray(tours) ? [...new Set(tours.map((t) => t?.location))] : [],
+    () => Array.isArray(tours) ? [...new Set(tours?.map((t) => t?.location))] : [],
     [tours]
   );  
   
