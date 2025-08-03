@@ -256,7 +256,7 @@
 }
 
 .headerContent .inputGroup div span {
-  z-index: 2;
+  /* z-index: 2; */
 }
 
 .headerContent .inputGroup div div .searchIcon {
@@ -366,13 +366,28 @@
   background-color: inherit;
 }
 
+@media only screen and (max-width: 1024px) {
+  .card-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .headerContent .inputGroup div div input {
+    width: 100%;
+  }
+
+  .headerContent {
+    bottom: 10%;
+  }
+}
+
 @media only screen and (max-width: 800px) {
   .card-container {
     flex-direction: column;
     align-items: center;
   }
 
-  .headerContent .inputGroup input {
+  .headerContent .inputGroup div div input {
     width: 100%;
   }
 }
@@ -436,7 +451,7 @@
   }
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 600px) {
   .hero {
     height: 90vh;
   }
@@ -462,6 +477,7 @@
   .headerContent .inputGroup {
     display: flex;
     flex-direction: column;
+    width: 90%;
   }
 
   .headerContent .inputGroup button {
@@ -474,5 +490,57 @@
 
   .headerContent .inputGroup input::placeholder {
     padding-left: 1.8rem;
+  }
+
+  .headerContent .inputGroup div div input {
+    width: 100%;
+  }
+}
+
+/* @media (max-height: 600px) {
+  .hero {
+    height: 90vh;
+  }
+
+  .headerContent {
+    bottom: 5%;
+  }
+
+  .headerContent h1 {
+    font-size: 1.8rem;
+  }
+
+  .headerContent p {
+    font-size: 0.9rem;
+    width: 100%;
+  }
+} */
+
+@media only screen and (max-height: 600px) {
+  .hero {
+    height: 100vh !important;
+  }
+
+  .headerContent h1 {
+    font-size: 1.7rem;
+  }
+
+  .headerContent p {
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .headerContent .inputGroup button {
+    display: none;
+  }
+  .headerContent .inputGroup button,
+  .headerContent .inputGroup div div input {
+    padding: 0.5rem 1.8rem;
+    font-size: 0.9rem;
+  }
+
+  .headerContent .buttonGroup button {
+    padding: 0.3rem 1.2rem;
+    font-size: 0.9rem;
   }
 }

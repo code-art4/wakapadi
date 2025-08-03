@@ -23,8 +23,6 @@ import styles from '../styles/HomePage.module.css';
 import Layout from '../components/Layout';
 import Tours from '../components/home/Tours';
 
-const PER_PAGE = 12;
-
 export type Tour = {
   image: string;
   _id: string;
@@ -38,6 +36,21 @@ export type Tour = {
 };
 
 export default function HomePage() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 599px)");
+
+    const handleChange = (e) => setIsMobile(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
+
+    // Initial check
+    setIsMobile(mediaQuery.matches);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  const PER_PAGE = isMobile ? 6 : 12;
   const { t } = useTranslation('common');
   const [tours, setTours] = useState<Tour[]>([]);
   const [search, setSearch] = useState('');
