@@ -185,7 +185,7 @@ export default function HomePage() {
   ];
 
   const locations = useMemo(
-    () => [...new Set(tours.map((t) => t.location))],
+    () => [...new Set(tours?.map((t) => t.location))],
     [tours]
   );
 
