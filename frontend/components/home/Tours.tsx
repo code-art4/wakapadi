@@ -15,7 +15,7 @@ const Tours = ({
   handlePageChange,
 }: {
   loading: boolean;
-  paginatedTours: Tour[];
+  paginatedTours: Tour[] | [];
   search: string;
   totalPages: number;
   page: number;
@@ -40,7 +40,7 @@ const Tours = ({
             />
           </div>
         ))
-      ) : paginatedTours.length > 0 ? (
+      ) : paginatedTours?.length > 0 ? (
         <>
           <h2>{t('availableTours')}</h2>
           <div className={styles.tourGrid} role='list'>
