@@ -41,7 +41,7 @@ export default function HomePage() {
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 599px)");
 
-    const handleChange = (e: any) => setIsMobile(e.matches);
+    const handleChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mediaQuery.addEventListener("change", handleChange);
 
     // Initial check
