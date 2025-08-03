@@ -15,7 +15,7 @@ const Tours = ({
   handlePageChange,
 }: {
   loading: boolean;
-  paginatedTours: Tour[];
+  paginatedTours: Tour[] | [];
   search: string;
   totalPages: number;
   page: number;

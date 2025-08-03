@@ -123,9 +123,9 @@ export default function HomePage() {
     }
   }, [filteredTours, page]);
 
-  const paginatedTours: Tour[] =
+  const paginatedTours =
     useMemo(() => {
-      return filteredTours.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+      return filteredTours?.slice((page - 1) * PER_PAGE, page * PER_PAGE);
     }, [filteredTours, page]) || [];
 
   useEffect(() => {
