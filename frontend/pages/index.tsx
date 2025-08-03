@@ -123,10 +123,9 @@ export default function HomePage() {
     }
   }, [filteredTours, page]);
 
-  const paginatedTours =
-    useMemo(() => {
-      return filteredTours?.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-    }, [filteredTours, page]) || [];
+  const paginatedTours = useMemo(() => {
+    return filteredTours?.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  }, [filteredTours, page]);
 
   useEffect(() => {
     const detectAndScrapeCity = async () => {

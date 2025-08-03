@@ -11,7 +11,7 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   i18n: {
     locales: ['en', 'fr', 'es', 'de'], // Ensure these match your actual setup
     defaultLocale: 'en',
