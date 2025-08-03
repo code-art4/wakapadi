@@ -7,12 +7,16 @@ import OverlayNav from './OverlayNav';
 import styles from '../../styles/components/Header.module.css';
 import Logo from '../../public/logo1.svg';
 import HeroPageLogo from '../../public/logo2.svg';
+import { useRouter } from 'next/navigation';
+import { useTranslation } from 'next-i18next';
 
 interface HeaderProps {
   homepage: boolean;
 }
 
 const Header = (props: HeaderProps) => {
+  const { t } = useTranslation('common');
+
   const handleMobileNavState = (state: boolean, action: string) => {
     switch (action) {
       case 'OPEN':
@@ -35,6 +39,8 @@ const Header = (props: HeaderProps) => {
     dispatch,
   };
 
+  const router = useRouter();
+
   // Render the header with different styles based on homepage prop
   if (homepage) {
     return (
@@ -43,13 +49,13 @@ const Header = (props: HeaderProps) => {
           <Image src={Logo} alt='Wakapadi Logo' />
         </Link>
         <Box className={styles['header-link-container']}>
-          <Link href='#'>Who is Nearby</Link>
-          <Link href='/about'>About</Link>
-          <Link href='#'>Contact</Link>
+          <Link href='/whois'>{t('whoisnearbylink')}</Link>
+          <Link href='/about'>{t('about')}</Link>
+          <Link href='/contact-us'>{t('contact')}</Link>
         </Box>
         <Box className={styles['header-authentication-link-homepage']}>
-          <Link href='#'>Log in</Link>
-          <Button>Get started</Button>
+          <Link href='/login'>{t('login')}</Link>
+          <Button onClick={() => router.push('/register')}>{t('getStarted')}</Button>
           <LanguageIcon width='30px' height='30px' />
         </Box>
         <Box
@@ -75,12 +81,14 @@ const Header = (props: HeaderProps) => {
         homepage ? styles['header-nav-homepage'] : styles['header-nav']
       }
     >
-      <Image src={homepage ? HeroPageLogo : Logo} alt='Wakapadi Logo' />
+      <Link href='/'>
+        <Image src={homepage ? HeroPageLogo : Logo} alt='Wakapadi Logo' />
+      </Link>
       {/* 1st nav */}
       <Box className={styles['header-link-container']}>
-        <Link href='#'>Who is Nearby</Link>
-        <Link href='#'>About</Link>
-        <Link href='#'>Contact</Link>
+        <Link href='/whois'>{t('whoisnearbylink')}</Link>
+        <Link href='/about'>{t('about')}</Link>
+        <Link href='/contact-us'>{t('contact')}</Link>
       </Box>
       {/* 2nd nav */}
       <Box
@@ -90,8 +98,8 @@ const Header = (props: HeaderProps) => {
             : styles['header-authentication-link']
         }
       >
-        <Link href='#'>Log in</Link>
-        <Button>Get started</Button>
+        <Link href='/login'>{t('login')}</Link>
+        <Button onClick={() => router.push('/register')}>{t('getStarted')}</Button>
         <LanguageIcon width='30px' height='30px' />
       </Box>
       <Box
