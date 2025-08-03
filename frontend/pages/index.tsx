@@ -185,9 +185,10 @@ export default function HomePage() {
   ];
 
   const locations = useMemo(
-    () => [...new Set(tours?.map((t) => t.location))],
+    () => Array.isArray(tours) ? [...new Set(tours.map((t) => t?.location))] : [],
     [tours]
-  );
+  );  
+  
 
   const handlePageChange = useCallback(
     (_: React.ChangeEvent<unknown>, value: number) => {
