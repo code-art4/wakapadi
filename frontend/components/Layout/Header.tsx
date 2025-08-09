@@ -1,43 +1,29 @@
-import { useReducer } from 'react';
-import { Link, Button, Box } from '@mui/material';
+import { Link, Button, Box, Container, Typography } from '@mui/material';
 import Image from 'next/image';
 import LanguageIcon from '@mui/icons-material/Language';
 import MenuIcon from '@mui/icons-material/Menu';
-import OverlayNav from './OverlayNav';
 import styles from '../../styles/components/Header.module.css';
 import Logo from '../../public/logo1.svg';
 import HeroPageLogo from '../../public/logo2.svg';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'next-i18next';
+import { useState } from 'react';
 
 interface HeaderProps {
   homepage: boolean;
+  dispatch: React.Dispatch<string>;
+  ismobileMenuOpen: boolean;
 }
 
 const Header = (props: HeaderProps) => {
   const { t } = useTranslation('common');
-
-  const handleMobileNavState = (state: boolean, action: string) => {
-    switch (action) {
-      case 'OPEN':
-        return true;
-      case 'CLOSE':
-        return false;
-      default:
-        return state;
-    }
-  };
+  const [openLanguageDropdown, setOpenLanguageDropdown] =
+    useState<boolean>(false);
 
   // useReducer to manage mobile menu state
   // 'OPEN' to open the menu, 'CLOSE' to close it
-  const [ismobileMenuOpen, dispatch] = useReducer(handleMobileNavState, false);
-  const { homepage = false } = props;
 
-  const overlayNavProps = {
-    homepage,
-    ismobileMenuOpen,
-    dispatch,
-  };
+  const { homepage = false, dispatch, ismobileMenuOpen } = props;
 
   const router = useRouter();
 
@@ -55,8 +41,42 @@ const Header = (props: HeaderProps) => {
         </Box>
         <Box className={styles['header-authentication-link-homepage']}>
           <Link href='/login'>{t('login')}</Link>
-          <Button onClick={() => router.push('/register')}>{t('getStarted')}</Button>
-          <LanguageIcon width='30px' height='30px' />
+          <Button onClick={() => router.push('/register')}>
+            {t('getStarted')}
+          </Button>
+          <LanguageIcon
+            width='30px'
+            height='30px'
+            onClick={() => setOpenLanguageDropdown(!openLanguageDropdown)}
+          />
+          {openLanguageDropdown ? (
+            <Container className={styles['header-language-dropdown']}>
+              <Typography
+                variant='body1'
+                onClick={() => setOpenLanguageDropdown(false)}
+              >
+                English
+              </Typography>
+              <Typography
+                variant='body1'
+                onClick={() => setOpenLanguageDropdown(false)}
+              >
+                French
+              </Typography>
+              <Typography
+                variant='body1'
+                onClick={() => setOpenLanguageDropdown(false)}
+              >
+                Spanish
+              </Typography>
+              <Typography
+                variant='body1'
+                onClick={() => setOpenLanguageDropdown(false)}
+              >
+                German
+              </Typography>
+            </Container>
+          ) : null}
         </Box>
         <Box
           className={`${styles['mobile-header-authentication-link']} ${
@@ -70,7 +90,6 @@ const Header = (props: HeaderProps) => {
             onClick={() => dispatch('OPEN')}
           />
         </Box>
-        <OverlayNav {...overlayNavProps} />
       </nav>
     );
   }
@@ -99,7 +118,9 @@ const Header = (props: HeaderProps) => {
         }
       >
         <Link href='/login'>{t('login')}</Link>
-        <Button onClick={() => router.push('/register')}>{t('getStarted')}</Button>
+        <Button onClick={() => router.push('/register')}>
+          {t('getStarted')}
+        </Button>
         <LanguageIcon width='30px' height='30px' />
       </Box>
       <Box
@@ -110,8 +131,6 @@ const Header = (props: HeaderProps) => {
         <LanguageIcon width='30px' height='30px' />
         <MenuIcon width='30px' height='30px' onClick={() => dispatch('OPEN')} />
       </Box>
-
-      <OverlayNav {...overlayNavProps} />
     </nav>
   );
 };
